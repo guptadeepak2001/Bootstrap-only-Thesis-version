@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Algorithm 4 — A4 Thesis Format</title>
+<style>
+  :root{--paper:#ffffff;--canvas:#ece8df;--ink:#101418;--muted:#5b6470;--rule:#d8d2c1;--navy:#11334d;}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--canvas);color:var(--ink);font-family:Georgia,"Times New Roman",serif;}
+  @page{size:A4 portrait; margin:0;}
+  body{padding:10mm 0;}
+  .page{
+    width:210mm; min-height:297mm; margin:0 auto; background:var(--paper);
+    box-shadow:0 1px 0 #d8d4c6,0 16px 34px rgba(20,20,20,.10);
+    padding:12mm 12mm 11mm; display:flex; flex-direction:column; gap:4mm;
+  }
+  .figtag{font-family:Arial,Helvetica,sans-serif;font-size:10.5pt;letter-spacing:.16em;text-transform:uppercase;color:var(--navy);font-weight:700;margin:0;}
+  h1{margin:0;font-size:18.5pt;line-height:1.14;font-weight:600;color:var(--ink);}
+  .subtitle{margin:0;font-size:10.7pt;line-height:1.36;color:var(--muted);font-style:italic;}
+  .diagram-wrap{
+    flex:1 1 auto;
+    min-height:0;
+    border:1px solid var(--rule);
+    background:linear-gradient(180deg,#fffdf8 0%,#fbfaf6 56%,#f8f6ee 100%);
+    padding:1.8mm;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .diagram-scale{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .diagram-scale svg{
+    width:104%;
+    height:104%;
+    max-width:none;
+    max-height:none;
+    display:block;
+  }
+  .caption{margin:0;font-size:8.55pt;line-height:1.34;color:#2f3540;text-align:justify;}
+  @media print{html,body{background:#fff;padding:0;}.page{margin:0;box-shadow:none;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="figtag">Figure · Algorithm 4</div>
+  <h1>Two-Stage Geometric Audit for Malicious Client Detection</h1>
+  <p class="subtitle">A geometric view of the audit logic — Stage 1 rejects directionally weak or negatively aligned clients using εdir, while Stage 2 applies robust median/MAD magnitude screening to the provisional pass set and returns accepted encrypted submissions 𝒜⁽ᵗ⁾ and rejected tags 𝒟⁽ᵗ⁾.</p>
+  <div class="diagram-wrap">
+    <div class="diagram-scale">
+    <svg preserveAspectRatio="xMidYMid meet" viewBox="0 0 1500 940" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geometric system architecture diagram for Algorithm 4 two-stage geometric audit for malicious client detection">
+      <defs>
+        <marker id="arrowNavy" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#11334d"/></marker>
+        <marker id="arrowTeal" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#0f766e"/></marker>
+        <marker id="arrowWarn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#8a2f2f"/></marker>
+        <marker id="arrowInk" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#101418"/></marker>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/><feOffset dy="1"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="bandFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#eef3f8"/><stop offset="100%" stop-color="#e6edf3"/></linearGradient>
+        <linearGradient id="paperGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fffdf8"/><stop offset="100%" stop-color="#f4f1e7"/></linearGradient>
+        <pattern id="dots" patternUnits="userSpaceOnUse" width="16" height="16"><circle cx="4" cy="4" r="1.1" fill="#11334d" opacity=".3"/><circle cx="12" cy="9" r="1.1" fill="#0f766e" opacity=".25"/></pattern>
+        <symbol id="scoremap" viewBox="0 0 118 100">
+          <rect x="4" y="8" width="110" height="84" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.5"/>
+          <rect x="4" y="8" width="110" height="12" fill="#11334d"/>
+          <line x1="4" y1="34" x2="114" y2="34" stroke="#101418" stroke-width="1.1"/>
+          <line x1="4" y1="54" x2="114" y2="54" stroke="#101418" stroke-width="1.1"/>
+          <line x1="4" y1="74" x2="114" y2="74" stroke="#101418" stroke-width="1.1"/>
+          <line x1="44" y1="20" x2="44" y2="92" stroke="#101418" stroke-width="1.1"/>
+          <circle cx="18" cy="14" r="2" fill="#fbfaf6"/><circle cx="24" cy="14" r="2" fill="#fbfaf6"/><circle cx="30" cy="14" r="2" fill="#fbfaf6"/>
+        </symbol>
+        <symbol id="encset" viewBox="0 0 118 100">
+          <rect x="4" y="8" width="110" height="84" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.5"/>
+          <rect x="4" y="8" width="110" height="12" fill="#11334d"/>
+          <g fill="#f3f1ea" stroke="#101418" stroke-width="1.05"><rect x="14" y="28" width="90" height="12" rx="1.5"/><rect x="14" y="46" width="90" height="12" rx="1.5"/><rect x="14" y="64" width="90" height="12" rx="1.5"/></g>
+          <g fill="#11334d"><circle cx="92" cy="34" r="1.7"/><circle cx="92" cy="52" r="1.7"/><circle cx="92" cy="70" r="1.7"/></g>
+        </symbol>
+        <symbol id="accept" viewBox="0 0 92 92">
+          <circle cx="46" cy="46" r="38" fill="#fbfaf6" stroke="#0f766e" stroke-width="2"/>
+          <path d="M25 47 L39 61 L67 31" fill="none" stroke="#0f766e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+        <symbol id="reject" viewBox="0 0 92 92">
+          <circle cx="46" cy="46" r="38" fill="#fbfaf6" stroke="#8a2f2f" stroke-width="2"/>
+          <path d="M29 29 L63 63 M63 29 L29 63" fill="none" stroke="#8a2f2f" stroke-width="5" stroke-linecap="round"/>
+        </symbol>
+      </defs>
+
+      <rect x="0" y="0" width="1500" height="940" fill="url(#paperGrad)"/>
+
+      <rect x="20" y="22" width="330" height="448" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="365" y="22" width="350" height="448" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="730" y="22" width="360" height="448" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="1105" y="22" width="375" height="448" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+
+      <g font-family="Arial,Helvetica,sans-serif">
+        <g><circle cx="42" cy="46" r="13" fill="#11334d"/><text x="42" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">A</text><text x="64" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE A</text><text x="64" y="58" font-size="15" font-weight="700" fill="#101418">Direction Audit</text></g>
+        <g><circle cx="387" cy="46" r="13" fill="#11334d"/><text x="387" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">B</text><text x="409" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE B</text><text x="409" y="58" font-size="15" font-weight="700" fill="#101418">Robust Statistics</text></g>
+        <g><circle cx="752" cy="46" r="13" fill="#11334d"/><text x="752" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">C</text><text x="774" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE C</text><text x="774" y="58" font-size="15" font-weight="700" fill="#101418">Magnitude Audit</text></g>
+        <g><circle cx="1127" cy="46" r="13" fill="#11334d"/><text x="1127" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">D</text><text x="1149" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE D</text><text x="1149" y="58" font-size="15" font-weight="700" fill="#101418">Accepted / Rejected Outputs</text></g>
+      </g>
+
+      <!-- Phase A -->
+      <g>
+        <g transform="translate(52,90)" filter="url(#shadow)"><use href="#scoremap" width="122" height="102"/></g>
+        <text x="113" y="220" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">FIP Score Map</text>
+        <text x="113" y="236" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13.5" fill="#11334d">𝒮<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+
+        <g transform="translate(202,90)" filter="url(#shadow)"><use href="#encset" width="122" height="102"/></g>
+        <text x="263" y="220" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Encrypted Set</text>
+        <text x="263" y="236" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13.5" fill="#11334d">𝒰<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+
+        <g transform="translate(42,272)">
+          <rect x="0" y="0" width="286" height="144" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">STAGE 1 · DIRECTION SCREEN</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.4" fill="#101418">P<tspan baseline-shift="super" font-size="10">(t)</tspan> ← ∅,&nbsp;&nbsp; 𝒟<tspan baseline-shift="super" font-size="10">(t)</tspan> ← ∅</text>
+          <text x="16" y="74" font-family="Georgia,Times New Roman,serif" font-size="14.8" fill="#101418">for all (TagID<tspan baseline-shift="sub" font-size="10">i</tspan>, s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>) ∈ 𝒮<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="100" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">if s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ≤ ε<tspan baseline-shift="sub" font-size="10">dir</tspan> : reject as Direction</text>
+          <text x="16" y="124" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">else : add TagID<tspan baseline-shift="sub" font-size="10">i</tspan> to P<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        </g>
+
+        <path d="M174,140 C186,140 191,140 201,140" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M113,240 L113,270" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M263,240 L263,270" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase B -->
+      <g>
+        <g transform="translate(386,90)">
+          <rect x="0" y="0" width="308" height="154" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">ROBUST STATISTICS ON PROVISIONAL PASS SET</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">if P<tspan baseline-shift="super" font-size="10">(t)</tspan> = ∅ : return ∅, 𝒟<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="74" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">X<tspan baseline-shift="super" font-size="10">(t)</tspan> ← { s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> : TagID<tspan baseline-shift="sub" font-size="10">i</tspan> ∈ P<tspan baseline-shift="super" font-size="10">(t)</tspan> }</text>
+          <text x="16" y="100" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">μ<tspan baseline-shift="super" font-size="10">(t)</tspan> ← Median(X<tspan baseline-shift="super" font-size="10">(t)</tspan>)</text>
+          <text x="16" y="126" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">MAD<tspan baseline-shift="super" font-size="10">(t)</tspan> ← max(Median({|x−μ<tspan baseline-shift="super" font-size="10">(t)</tspan>|}), ε)</text>
+        </g>
+
+        <g transform="translate(398,276)">
+          <rect x="0" y="0" width="286" height="140" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">ADAPTIVE CONTAMINATION + THRESHOLDS</text>
+          <text x="16" y="46" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">ρ<tspan baseline-shift="super" font-size="10">(t)</tspan> ← ( |𝒟<tspan baseline-shift="super" font-size="10">(t)</tspan>| + |{ i ∈ P<tspan baseline-shift="super" font-size="10">(t)</tspan> : |s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>−μ<tspan baseline-shift="super" font-size="10">(t)</tspan>| &gt; γ<tspan baseline-shift="sub" font-size="10">mad</tspan>MAD<tspan baseline-shift="super" font-size="10">(t)</tspan> }| ) / |𝒮<tspan baseline-shift="super" font-size="10">(t)</tspan>|</text>
+          <text x="16" y="86" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">τ<tspan baseline-shift="sub" font-size="10">min</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ← α(ρ<tspan baseline-shift="super" font-size="10">(t)</tspan>) μ<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="112" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">τ<tspan baseline-shift="sub" font-size="10">max</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ← μ<tspan baseline-shift="super" font-size="10">(t)</tspan> + γ<tspan baseline-shift="sub" font-size="10">mad</tspan>MAD<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="134" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">construct acceptance band for magnitude-consistent clients</text>
+        </g>
+
+        <path d="M329,344 C355,344 363,166 385,166" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M540,246 L540,274" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase C -->
+      <g>
+        <g transform="translate(748,94)">
+          <rect x="0" y="0" width="324" height="150" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">STAGE 2 · MAGNITUDE AUDIT</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan> ← ∅</text>
+          <text x="16" y="74" font-family="Georgia,Times New Roman,serif" font-size="14.9" fill="#101418">for all TagID<tspan baseline-shift="sub" font-size="10">i</tspan> ∈ P<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="100" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">if τ<tspan baseline-shift="sub" font-size="10">min</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ≤ s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ≤ τ<tspan baseline-shift="sub" font-size="10">max</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="124" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">then 𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan> ← 𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan> ∪ { 𝒰<tspan baseline-shift="super" font-size="10">(t)</tspan>[TagID<tspan baseline-shift="sub" font-size="10">i</tspan>] }</text>
+          <text x="16" y="146" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">else add (TagID<tspan baseline-shift="sub" font-size="10">i</tspan>, Magnitude) to 𝒟<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        </g>
+
+        <g transform="translate(784,280)" filter="url(#shadow)"><use href="#accept" width="90" height="90"/></g>
+        <text x="829" y="386" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.6" font-weight="700" letter-spacing=".06em" fill="#0f766e">Accepted</text>
+        <text x="829" y="402" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">inside [τmin, τmax]</text>
+
+        <g transform="translate(944,280)" filter="url(#shadow)"><use href="#reject" width="90" height="90"/></g>
+        <text x="989" y="386" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.6" font-weight="700" letter-spacing=".06em" fill="#8a2f2f">Rejected</text>
+        <text x="989" y="402" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">outside [τmin, τmax]</text>
+
+        <path d="M686,348 C720,348 727,170 746,170" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M910,248 C890,264 874,277 864,284" fill="none" stroke="#0f766e" stroke-width="1.7" marker-end="url(#arrowTeal)"/>
+        <path d="M949,248 C965,265 976,277 983,284" fill="none" stroke="#8a2f2f" stroke-width="1.7" marker-end="url(#arrowWarn)"/>
+      </g>
+
+      <!-- Phase D -->
+      <g>
+        <g transform="translate(1120,90)">
+          <rect x="0" y="0" width="344" height="150" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">FINAL OUTPUTS</text>
+          <text x="18" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.3" fill="#101418">return 𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan>, 𝒟<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="18" y="78" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan> : accepted encrypted submissions</text>
+          <text x="18" y="104" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">𝒟<tspan baseline-shift="super" font-size="10">(t)</tspan> : rejected tags with reason</text>
+          <text x="18" y="130" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">reasons are Direction or Magnitude</text>
+        </g>
+
+        <g transform="translate(1120,268)">
+          <rect x="0" y="0" width="158" height="144" rx="4" fill="#e8f5f1" stroke="#0f766e" stroke-width="1.35"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#0f766e" letter-spacing=".14em">ACCEPTED SET</text>
+          <text x="18" y="48" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">𝒰[TagID<tspan baseline-shift="sub" font-size="9">2</tspan>]</text>
+          <text x="18" y="70" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">𝒰[TagID<tspan baseline-shift="sub" font-size="9">4</tspan>]</text>
+          <text x="18" y="92" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">…</text>
+          <text x="18" y="114" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">𝒰[TagID<tspan baseline-shift="sub" font-size="9">k</tspan>]</text>
+        </g>
+
+        <g transform="translate(1300,268)">
+          <rect x="0" y="0" width="164" height="144" rx="4" fill="#f8ece9" stroke="#8a2f2f" stroke-width="1.35"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#8a2f2f" letter-spacing=".14em">REJECTED SET</text>
+          <text x="18" y="48" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">(TagID<tspan baseline-shift="sub" font-size="9">1</tspan>, Direction)</text>
+          <text x="18" y="70" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">(TagID<tspan baseline-shift="sub" font-size="9">3</tspan>, Magnitude)</text>
+          <text x="18" y="92" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">…</text>
+          <text x="18" y="114" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">(TagID<tspan baseline-shift="sub" font-size="9">j</tspan>, Reason)</text>
+        </g>
+
+        <path d="M1074,168 C1100,168 1106,168 1118,166" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M1200,242 L1200,266" fill="none" stroke="#0f766e" stroke-width="1.6" marker-end="url(#arrowTeal)"/>
+        <path d="M1380,242 L1380,266" fill="none" stroke="#8a2f2f" stroke-width="1.6" marker-end="url(#arrowWarn)"/>
+      </g>
+
+      <!-- divider -->
+      <g>
+        <line x1="20" y1="490" x2="1480" y2="490" stroke="#cdc8b6" stroke-width="1"/>
+        <text x="20" y="484" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".22em" fill="#11334d">GEOMETRIC INSET · DIRECTION CONSISTENCY FOLLOWED BY ROBUST MAGNITUDE SCREENING</text>
+      </g>
+
+      <!-- bottom left notes -->
+      <g transform="translate(40,520)">
+        <text x="0" y="14" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" letter-spacing=".14em" fill="#11334d">TWO-STAGE AUDIT INTUITION</text>
+        <text x="0" y="42" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">Stage 1 removes clients whose FIP scores indicate poor directional alignment</text>
+        <text x="0" y="62" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">with the trusted reference, i.e. s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ≤ ε<tspan baseline-shift="sub" font-size="10">dir</tspan>.</text>
+        <text x="0" y="90" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">The direction threshold ε<tspan baseline-shift="sub" font-size="10">dir</tspan> is set near zero so that negatively</text>
+        <text x="0" y="110" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">aligned or weakly aligned updates are rejected before magnitude screening.</text>
+        <text x="0" y="138" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">Stage 2 keeps only those provisional clients whose scores fall within</text>
+        <text x="0" y="158" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">an adaptive robust interval based on μ<tspan baseline-shift="super" font-size="10">(t)</tspan>, MAD<tspan baseline-shift="super" font-size="10">(t)</tspan>, γ<tspan baseline-shift="sub" font-size="10">mad</tspan>, and α(ρ<tspan baseline-shift="super" font-size="10">(t)</tspan>).</text>
+        <line x1="0" y1="184" x2="385" y2="184" stroke="#cdc8b6"/>
+        <text x="0" y="214" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">This figure uses thesis-level notation only:</text>
+        <text x="0" y="236" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">𝒮<tspan baseline-shift="super" font-size="10">(t)</tspan>, 𝒰<tspan baseline-shift="super" font-size="10">(t)</tspan>, P<tspan baseline-shift="super" font-size="10">(t)</tspan>, 𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan>, 𝒟<tspan baseline-shift="super" font-size="10">(t)</tspan>, ε<tspan baseline-shift="sub" font-size="10">dir</tspan>, γ<tspan baseline-shift="sub" font-size="10">mad</tspan>, α(ρ), ε, μ<tspan baseline-shift="super" font-size="10">(t)</tspan>, MAD<tspan baseline-shift="super" font-size="10">(t)</tspan>, τ<tspan baseline-shift="sub" font-size="10">min</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>, τ<tspan baseline-shift="sub" font-size="10">max</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>.</text>
+      </g>
+
+      <!-- bottom middle geometry -->
+      <g transform="translate(480,518)">
+        <rect x="-10" y="-10" width="458" height="310" rx="3" fill="#fbfaf6" stroke="#cdd7e0"/>
+        <g stroke="#e6e0cb" stroke-width=".7">
+          <line x1="34" y1="244" x2="412" y2="244"/>
+          <line x1="70" y1="32" x2="70" y2="244"/>
+          <line x1="34" y1="70" x2="412" y2="70"/>
+          <line x1="34" y1="116" x2="412" y2="116"/>
+          <line x1="34" y1="162" x2="412" y2="162"/>
+          <line x1="34" y1="208" x2="412" y2="208"/>
+        </g>
+        <text x="36" y="24" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".12em" fill="#11334d">SCORE-AUDIT VIEW</text>
+        <line x1="70" y1="244" x2="70" y2="32" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <line x1="70" y1="244" x2="412" y2="244" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <text x="20" y="38" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">score</text>
+        <text x="364" y="264" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">client index</text>
+
+        <line x1="70" y1="208" x2="412" y2="208" stroke="#8a2f2f" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <text x="320" y="202" font-family="Georgia,Times New Roman,serif" font-size="12" fill="#8a2f2f">ε<tspan baseline-shift="sub" font-size="9">dir</tspan></text>
+
+        <line x1="70" y1="96" x2="412" y2="96" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <text x="335" y="90" font-family="Georgia,Times New Roman,serif" font-size="12" fill="#0f766e">τ<tspan baseline-shift="sub" font-size="9">max</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text>
+        <line x1="70" y1="150" x2="412" y2="150" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <text x="335" y="144" font-family="Georgia,Times New Roman,serif" font-size="12" fill="#0f766e">τ<tspan baseline-shift="sub" font-size="9">min</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text>
+        <line x1="70" y1="122" x2="412" y2="122" stroke="#11334d" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <text x="338" y="118" font-family="Georgia,Times New Roman,serif" font-size="12" fill="#11334d">μ<tspan baseline-shift="super" font-size="9">(t)</tspan></text>
+
+        <circle cx="122" cy="216" r="6" fill="#8a2f2f"/>
+        <circle cx="164" cy="135" r="6" fill="#0f766e"/>
+        <circle cx="206" cy="126" r="6" fill="#0f766e"/>
+        <circle cx="248" cy="112" r="6" fill="#8a2f2f"/>
+        <circle cx="290" cy="142" r="6" fill="#0f766e"/>
+        <circle cx="332" cy="154" r="6" fill="#0f766e"/>
+        <circle cx="374" cy="170" r="6" fill="#8a2f2f"/>
+
+        <text x="114" y="233" font-family="Georgia,Times New Roman,serif" font-size="10.8" fill="#8a2f2f">Direction reject</text>
+        <text x="229" y="82" font-family="Georgia,Times New Roman,serif" font-size="10.8" fill="#8a2f2f">Magnitude reject</text>
+        <text x="274" y="274" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">Accepted clients lie inside the robust interval after passing the direction gate</text>
+      </g>
+
+      <!-- bottom right output card -->
+      <g transform="translate(965,522)">
+        <rect x="0" y="0" width="478" height="262" rx="3" fill="#fbfaf6" stroke="#11334d" stroke-width="1.4"/>
+        <rect x="0" y="0" width="478" height="34" rx="3" fill="#11334d"/>
+        <text x="14" y="22" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#fbfaf6" letter-spacing=".18em">OUTPUT OF ALGORITHM 4</text>
+        <g font-family="Georgia,Times New Roman,serif" fill="#101418">
+          <g transform="translate(20,58)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">Stage 1 rejects clients with s<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan> ≤ ε<tspan baseline-shift="sub" font-size="9">dir</tspan> and records reason = Direction</text></g>
+          <g transform="translate(20,86)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">Robust statistics on provisional pass set yield μ<tspan baseline-shift="super" font-size="9">(t)</tspan>, MAD<tspan baseline-shift="super" font-size="9">(t)</tspan>, ρ<tspan baseline-shift="super" font-size="9">(t)</tspan>, τ<tspan baseline-shift="sub" font-size="9">min</tspan>, τ<tspan baseline-shift="sub" font-size="9">max</tspan></text></g>
+          <g transform="translate(20,114)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">Stage 2 accepts encrypted submissions whose scores fall inside [τ<tspan baseline-shift="sub" font-size="9">min</tspan>, τ<tspan baseline-shift="sub" font-size="9">max</tspan>]</text></g>
+          <g transform="translate(20,142)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">Out-of-band provisional clients are appended to 𝒟<tspan baseline-shift="super" font-size="9">(t)</tspan> with reason = Magnitude</text></g>
+          <g transform="translate(20,170)"><circle cx="6" cy="6" r="3.2" fill="#0f766e"/><text x="20" y="10" font-size="13.4">Return the final pair (𝒜<tspan baseline-shift="super" font-size="9">(t)</tspan>, 𝒟<tspan baseline-shift="super" font-size="9">(t)</tspan>)</text></g>
+        </g>
+        <line x1="20" y1="198" x2="458" y2="198" stroke="#cdc8b6"/>
+        <text x="20" y="220" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".14em" fill="#11334d">AUDIT INVARIANT</text>
+        <text x="20" y="240" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#101418">Only metadata and scores are used for filtering; accepted items remain encrypted submissions 𝒰[TagID].</text>
+      </g>
+    </svg>
+    </div>
+  </div>
+  <p class="caption"><b>Figure 4.</b> Algorithm 4. The verifier takes the FIP score map <i>𝒮</i><sup>(t)</sup> and encrypted submission set <i>𝒰</i><sup>(t)</sup>. In Stage 1, it rejects clients with <i>s</i><sub>i</sub><sup>(t)</sup> ≤ <i>ε</i><sub>dir</sub> as directionally suspicious and forms the provisional pass set <i>P</i><sup>(t)</sup>. In Stage 2, it computes the robust statistics <i>μ</i><sup>(t)</sup> and MAD<sup>(t)</sup>, estimates the contamination rate <i>ρ</i><sup>(t)</sup>, and constructs the adaptive interval [<i>τ</i><sub>min</sub><sup>(t)</sup>, <i>τ</i><sub>max</sub><sup>(t)</sup>]. Encrypted submissions whose scores fall inside this band are retained in the accepted set <i>𝒜</i><sup>(t)</sup>, while the others are added to the rejected tag set <i>𝒟</i><sup>(t)</sup> with reason Direction or Magnitude. The inset visualizes this two-stage screening in score space.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>FIP-PPFL — Working Prototype (Geometric Flow)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f5f1;
+    --ink:#1a1a1a;
+    --muted:#5f5f5f;
+    --rule:#1a1a1a;
+    --soft:#e9e6dd;
+    --hon:#2f6f3e;
+    --hon-bg:#e4efdf;
+    --mal:#b53a2b;
+    --mal-bg:#f6d9ce;
+    --ref:#6b4fbb;
+    --ref-bg:#e7dffb;
+    --enc:#2a5ea8;
+    --enc-bg:#dbe7f7;
+    --warn:#b8860b;
+    --warn-bg:#fff5d9;
+    --panel:#fffdf7;
+  }
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;}
+  .page{width:1600px;margin:0 auto;padding:48px 56px 56px;}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+  h1{font-size:42px;line-height:1.05;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px;}
+  .sub{font-size:15px;color:var(--muted);max-width:1100px;line-height:1.5;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid var(--rule);border-radius:999px;background:#fff;white-space:nowrap;}
+  .sw{width:10px;height:10px;border-radius:2px;display:inline-block;border:1px solid var(--rule);}
+  .sw.hon{background:var(--hon-bg);}
+  .sw.mal{background:var(--mal-bg);}
+  .sw.enc{background:var(--enc-bg);}
+  .sw.ref{background:var(--ref-bg);}
+  .sw.warn{background:var(--warn-bg);}
+  .sw.tka{background:#f3f1ea;}
+
+  /* main canvas */
+  .canvas{margin-top:24px;border:1.5px solid var(--rule);background:var(--panel);border-radius:6px;padding:34px 30px 28px;position:relative;overflow:hidden;}
+  .canvas svg{display:block;width:100%;height:auto;}
+
+  /* cards row below the SVG */
+  .legend-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px;}
+  .lc{border:1.5px solid var(--rule);border-radius:5px;background:#fff;padding:14px 16px;}
+  .lc h4{margin:0 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;}
+  .lc p{margin:0;font-size:13px;line-height:1.5;color:#1a1a1a;}
+  .lc .mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:6px;display:block;}
+  .lc.tka{border-color:#1a1a1a;background:#f3f1ea;}
+  .lc.dir{border-color:var(--ref);background:var(--ref-bg);}
+  .lc.mag{border-color:var(--warn);background:var(--warn-bg);}
+  .lc.agg{border-color:var(--enc);background:var(--enc-bg);}
+
+  footer{margin-top:30px;padding-top:14px;border-top:1.5px solid var(--rule);display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+
+  /* SVG text helpers — controlled inline */
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">Working Prototype · System Flow</div>
+  <h1>FIP-PPFL — Privacy-Preserving Federated Learning</h1>
+  <p class="sub">
+    A trusted key authority publishes a Paillier public key. Clients train locally and submit encrypted
+    gradients. The aggregator audits each encrypted update against a benign reference using two
+    geometric criteria — first a directional check, then a magnitude window — and homomorphically
+    aggregates only the survivors. The single private key never leaves the key authority.
+  </p>
+
+  <div class="legend">
+    <span class="chip"><span class="sw tka"></span>Trusted Key Authority</span>
+    <span class="chip"><span class="sw hon"></span>Honest client</span>
+    <span class="chip"><span class="sw mal"></span>Malicious client</span>
+    <span class="chip"><span class="sw enc"></span>Paillier-encrypted gradient</span>
+    <span class="chip"><span class="sw ref"></span>Direction filter ⟨g, g_ref⟩</span>
+    <span class="chip"><span class="sw warn"></span>Magnitude filter τ<sub>min</sub> ≤ ⟨·,·⟩ ≤ τ<sub>max</sub></span>
+  </div>
+
+  <div class="canvas">
+    <svg viewBox="0 0 1500 1100" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+      <!-- ============== DEFS ============== -->
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/>
+        </marker>
+        <marker id="arr-mal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#b53a2b"/>
+        </marker>
+        <marker id="arr-key" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5f5f5f"/>
+        </marker>
+        <marker id="arr-priv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#6b4fbb"/>
+        </marker>
+        <pattern id="hatch-rej" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+          <rect width="8" height="8" fill="#f6d9ce"/>
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#b53a2b" stroke-width="1.5" opacity="0.55"/>
+        </pattern>
+        <pattern id="hatch-acc" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+          <rect width="8" height="8" fill="#e4efdf"/>
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#2f6f3e" stroke-width="1.5" opacity="0.45"/>
+        </pattern>
+      </defs>
+
+      <!-- ============== TRUSTED KEY AUTHORITY (top) ============== -->
+      <g id="tka">
+        <rect x="600" y="20" width="300" height="118" rx="6" fill="#f3f1ea" stroke="#1a1a1a" stroke-width="2"/>
+        <!-- key icon -->
+        <g transform="translate(620,40)">
+          <circle cx="14" cy="14" r="10" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+          <line x1="22" y1="14" x2="42" y2="14" stroke="#1a1a1a" stroke-width="2"/>
+          <line x1="34" y1="14" x2="34" y2="22" stroke="#1a1a1a" stroke-width="2"/>
+          <line x1="40" y1="14" x2="40" y2="20" stroke="#1a1a1a" stroke-width="2"/>
+        </g>
+        <text x="750" y="58" text-anchor="middle" font-size="18" font-weight="700">Trusted Key Authority</text>
+        <text x="750" y="80" text-anchor="middle" font-size="13" fill="#5f5f5f" font-family="JetBrains Mono, monospace">generates  (pub_key, priv_key)</text>
+        <!-- pub_key chip -->
+        <g transform="translate(620,92)">
+          <rect width="110" height="32" rx="4" fill="#dbe7f7" stroke="#2a5ea8" stroke-width="1.5"/>
+          <text x="55" y="21" text-anchor="middle" font-size="13" font-weight="600" fill="#2a5ea8" font-family="JetBrains Mono, monospace">pub_key</text>
+        </g>
+        <!-- priv_key chip (locked, stays inside) -->
+        <g transform="translate(770,92)">
+          <rect width="110" height="32" rx="4" fill="#fff" stroke="#6b4fbb" stroke-width="1.5"/>
+          <text x="42" y="21" text-anchor="middle" font-size="13" font-weight="600" fill="#6b4fbb" font-family="JetBrains Mono, monospace">priv_key</text>
+          <!-- lock -->
+          <g transform="translate(78,8)">
+            <rect x="0" y="6" width="16" height="12" rx="2" fill="#6b4fbb"/>
+            <path d="M3,6 V3 a5,5 0 0 1 10,0 V6" fill="none" stroke="#6b4fbb" stroke-width="2"/>
+          </g>
+        </g>
+        <text x="750" y="160" text-anchor="middle" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">priv_key never leaves the key authority</text>
+      </g>
+
+      <!-- pub_key broadcast lines (dashed) -->
+      <g stroke="#5f5f5f" stroke-width="1.5" stroke-dasharray="4 4" fill="none" marker-end="url(#arr-key)">
+        <!-- to clients column header -->
+        <path d="M675,138 C 580,200 220,210 175,260"/>
+        <!-- to aggregator -->
+        <path d="M825,138 C 1000,210 1280,260 1320,300"/>
+      </g>
+      <text x="350" y="225" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">pub_key → all clients</text>
+      <text x="1110" y="245" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">pub_key → aggregator</text>
+
+      <!-- ============== CLIENTS (left column) ============== -->
+      <g id="clients">
+        <text x="155" y="260" font-size="13" font-weight="600" fill="#1a1a1a" letter-spacing="2">CLIENTS</text>
+        <line x1="58" y1="270" x2="252" y2="270" stroke="#1a1a1a" stroke-width="1"/>
+
+        <!-- C1..C4 honest -->
+        <!-- y positions: 290, 360, 430, 500 -->
+        <g transform="translate(58,290)">
+          <rect width="194" height="56" rx="4" fill="#e4efdf" stroke="#1a1a1a" stroke-width="1.5"/>
+          <circle cx="22" cy="28" r="11" fill="#2f6f3e"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C1</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">local SGD → g₁</text>
+        </g>
+        <g transform="translate(58,360)">
+          <rect width="194" height="56" rx="4" fill="#e4efdf" stroke="#1a1a1a" stroke-width="1.5"/>
+          <circle cx="22" cy="28" r="11" fill="#2f6f3e"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C2</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">local SGD → g₂</text>
+        </g>
+        <g transform="translate(58,430)">
+          <rect width="194" height="56" rx="4" fill="#e4efdf" stroke="#1a1a1a" stroke-width="1.5"/>
+          <circle cx="22" cy="28" r="11" fill="#2f6f3e"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C3</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">local SGD → g₃</text>
+        </g>
+        <g transform="translate(58,500)">
+          <rect width="194" height="56" rx="4" fill="#e4efdf" stroke="#1a1a1a" stroke-width="1.5"/>
+          <circle cx="22" cy="28" r="11" fill="#2f6f3e"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C4</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">local SGD → g₄</text>
+        </g>
+        <!-- C5 malicious -->
+        <g transform="translate(58,580)">
+          <rect width="194" height="56" rx="4" fill="#f6d9ce" stroke="#b53a2b" stroke-width="2"/>
+          <circle cx="22" cy="28" r="11" fill="#b53a2b"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C5</text>
+          <text x="44" y="24" font-size="13" font-weight="700" fill="#b53a2b">Malicious</text>
+          <text x="44" y="42" font-size="11" fill="#b53a2b" font-family="JetBrains Mono, monospace">flipped labels → g₅</text>
+        </g>
+        <!-- C6 malicious (scaling) -->
+        <g transform="translate(58,650)">
+          <rect width="194" height="56" rx="4" fill="#f6d9ce" stroke="#b53a2b" stroke-width="2"/>
+          <circle cx="22" cy="28" r="11" fill="#b53a2b"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C6</text>
+          <text x="44" y="24" font-size="13" font-weight="700" fill="#b53a2b">Malicious</text>
+          <text x="44" y="42" font-size="11" fill="#b53a2b" font-family="JetBrains Mono, monospace">scaled update → g₆</text>
+        </g>
+
+        <!-- encrypt step bracket -->
+        <g>
+          <rect x="280" y="290" width="74" height="416" fill="#dbe7f7" stroke="#2a5ea8" stroke-width="1.5" rx="5"/>
+          <text x="317" y="320" text-anchor="middle" font-size="12" font-weight="700" fill="#2a5ea8">Encrypt</text>
+          <text x="317" y="338" text-anchor="middle" font-size="11" fill="#2a5ea8" font-family="JetBrains Mono, monospace">E(gᵢ)</text>
+          <text x="317" y="358" text-anchor="middle" font-size="11" fill="#2a5ea8" font-family="JetBrains Mono, monospace">with</text>
+          <text x="317" y="376" text-anchor="middle" font-size="11" fill="#2a5ea8" font-family="JetBrains Mono, monospace">pub_key</text>
+          <!-- small lock -->
+          <g transform="translate(303,420)">
+            <rect x="0" y="9" width="22" height="18" rx="2" fill="#2a5ea8"/>
+            <path d="M4,9 V4 a7,7 0 0 1 14,0 V9" fill="none" stroke="#2a5ea8" stroke-width="2.2"/>
+          </g>
+          <text x="317" y="478" text-anchor="middle" font-size="11" fill="#2a5ea8" font-family="JetBrains Mono, monospace">Paillier</text>
+          <text x="317" y="494" text-anchor="middle" font-size="11" fill="#2a5ea8" font-family="JetBrains Mono, monospace">additively</text>
+          <text x="317" y="510" text-anchor="middle" font-size="11" fill="#2a5ea8" font-family="JetBrains Mono, monospace">homomorphic</text>
+        </g>
+
+        <!-- arrows from clients to encrypt -->
+        <g stroke="#1a1a1a" stroke-width="1.5" fill="none" marker-end="url(#arr)">
+          <line x1="252" y1="318" x2="280" y2="318"/>
+          <line x1="252" y1="388" x2="280" y2="388"/>
+          <line x1="252" y1="458" x2="280" y2="458"/>
+          <line x1="252" y1="528" x2="280" y2="528"/>
+        </g>
+        <g stroke="#b53a2b" stroke-width="1.8" fill="none" marker-end="url(#arr-mal)">
+          <line x1="252" y1="608" x2="280" y2="608"/>
+          <line x1="252" y1="678" x2="280" y2="678"/>
+        </g>
+      </g>
+
+      <!-- ============== AGGREGATOR (right column) ============== -->
+      <g id="aggregator">
+        <!-- container -->
+        <rect x="500" y="240" width="940" height="700" rx="8" fill="#fffdf7" stroke="#1a1a1a" stroke-width="2"/>
+        <text x="520" y="266" font-size="13" font-weight="700" letter-spacing="2">AGGREGATOR  /  SERVER</text>
+
+        <!-- arrows from encrypt -> aggregator entry (encrypted bus) -->
+        <g stroke="#2a5ea8" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <path d="M354,318 C 420,318 440,300 500,300"/>
+          <path d="M354,388 C 420,388 440,360 500,360"/>
+          <path d="M354,458 C 420,458 440,420 500,420"/>
+          <path d="M354,528 C 420,528 440,460 500,460"/>
+        </g>
+        <g stroke="#b53a2b" stroke-width="2" fill="none" marker-end="url(#arr-mal)" stroke-dasharray="6 3">
+          <path d="M354,608 C 420,608 440,520 500,520"/>
+          <path d="M354,678 C 420,678 440,560 500,560"/>
+        </g>
+
+        <!-- Encrypted gradient bus -->
+        <g>
+          <rect x="510" y="290" width="160" height="290" rx="5" fill="#dbe7f7" stroke="#2a5ea8" stroke-width="1.5"/>
+          <text x="590" y="312" text-anchor="middle" font-size="12" font-weight="700" fill="#2a5ea8">Encrypted</text>
+          <text x="590" y="328" text-anchor="middle" font-size="12" font-weight="700" fill="#2a5ea8">gradients</text>
+          <text x="590" y="346" text-anchor="middle" font-size="11" fill="#2a5ea8" font-family="JetBrains Mono, monospace">{ E(gᵢ) }</text>
+
+          <!-- six encrypted blobs -->
+          <g font-family="JetBrains Mono, monospace" font-size="11">
+            <g transform="translate(528,360)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#2a5ea8"/><text x="62" y="15" text-anchor="middle" fill="#2a5ea8">E(g₁)</text></g>
+            <g transform="translate(528,386)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#2a5ea8"/><text x="62" y="15" text-anchor="middle" fill="#2a5ea8">E(g₂)</text></g>
+            <g transform="translate(528,412)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#2a5ea8"/><text x="62" y="15" text-anchor="middle" fill="#2a5ea8">E(g₃)</text></g>
+            <g transform="translate(528,438)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#2a5ea8"/><text x="62" y="15" text-anchor="middle" fill="#2a5ea8">E(g₄)</text></g>
+            <g transform="translate(528,464)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#b53a2b"/><text x="62" y="15" text-anchor="middle" fill="#b53a2b">E(g₅)</text></g>
+            <g transform="translate(528,490)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#b53a2b"/><text x="62" y="15" text-anchor="middle" fill="#b53a2b">E(g₆)</text></g>
+          </g>
+          <text x="590" y="540" text-anchor="middle" font-size="10" fill="#5f5f5f" font-family="JetBrains Mono, monospace">never decrypted</text>
+          <text x="590" y="556" text-anchor="middle" font-size="10" fill="#5f5f5f" font-family="JetBrains Mono, monospace">at the server</text>
+        </g>
+
+        <!-- ============ DIRECTION FILTER (geometric) ============ -->
+        <!-- arrow into direction filter -->
+        <g stroke="#1a1a1a" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <line x1="670" y1="430" x2="720" y2="430"/>
+        </g>
+
+        <g id="dir-filter">
+          <rect x="720" y="290" width="320" height="320" rx="6" fill="#e7dffb" stroke="#6b4fbb" stroke-width="2"/>
+          <text x="880" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#6b4fbb" letter-spacing="1.5">DIRECTION  FILTER</text>
+          <text x="880" y="330" text-anchor="middle" font-size="11" fill="#6b4fbb" font-family="JetBrains Mono, monospace">⟨ E(gᵢ) , g_ref ⟩  homomorphic</text>
+
+          <!-- 2D coordinate -->
+          <g transform="translate(880,470)">
+            <!-- accept cone (right half) -->
+            <path d="M0,0 L120,-90 A150,150 0 0 1 120,90 Z" fill="url(#hatch-acc)" opacity="0.95"/>
+            <!-- reject cone (left half) -->
+            <path d="M0,0 L-120,-90 A150,150 0 0 0 -120,90 Z" fill="url(#hatch-rej)" opacity="0.95"/>
+
+            <!-- axes -->
+            <line x1="-130" y1="0" x2="130" y2="0" stroke="#1a1a1a" stroke-width="1.2"/>
+            <line x1="0" y1="-115" x2="0" y2="115" stroke="#1a1a1a" stroke-width="1.2"/>
+
+            <!-- reference vector g_ref -->
+            <line x1="0" y1="0" x2="115" y2="-30" stroke="#6b4fbb" stroke-width="3" marker-end="url(#arr-priv)"/>
+            <text x="92" y="-44" font-size="11" font-weight="700" fill="#6b4fbb" font-family="JetBrains Mono, monospace">g_ref</text>
+
+            <!-- honest gradients (cluster around g_ref direction) -->
+            <line x1="0" y1="0" x2="100" y2="-22" stroke="#2f6f3e" stroke-width="2"/>
+            <line x1="0" y1="0" x2="92" y2="-10" stroke="#2f6f3e" stroke-width="2"/>
+            <line x1="0" y1="0" x2="105" y2="-40" stroke="#2f6f3e" stroke-width="2"/>
+            <line x1="0" y1="0" x2="88" y2="-3" stroke="#2f6f3e" stroke-width="2"/>
+            <!-- malicious flipped: opposite direction -->
+            <line x1="0" y1="0" x2="-88" y2="22" stroke="#b53a2b" stroke-width="2.4"/>
+            <text x="-100" y="40" font-size="10" fill="#b53a2b" font-family="JetBrains Mono, monospace">g₅ flipped</text>
+            <!-- malicious scaled: aligned but huge -->
+            <line x1="0" y1="0" x2="118" y2="-30" stroke="#b53a2b" stroke-width="2.4" stroke-dasharray="3 2"/>
+            <text x="80" y="-66" font-size="10" fill="#b53a2b" font-family="JetBrains Mono, monospace">g₆ huge</text>
+
+            <!-- accept / reject labels -->
+            <text x="86" y="86" font-size="11" font-weight="700" fill="#2f6f3e" font-family="JetBrains Mono, monospace">ACCEPT</text>
+            <text x="-118" y="86" font-size="11" font-weight="700" fill="#b53a2b" font-family="JetBrains Mono, monospace">REJECT</text>
+          </g>
+
+          <!-- caption -->
+          <text x="880" y="592" text-anchor="middle" font-size="11" fill="#1a1a1a" font-family="JetBrains Mono, monospace">accept iff  ⟨gᵢ, g_ref⟩  &gt;  ε_dir</text>
+        </g>
+
+        <!-- arrow direction → magnitude -->
+        <g stroke="#1a1a1a" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <line x1="1040" y1="450" x2="1090" y2="450"/>
+        </g>
+        <text x="1065" y="442" text-anchor="middle" font-size="10" fill="#5f5f5f" font-family="JetBrains Mono, monospace">survivors</text>
+
+        <!-- ============ MAGNITUDE FILTER ============ -->
+        <g id="mag-filter">
+          <rect x="1090" y="290" width="330" height="320" rx="6" fill="#fff5d9" stroke="#b8860b" stroke-width="2"/>
+          <text x="1255" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#8a6500" letter-spacing="1.5">MAGNITUDE  WINDOW</text>
+          <text x="1255" y="330" text-anchor="middle" font-size="11" fill="#8a6500" font-family="JetBrains Mono, monospace">τ_min ≤ ⟨gᵢ , g_ref⟩ ≤ τ_max</text>
+
+          <!-- horizontal score bar -->
+          <g transform="translate(1115,420)">
+            <!-- baseline -->
+            <line x1="0" y1="60" x2="280" y2="60" stroke="#1a1a1a" stroke-width="1.5"/>
+            <!-- ticks -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#5f5f5f">
+              <line x1="0" y1="55" x2="0" y2="65" stroke="#1a1a1a"/>
+              <line x1="280" y1="55" x2="280" y2="65" stroke="#1a1a1a"/>
+              <text x="0" y="80" text-anchor="middle">low</text>
+              <text x="280" y="80" text-anchor="middle">high</text>
+            </g>
+            <!-- accept window (between tau_min and tau_max) -->
+            <rect x="80" y="34" width="120" height="52" fill="url(#hatch-acc)" opacity="0.95"/>
+            <!-- reject zones -->
+            <rect x="0" y="34" width="80" height="52" fill="url(#hatch-rej)" opacity="0.95"/>
+            <rect x="200" y="34" width="80" height="52" fill="url(#hatch-rej)" opacity="0.95"/>
+
+            <!-- threshold tick marks -->
+            <line x1="80" y1="20" x2="80" y2="86" stroke="#b8860b" stroke-width="2" stroke-dasharray="3 2"/>
+            <line x1="200" y1="20" x2="200" y2="86" stroke="#b8860b" stroke-width="2" stroke-dasharray="3 2"/>
+            <text x="80" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#8a6500" font-family="JetBrains Mono, monospace">τ_min</text>
+            <text x="200" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#8a6500" font-family="JetBrains Mono, monospace">τ_max</text>
+
+            <!-- score points -->
+            <!-- honest cluster inside -->
+            <circle cx="115" cy="60" r="5" fill="#2f6f3e" stroke="#1a1a1a" stroke-width="1.2"/>
+            <circle cx="135" cy="60" r="5" fill="#2f6f3e" stroke="#1a1a1a" stroke-width="1.2"/>
+            <circle cx="155" cy="60" r="5" fill="#2f6f3e" stroke="#1a1a1a" stroke-width="1.2"/>
+            <circle cx="175" cy="60" r="5" fill="#2f6f3e" stroke="#1a1a1a" stroke-width="1.2"/>
+            <!-- C6 outside (high outlier scaled) -->
+            <circle cx="245" cy="60" r="6" fill="#b53a2b" stroke="#1a1a1a" stroke-width="1.4"/>
+            <text x="245" y="106" text-anchor="middle" font-size="10" fill="#b53a2b" font-family="JetBrains Mono, monospace">g₆ ✗</text>
+
+            <!-- C5 already filtered upstream — show ghosted on left -->
+            <circle cx="34" cy="60" r="5" fill="#b53a2b" stroke="#1a1a1a" stroke-width="1" opacity="0.35"/>
+            <text x="34" y="106" text-anchor="middle" font-size="10" fill="#b53a2b" opacity="0.55" font-family="JetBrains Mono, monospace">(already cut)</text>
+
+            <text x="155" y="-18" text-anchor="middle" font-size="11" font-weight="700" fill="#2f6f3e" font-family="JetBrains Mono, monospace">accept window</text>
+          </g>
+
+          <!-- caption -->
+          <text x="1255" y="595" text-anchor="middle" font-size="11" fill="#1a1a1a" font-family="JetBrains Mono, monospace">μ = median(X)  ·  τ_min = μ·α  ·  τ_max = μ + 5·MAD</text>
+        </g>
+
+        <!-- ============ SECURE AGGREGATION ============ -->
+        <!-- arrow magnitude → aggregation -->
+        <g stroke="#1a1a1a" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <path d="M1255,610 C 1255,650 1100,660 1000,660"/>
+        </g>
+        <text x="1140" y="650" text-anchor="middle" font-size="10" fill="#5f5f5f" font-family="JetBrains Mono, monospace">accepted set  S(t)</text>
+
+        <g id="agg">
+          <rect x="700" y="650" width="300" height="120" rx="6" fill="#dbe7f7" stroke="#2a5ea8" stroke-width="2"/>
+          <text x="850" y="676" text-anchor="middle" font-size="13" font-weight="700" fill="#2a5ea8" letter-spacing="1.5">HOMOMORPHIC  AGGREGATION</text>
+          <text x="850" y="696" text-anchor="middle" font-size="12" fill="#2a5ea8" font-family="JetBrains Mono, monospace">E(Σ gᵢ)  =  ∏  E(gᵢ)   for i ∈ S(t)</text>
+          <text x="850" y="716" text-anchor="middle" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">computed entirely on ciphertexts</text>
+          <text x="850" y="752" text-anchor="middle" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">no individual gradient is ever revealed</text>
+        </g>
+
+        <!-- arrow agg -> threshold decryption (back to TKA) — routed up the right channel between magnitude box and aggregator wall -->
+        <g stroke="#6b4fbb" stroke-width="2" fill="none" marker-end="url(#arr-priv)" stroke-dasharray="5 3">
+          <path d="M1000,680 C 1100,680 1455,680 1455,200 C 1455,160 1200,138 900,138" />
+        </g>
+        <text x="1465" y="450" font-size="11" fill="#6b4fbb" font-family="JetBrains Mono, monospace" transform="rotate(-90 1465 450)">E(Σ gᵢ) → priv_key  ·  threshold decrypt</text>
+
+        <!-- decrypted aggregate -> global model update -->
+        <g id="model">
+          <rect x="700" y="810" width="300" height="100" rx="6" fill="#e4efdf" stroke="#2f6f3e" stroke-width="2"/>
+          <text x="850" y="838" text-anchor="middle" font-size="13" font-weight="700" fill="#2f6f3e" letter-spacing="1.5">GLOBAL  MODEL  UPDATE</text>
+          <text x="850" y="858" text-anchor="middle" font-size="12" fill="#2f6f3e" font-family="JetBrains Mono, monospace">w_{t+1}  =  w_t  −  η · (Σ gᵢ) / |S(t)|</text>
+          <text x="850" y="880" text-anchor="middle" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">only the aggregate is decrypted, never any individual update</text>
+        </g>
+
+        <!-- arrow agg -> model -->
+        <g stroke="#1a1a1a" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <line x1="850" y1="770" x2="850" y2="810"/>
+        </g>
+
+      </g>
+
+      <!-- ============== REJECTED BIN ============== -->
+      <g id="rejected">
+        <rect x="80" y="800" width="380" height="140" rx="6" fill="#f6d9ce" stroke="#b53a2b" stroke-width="2"/>
+        <text x="270" y="828" text-anchor="middle" font-size="13" font-weight="700" fill="#b53a2b" letter-spacing="1.5">REJECTED  /  DROPPED</text>
+        <text x="270" y="850" text-anchor="middle" font-size="11" fill="#b53a2b" font-family="JetBrains Mono, monospace">filtered out before aggregation — never decrypted</text>
+        <g font-family="JetBrains Mono, monospace" font-size="12">
+          <g transform="translate(108,866)">
+            <rect width="150" height="50" rx="4" fill="#fff" stroke="#b53a2b"/>
+            <text x="75" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#b53a2b">C5 · g₅</text>
+            <text x="75" y="40" text-anchor="middle" font-size="11" fill="#b53a2b">opposite direction</text>
+          </g>
+          <g transform="translate(282,866)">
+            <rect width="150" height="50" rx="4" fill="#fff" stroke="#b53a2b"/>
+            <text x="75" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#b53a2b">C6 · g₆</text>
+            <text x="75" y="40" text-anchor="middle" font-size="11" fill="#b53a2b">magnitude outside window</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- arrows from filters into rejected bin -->
+      <g stroke="#b53a2b" stroke-width="1.8" fill="none" marker-end="url(#arr-mal)" stroke-dasharray="5 3">
+        <!-- direction filter reject -->
+        <path d="M820,610 C 700,720 460,790 380,800"/>
+        <!-- magnitude filter reject -- routed left along the bottom of the aggregator, well clear of the model-update box -->
+        <path d="M1190,610 C 1180,720 600,950 460,900"/>
+      </g>
+      <text x="540" y="760" font-size="11" fill="#b53a2b" font-family="JetBrains Mono, monospace">direction reject</text>
+      <text x="540" y="950" font-size="11" fill="#b53a2b" font-family="JetBrains Mono, monospace">magnitude reject</text>
+
+      <!-- step badges -->
+      <g font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">
+        <g transform="translate(64,260)"><circle cx="0" cy="-6" r="11" fill="#1a1a1a"/><text x="0" y="-2" text-anchor="middle" fill="#fff">1</text></g>
+        <g transform="translate(317,272)"><circle cx="0" cy="0" r="11" fill="#2a5ea8"/><text x="0" y="4" text-anchor="middle" fill="#fff">2</text></g>
+        <g transform="translate(722,272)"><circle cx="0" cy="0" r="11" fill="#6b4fbb"/><text x="0" y="4" text-anchor="middle" fill="#fff">3</text></g>
+        <g transform="translate(1092,272)"><circle cx="0" cy="0" r="11" fill="#b8860b"/><text x="0" y="4" text-anchor="middle" fill="#fff">4</text></g>
+        <g transform="translate(702,640)"><circle cx="0" cy="0" r="11" fill="#2a5ea8"/><text x="0" y="4" text-anchor="middle" fill="#fff">5</text></g>
+        <g transform="translate(702,800)"><circle cx="0" cy="0" r="11" fill="#2f6f3e"/><text x="0" y="4" text-anchor="middle" fill="#fff">6</text></g>
+      </g>
+
+      <!-- floor caption -->
+      <g>
+        <line x1="40" y1="980" x2="1460" y2="980" stroke="#1a1a1a" stroke-width="1"/>
+        <text x="40" y="1010" font-size="12" font-weight="700" letter-spacing="2" fill="#1a1a1a">FLOW</text>
+        <text x="100" y="1010" font-size="12" fill="#1a1a1a" font-family="JetBrains Mono, monospace">
+          ① local training  →  ② Paillier encryption  →  ③ direction filter  →  ④ magnitude window  →  ⑤ homomorphic aggregation  →  ⑥ threshold-decrypted global update
+        </text>
+        <text x="40" y="1040" font-size="11" fill="#5f5f5f" font-family="JetBrains Mono, monospace">
+          Privacy property: every per-client gradient remains encrypted end-to-end. Only one scalar (the audit score) and the aggregate are ever decrypted, both via priv_key held only by the Trusted Key Authority.
+        </text>
+      </g>
+
+    </svg>
+  </div>
+
+  <div class="legend-cards">
+    <div class="lc tka">
+      <h4>① Trusted Key Authority</h4>
+      <p>Generates one Paillier keypair. Distributes the public key to all clients and the aggregator; keeps the private key sealed and uses it only for threshold decryption of the audit score and the aggregate.</p>
+      <span class="mono">pub_key → broadcast<br>priv_key → never leaves</span>
+    </div>
+    <div class="lc dir">
+      <h4>③ Direction Filter</h4>
+      <p>Server computes the homomorphic inner product ⟨gᵢ, g_ref⟩ against a benign reference built on public data. Updates pointing in the wrong half-space are removed before any aggregation.</p>
+      <span class="mono">accept iff ⟨gᵢ, g_ref⟩ &gt; ε_dir</span>
+    </div>
+    <div class="lc mag">
+      <h4>④ Magnitude Window</h4>
+      <p>Robust statistics on the alignment scores. Median μ and MAD define an adaptive window; any client whose score is too small or too large is dropped — symmetric protection against shrinking and scaling attacks.</p>
+      <span class="mono">τ_min ≤ ⟨gᵢ, g_ref⟩ ≤ τ_max</span>
+    </div>
+    <div class="lc agg">
+      <h4>⑤ Secure Aggregation</h4>
+      <p>The encrypted gradients of the surviving set S(t) are summed homomorphically. Only the aggregate is sent to the key authority for threshold decryption — individual gradients never appear in plaintext.</p>
+      <span class="mono">E(Σ gᵢ) = ∏ E(gᵢ),  i ∈ S(t)</span>
+    </div>
+  </div>
+
+  <footer>
+    <div>FIP-PPFL · System flow · Paillier additively homomorphic encryption</div>
+    <div>Geometric audit  ·  direction + magnitude  ·  no plaintext leak</div>
+  </footer>
+
+</div>
+</body>
+</html>

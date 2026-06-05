@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Algorithm 3 — Homomorphic Functional Inner Product Score Computation</title>
+<style>
+  :root{
+    --paper:#fbfaf6;
+    --canvas:#e9e7df;
+    --ink:#101418;
+    --muted:#5b6470;
+    --rule:#d7d1bf;
+    --navy:#11334d;
+    --teal:#0f766e;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--canvas);color:var(--ink);font-family:Georgia,"Times New Roman",serif;}
+  .page{width:1600px;min-height:1080px;margin:28px auto;padding:42px 52px 46px;background:var(--paper);box-shadow:0 1px 0 #d8d4c6,0 18px 42px rgba(20,20,20,.08);}
+  .figtag{font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--navy);font-weight:700;}
+  h1{margin:7px 0 4px;font-size:27px;line-height:1.18;font-weight:600;letter-spacing:-.01em;}
+  .subtitle{max-width:1260px;margin:0 0 18px;color:var(--muted);font-size:15.5px;line-height:1.45;font-style:italic;}
+  .frame{border:1px solid var(--rule);background:linear-gradient(180deg,#fffdf8 0%,#fbfaf6 56%,#f8f6ee 100%);padding:18px 22px 20px;}
+  svg{display:block;width:100%;height:auto}
+  .caption{margin-top:13px;font-size:13.5px;line-height:1.58;color:#30363d;}
+  .caption b{font-weight:700;color:var(--ink)}
+  @media print{html,body{background:#fff}.page{width:auto;margin:0;box-shadow:none;page-break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="figtag">Figure · Algorithm 3</div>
+  <h1>Homomorphic Functional Inner Product Score Computation</h1>
+  <p class="subtitle">Geometric server-side view for thesis use: the FIP Verifier receives encrypted client submissions and the trusted reference, encodes the reference coordinates, computes each homomorphic functional inner-product score in encrypted form, sends only the encrypted scalar accumulator to the TKA for decryption, decodes the scalar score, and returns the score map <em>𝒮</em><sup>(t)</sup>.</p>
+
+  <div class="frame">
+    <svg viewBox="0 0 1500 930" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geometric system architecture diagram for Algorithm 3 homomorphic functional inner product score computation">
+      <defs>
+        <marker id="arrowNavy" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#11334d"/></marker>
+        <marker id="arrowInk" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#101418"/></marker>
+        <marker id="arrowTeal" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#0f766e"/></marker>
+        <marker id="arrowGrey" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#5b6470"/></marker>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/><feOffset dy="1"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="bandFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#eef3f8"/><stop offset="100%" stop-color="#e6edf3"/></linearGradient>
+        <linearGradient id="paperGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fffdf8"/><stop offset="100%" stop-color="#f4f1e7"/></linearGradient>
+        <pattern id="matrix" patternUnits="userSpaceOnUse" width="14" height="14"><circle cx="3" cy="3" r="1.2" fill="#11334d" opacity=".35"/><circle cx="10" cy="7" r="1.2" fill="#0f766e" opacity=".3"/><circle cx="6" cy="11" r="1.2" fill="#101418" opacity=".15"/></pattern>
+        <symbol id="table" viewBox="0 0 118 96">
+          <rect x="4" y="6" width="110" height="84" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.5"/>
+          <rect x="4" y="6" width="110" height="12" fill="#11334d"/>
+          <line x1="4" y1="32" x2="114" y2="32" stroke="#101418" stroke-width="1.1"/>
+          <line x1="4" y1="52" x2="114" y2="52" stroke="#101418" stroke-width="1.1"/>
+          <line x1="4" y1="72" x2="114" y2="72" stroke="#101418" stroke-width="1.1"/>
+          <line x1="38" y1="18" x2="38" y2="90" stroke="#101418" stroke-width="1.1"/>
+          <line x1="80" y1="18" x2="80" y2="90" stroke="#101418" stroke-width="1.1"/>
+          <circle cx="20" cy="24" r="2.2" fill="#fbfaf6"/><circle cx="26" cy="24" r="2.2" fill="#fbfaf6"/><circle cx="32" cy="24" r="2.2" fill="#fbfaf6"/>
+        </symbol>
+        <symbol id="dataset" viewBox="0 0 110 90">
+          <g fill="#fbfaf6" stroke="#101418" stroke-width="1.35"><ellipse cx="55" cy="14" rx="42" ry="9"/><path d="M13 14 v18 c0 5 18.8 9 42 9 s42 -4 42 -9 v-18"/><path d="M13 32 v18 c0 5 18.8 9 42 9 s42 -4 42 -9 v-18" fill="#f3f1ea"/><path d="M13 50 v18 c0 5 18.8 9 42 9 s42 -4 42 -9 v-18" fill="#f3f1ea"/></g>
+          <g fill="none" stroke="#101418" stroke-width="1" opacity=".45"><ellipse cx="55" cy="32" rx="42" ry="9"/><ellipse cx="55" cy="50" rx="42" ry="9"/></g>
+        </symbol>
+        <symbol id="server" viewBox="0 0 112 112">
+          <rect x="2" y="6" width="108" height="100" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <rect x="2" y="6" width="108" height="14" fill="#11334d"/>
+          <text x="56" y="16.4" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" fill="#fbfaf6" letter-spacing="1.2">SERVER</text>
+          <g stroke="#101418" stroke-width="1.05" fill="#f3f1ea"><rect x="10" y="28" width="92" height="14" rx="1.5"/><rect x="10" y="46" width="92" height="14" rx="1.5"/><rect x="10" y="64" width="92" height="14" rx="1.5"/><rect x="10" y="82" width="92" height="14" rx="1.5"/></g>
+          <g fill="#11334d"><circle cx="94" cy="35" r="1.5"/><circle cx="88" cy="35" r="1.5"/><circle cx="94" cy="53" r="1.5"/><circle cx="88" cy="53" r="1.5"/><circle cx="94" cy="71" r="1.5"/><circle cx="88" cy="71" r="1.5"/><circle cx="94" cy="89" r="1.5"/><circle cx="88" cy="89" r="1.5"/></g>
+        </symbol>
+        <symbol id="shield" viewBox="0 0 100 110">
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 C28 100 8 84 8 58 V18 Z" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 Z" fill="#11334d" opacity=".07"/>
+          <text x="50" y="57" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="20" fill="#11334d">FIP</text>
+          <text x="50" y="76" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.5" fill="#101418">VERIFIER</text>
+        </symbol>
+        <symbol id="vault" viewBox="0 0 112 112">
+          <rect x="2" y="2" width="108" height="108" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <circle cx="56" cy="56" r="35" fill="none" stroke="#101418" stroke-width="1.4"/>
+          <circle cx="56" cy="56" r="24" fill="none" stroke="#101418" stroke-width="1.1"/>
+          <g stroke="#101418" stroke-width="1.4" stroke-linecap="round"><line x1="56" y1="13" x2="56" y2="22"/><line x1="56" y1="90" x2="56" y2="99"/><line x1="13" y1="56" x2="22" y2="56"/><line x1="90" y1="56" x2="99" y2="56"/></g>
+          <circle cx="56" cy="56" r="3" fill="#11334d"/>
+          <path d="M40,57 h30" stroke="#11334d" stroke-width="1.5"/>
+        </symbol>
+      </defs>
+
+      <rect x="0" y="0" width="1500" height="930" fill="url(#paperGrad)"/>
+
+      <rect x="20" y="22" width="335" height="446" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="370" y="22" width="350" height="446" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="735" y="22" width="350" height="446" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="1100" y="22" width="380" height="446" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+
+      <g font-family="Arial,Helvetica,sans-serif">
+        <g><circle cx="42" cy="46" r="13" fill="#11334d"/><text x="42" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">A</text><text x="64" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE A</text><text x="64" y="58" font-size="15" font-weight="700" fill="#101418">Inputs + Reference Encoding</text></g>
+        <g><circle cx="392" cy="46" r="13" fill="#11334d"/><text x="392" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">B</text><text x="414" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE B</text><text x="414" y="58" font-size="15" font-weight="700" fill="#101418">Homomorphic FIP Accumulation</text></g>
+        <g><circle cx="757" cy="46" r="13" fill="#11334d"/><text x="757" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">C</text><text x="779" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE C</text><text x="779" y="58" font-size="15" font-weight="700" fill="#101418">Scalar Decryption + Decoding</text></g>
+        <g><circle cx="1122" cy="46" r="13" fill="#11334d"/><text x="1122" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">D</text><text x="1144" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE D</text><text x="1144" y="58" font-size="15" font-weight="700" fill="#101418">Score Map Assembly</text></g>
+      </g>
+
+      <!-- Phase A -->
+      <g>
+        <g transform="translate(46,92)" filter="url(#shadow)"><use href="#table" width="122" height="100"/></g>
+        <text x="107" y="218" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Encrypted Submissions</text>
+        <text x="107" y="234" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13.5" fill="#11334d">𝒰<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+
+        <g transform="translate(204,88)" filter="url(#shadow)"><use href="#dataset" width="112" height="92"/></g>
+        <text x="260" y="218" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Trusted Reference</text>
+        <text x="260" y="234" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13.5" fill="#11334d">R<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+
+        <g transform="translate(52,274)">
+          <rect x="0" y="0" width="266" height="126" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">INITIALIZATION + REFERENCE ENCODING</text>
+          <text x="18" y="48" font-family="Georgia,Times New Roman,serif" font-size="16" fill="#101418">𝒮<tspan baseline-shift="super" font-size="11">(t)</tspan> ← ∅</text>
+          <text x="18" y="76" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">R̂<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ← Encode<tspan baseline-shift="sub" font-size="10">S</tspan>(R<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>)</text>
+          <text x="18" y="98" font-family="Georgia,Times New Roman,serif" font-size="12" font-style="italic" fill="#5b6470">for k = 1, … , d</text>
+          <text x="18" y="116" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">prepare encoded reference coordinates once per round</text>
+        </g>
+
+        <path d="M168,136 C184,136 190,136 203,134" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M107,238 L107,272" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M260,238 L260,272" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase B -->
+      <g>
+        <rect x="435" y="80" width="252" height="172" rx="6" fill="none" stroke="#11334d" stroke-width="1" stroke-dasharray="4 3" opacity=".72"/>
+        <rect x="437" y="74" width="148" height="15" fill="#eef3f8"/>
+        <text x="443" y="85" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" letter-spacing=".14em" fill="#11334d">SERVER-SIDE FIP VERIFIER</text>
+
+        <g transform="translate(487,92)" filter="url(#shadow)"><use href="#shield" width="86" height="94"/></g>
+        <text x="530" y="204" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.6" font-weight="700" letter-spacing=".06em" fill="#101418">Homomorphic FIP Engine</text>
+        <text x="530" y="220" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">works only on encrypted submissions</text>
+
+        <g transform="translate(388,278)">
+          <rect x="0" y="0" width="314" height="126" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">PER-CLIENT HOMOMORPHIC SCORE LOOP</text>
+          <text x="16" y="46" font-family="Georgia,Times New Roman,serif" font-size="14.8" fill="#101418">for all (TagID<tspan baseline-shift="sub" font-size="10">i</tspan>, {[[ĝ<tspan baseline-shift="sub" font-size="9">i,k</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan>]]}<tspan baseline-shift="super" font-size="10">d</tspan><tspan baseline-shift="sub" font-size="10">k=1</tspan>) ∈ 𝒰<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="72" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">[[ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] ← Enc<tspan baseline-shift="sub" font-size="10">pk</tspan>(0)</text>
+          <text x="16" y="98" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">for k = 1 … d : [[ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] ← [[ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] · ([[ĝ<tspan baseline-shift="sub" font-size="9">i,k</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan>]])<tspan baseline-shift="super" font-size="10">R̂k(t)</tspan> mod n²</text>
+          <text x="16" y="118" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">coordinate-wise encrypted accumulation yields one encrypted scalar FIP score</text>
+        </g>
+
+        <path d="M320,336 C350,336 360,148 435,148" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M560,222 L560,276" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase C -->
+      <g>
+        <g transform="translate(760,86)" filter="url(#shadow)"><use href="#vault" width="98" height="98"/></g>
+        <text x="809" y="212" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Trusted Key Authority</text>
+        <text x="809" y="228" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12.5" fill="#5b6470">holds sealed sk; decrypts scalar only</text>
+
+        <g transform="translate(890,84)" filter="url(#shadow)"><use href="#server" width="118" height="112"/></g>
+        <text x="949" y="212" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.6" font-weight="700" letter-spacing=".06em" fill="#101418">Scalar Transfer</text>
+        <text x="949" y="228" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">send only encrypted scalar accumulator</text>
+
+        <g transform="translate(748,278)">
+          <rect x="0" y="0" width="323" height="128" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">SCALAR DECRYPTION + DECODE</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">Send [[ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] to TKA</text>
+          <text x="16" y="74" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ← Dec<tspan baseline-shift="sub" font-size="10">sk</tspan>([[ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]])</text>
+          <text x="16" y="100" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ← Decode<tspan baseline-shift="sub" font-size="10">S²</tspan>(ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>)</text>
+          <text x="16" y="120" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">recover the real-valued FIP score after fixed-point scalar decryption</text>
+        </g>
+
+        <path d="M703,342 C724,342 732,148 758,148" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M858,136 C874,136 878,136 889,136" fill="none" stroke="#0f766e" stroke-width="1.6" marker-end="url(#arrowTeal)"/>
+        <path d="M949,232 L949,276" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase D -->
+      <g>
+        <g transform="translate(1128,90)">
+          <rect x="0" y="0" width="314" height="120" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">STORE SCORE MAP</text>
+          <text x="157" y="54" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="17" fill="#101418">𝒮<tspan baseline-shift="super" font-size="10">(t)</tspan>[TagID<tspan baseline-shift="sub" font-size="10">i</tspan>] ← s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="157" y="78" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">insert each decoded scalar score into the round score map</text>
+          <text x="157" y="100" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">return 𝒮<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        </g>
+
+        <g transform="translate(1176,258)">
+          <rect x="0" y="0" width="218" height="148" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">ROUND OUTPUT</text>
+          <text x="18" y="46" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">TagID<tspan baseline-shift="sub" font-size="9">1</tspan> ↦ s<tspan baseline-shift="sub" font-size="9">1</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text>
+          <text x="18" y="68" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">TagID<tspan baseline-shift="sub" font-size="9">2</tspan> ↦ s<tspan baseline-shift="sub" font-size="9">2</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text>
+          <text x="18" y="90" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">…</text>
+          <text x="18" y="112" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">TagID<tspan baseline-shift="sub" font-size="9">N</tspan> ↦ s<tspan baseline-shift="sub" font-size="9">N</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text>
+          <text x="18" y="134" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">per-client FIP score map for round t</text>
+        </g>
+
+        <path d="M1072,342 C1104,342 1118,156 1126,156" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M1285,212 L1285,256" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <g>
+        <line x1="20" y1="492" x2="1480" y2="492" stroke="#cdc8b6" stroke-width="1"/>
+        <text x="20" y="486" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".22em" fill="#11334d">GEOMETRIC INSET · ENCRYPTED ALIGNMENT WITH A TRUSTED REFERENCE</text>
+      </g>
+
+      <!-- bottom-left note -->
+      <g transform="translate(40,522)">
+        <text x="0" y="14" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" letter-spacing=".14em" fill="#11334d">HOMOMORPHIC FIP INTUITION</text>
+        <text x="0" y="42" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">For each client, the verifier combines encrypted encoded coordinates</text>
+        <text x="0" y="62" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">with the encoded trusted reference to obtain one encrypted scalar</text>
+        <text x="0" y="82" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">that represents the functional inner product alignment score.</text>
+        <text x="0" y="110" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">Only this scalar accumulator is decrypted by the TKA; full vectors</text>
+        <text x="0" y="130" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">remain encrypted throughout the server-side computation.</text>
+        <line x1="0" y1="154" x2="378" y2="154" stroke="#cdc8b6"/>
+        <text x="0" y="184" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">This figure uses thesis-level notation only:</text>
+        <text x="0" y="206" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">𝒰<tspan baseline-shift="super" font-size="10">(t)</tspan>, R<tspan baseline-shift="super" font-size="10">(t)</tspan>, pk, sk, S, R̂<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>, [[ĝ<tspan baseline-shift="sub" font-size="10">i,k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]], [[ŝ<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]], s<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>, 𝒮<tspan baseline-shift="super" font-size="10">(t)</tspan>.</text>
+        <line x1="0" y1="228" x2="378" y2="228" stroke="#cdc8b6"/>
+        <text x="0" y="254" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".14em" fill="#11334d">SIGNED EXPONENT HANDLING</text>
+        <text x="0" y="276" font-family="Georgia,Times New Roman,serif" font-size="12.6" fill="#101418">For negative encoded reference values R̂<tspan baseline-shift="sub" font-size="9">k</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan> &lt; 0, Paillier exponentiation uses</text>
+        <text x="0" y="296" font-family="Georgia,Times New Roman,serif" font-size="12.6" fill="#101418">ciphertext inversion: c<tspan baseline-shift="super" font-size="9">a</tspan> = (c<tspan baseline-shift="super" font-size="9">−1</tspan>)<tspan baseline-shift="super" font-size="9">|a|</tspan> mod n².</text>
+      </g>
+
+      <!-- bottom-middle geometry -->
+      <g transform="translate(495,520)">
+        <rect x="-10" y="-10" width="430" height="300" rx="3" fill="#fbfaf6" stroke="#cdd7e0"/>
+        <g stroke="#e6e0cb" stroke-width=".7">
+          <line x1="26" y1="140" x2="392" y2="140"/>
+          <line x1="198" y1="22" x2="198" y2="260"/>
+          <g opacity=".5"><line x1="66" y1="22" x2="66" y2="260"/><line x1="106" y1="22" x2="106" y2="260"/><line x1="146" y1="22" x2="146" y2="260"/><line x1="246" y1="22" x2="246" y2="260"/><line x1="286" y1="22" x2="286" y2="260"/><line x1="326" y1="22" x2="326" y2="260"/><line x1="26" y1="60" x2="392" y2="60"/><line x1="26" y1="100" x2="392" y2="100"/><line x1="26" y1="180" x2="392" y2="180"/><line x1="26" y1="220" x2="392" y2="220"/></g>
+        </g>
+        <line x1="26" y1="140" x2="392" y2="140" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <line x1="198" y1="260" x2="198" y2="22" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <text x="386" y="156" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+        <text x="208" y="26" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+
+        <line x1="198" y1="140" x2="308" y2="82" stroke="#11334d" stroke-width="2.8" marker-end="url(#arrowNavy)"/>
+        <text x="314" y="80" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#11334d" font-style="italic">R<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        <text x="314" y="95" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#11334d" font-style="italic">trusted reference</text>
+
+        <line x1="198" y1="140" x2="274" y2="118" stroke="#5b6470" stroke-width="2.4" marker-end="url(#arrowGrey)"/>
+        <text x="282" y="119" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#5b6470" font-style="italic">g<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        <text x="282" y="134" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#5b6470" font-style="italic">client gradient direction</text>
+
+        <path d="M248,140 A50,50 0 0 1 241,116" fill="none" stroke="#0f766e" stroke-width="1.4"/>
+        <text x="246" y="132" font-family="Georgia,Times New Roman,serif" font-size="11" fill="#0f766e" font-style="italic">θ</text>
+        <path d="M274,118 L294,105" fill="none" stroke="#0f766e" stroke-width="1.4" marker-end="url(#arrowTeal)"/>
+        <rect x="255" y="172" width="116" height="32" rx="4" fill="#e7f5f2" stroke="#0f766e"/>
+        <text x="313" y="192" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#0f766e">s<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan> ∝ ⟨g<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan>, R<tspan baseline-shift="super" font-size="9">(t)</tspan>⟩</text>
+        <text x="197" y="280" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">2-D slice illustrating alignment-based scalar scoring</text>
+      </g>
+
+      <!-- bottom-right output card -->
+      <g transform="translate(950,528)">
+        <rect x="0" y="0" width="495" height="258" rx="3" fill="#fbfaf6" stroke="#11334d" stroke-width="1.4"/>
+        <rect x="0" y="0" width="495" height="34" rx="3" fill="#11334d"/>
+        <text x="14" y="22" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#fbfaf6" letter-spacing=".18em">OUTPUT OF ALGORITHM 3</text>
+        <g font-family="Georgia,Times New Roman,serif" fill="#101418">
+          <g transform="translate(20,58)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Reference coordinates R̂<tspan baseline-shift="sub" font-size="9">k</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan> encoded once for the round</text></g>
+          <g transform="translate(20,86)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">One encrypted scalar accumulator [[ŝ<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan>]] computed for each TagID<tspan baseline-shift="sub" font-size="9">i</tspan></text></g>
+          <g transform="translate(20,114)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">TKA decrypts only the scalar accumulator, not the full encrypted gradient vector</text></g>
+          <g transform="translate(20,142)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Decoded score inserted as 𝒮<tspan baseline-shift="super" font-size="9">(t)</tspan>[TagID<tspan baseline-shift="sub" font-size="9">i</tspan>] = s<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text></g>
+          <g transform="translate(20,170)"><circle cx="6" cy="6" r="3.2" fill="#0f766e"/><text x="20" y="10" font-size="13.5">Return the complete round score map 𝒮<tspan baseline-shift="super" font-size="9">(t)</tspan></text></g>
+        </g>
+        <line x1="20" y1="198" x2="475" y2="198" stroke="#cdc8b6"/>
+        <text x="20" y="220" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".14em" fill="#11334d">PRIVACY INVARIANT</text>
+        <text x="20" y="240" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#101418">Client vectors remain encrypted end-to-end; only the homomorphic scalar FIP score is decrypted.</text>
+      </g>
+    </svg>
+
+    <div class="caption">
+      <b>Figure.</b> Editable academic-style geometric diagram for <b>Algorithm 3</b>. The FIP Verifier begins by initializing the round score map <i>𝒮</i><sup>(t)</sup> = ∅ and encoding the trusted reference coordinates as <i>R̂</i><sub>k</sub><sup>(t)</sup> ← Encode<sub>S</sub>(<i>R</i><sub>k</sub><sup>(t)</sup>) for <i>k</i> = 1, …, <i>d</i>. For each encrypted submission (<i>TagID</i><sub>i</sub>, {[[<i>ĝ</i><sub>i,k</sub><sup>(t)</sup>]]]}<sub>k=1</sub><sup>d</sup>) in <i>𝒰</i><sup>(t)</sup>, it initializes the encrypted scalar accumulator [[<i>ŝ</i><sub>i</sub><sup>(t)</sup>]] ← Enc<sub>pk</sub>(0) and updates it coordinate-wise by the Paillier homomorphic rule [[<i>ŝ</i><sub>i</sub><sup>(t)</sup>]] ← [[<i>ŝ</i><sub>i</sub><sup>(t)</sup>]] · ([[<i>ĝ</i><sub>i,k</sub><sup>(t)</sup>]])<sup><i>R̂</i><sub>k</sub><sup>(t)</sup></sup> mod <i>n</i><sup>2</sup>. Only this encrypted scalar accumulator is sent to the TKA, where <i>ŝ</i><sub>i</sub><sup>(t)</sup> ← Dec<sub>sk</sub>([[<i>ŝ</i><sub>i</sub><sup>(t)</sup>]]) and the real-valued score is recovered by <i>s</i><sub>i</sub><sup>(t)</sup> ← Decode<sub>S²</sub>(<i>ŝ</i><sub>i</sub><sup>(t)</sup>). The verifier then stores the result as <i>𝒮</i><sup>(t)</sup>[<i>TagID</i><sub>i</sub>] ← <i>s</i><sub>i</sub><sup>(t)</sup> and returns the completed FIP score map. For negative encoded reference coefficients, Paillier exponentiation is implemented using ciphertext inversion, i.e. c^a = (c^{-1})^{|a|} mod n^2 when a < 0.
+    </div>
+  </div>
+</div>
+</body>
+</html>

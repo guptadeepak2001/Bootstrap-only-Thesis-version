@@ -1,0 +1,5 @@
+attack_rate,attack_rate_pct,n_malicious_clients,malicious_clients,n_actual_malicious_clients,actual_malicious_clients,n_detected_malicious_clients,detected_malicious_clients,n_accepted_clients,accepted_clients,n_rejected_clients,rejected_clients,round,ACC,t_acc,o_acc,TPR,FPR,true_positives,true_positive_clients,false_positives,false_positive_clients,detection_result,round_time_sec,attack_rate_num,overall_error_percent
+10%,10,1,C4,1,C4,1,C4,9,"C0,C1,C2,C3,C5,C6,C7,C8,C9",1,C4,300,0.9122,0.976,0.9018,1.0,0.0,1,C4,0,,PERFECT,128.04,10.0,8.78
+20%,20,2,"C3,C5",2,"C3,C5",2,"C3,C5",8,"C0,C1,C2,C4,C6,C7,C8,C9",2,"C3,C5",300,0.9102,0.9787,0.8994,1.0,0.0,2,"C3,C5",0,,PERFECT,128.89,20.0,8.979999999999999
+30%,30,3,"C1,C2,C8",3,"C1,C2,C8",3,"C1,C2,C8",7,"C0,C3,C4,C5,C6,C7,C9",3,"C1,C2,C8",300,0.9078,0.9733,0.8931,1.0,0.0,3,"C1,C2,C8",0,,PERFECT,128.24,30.0,9.219999999999995
+50%,50,5,"C0,C1,C5,C6,C8",5,"C0,C1,C5,C6,C8",6,"C0,C1,C3,C5,C6,C8",4,"C2,C4,C7,C9",6,"C0,C1,C3,C5,C6,C8",300,0.911,0.9751,0.8991,1.0,0.2,5,"C0,C1,C5,C6,C8",1,C3,FALSE_POSITIVE,128.24,50.0,8.899999999999997

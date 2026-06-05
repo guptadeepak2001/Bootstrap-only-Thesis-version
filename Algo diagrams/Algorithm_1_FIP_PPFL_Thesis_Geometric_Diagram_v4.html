@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Algorithm 1 — FIP-PPFL Initialization and Reference Bootstrapping</title>
+<style>
+  :root{
+    --paper:#fbfaf6;
+    --paper2:#f3f1ea;
+    --canvas:#e9e7df;
+    --ink:#101418;
+    --ink2:#2c3440;
+    --muted:#5b6470;
+    --rule:#d7d1bf;
+    --navy:#11334d;
+    --navy2:#1f5a82;
+    --navySoft:#e6edf3;
+    --teal:#0f766e;
+    --soft:#f7f5ed;
+    --white:#fffdf8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--canvas);color:var(--ink);font-family:Georgia,"Times New Roman",serif;}
+  .page{
+    width:1600px;
+    min-height:1020px;
+    margin:28px auto;
+    padding:42px 52px 46px;
+    background:var(--paper);
+    box-shadow:0 1px 0 #d8d4c6,0 18px 42px rgba(20,20,20,.08);
+  }
+  .figtag{
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--navy);
+    font-weight:700;
+  }
+  h1{
+    margin:7px 0 4px;
+    font-size:27px;
+    line-height:1.18;
+    font-weight:600;
+    letter-spacing:-.01em;
+  }
+  .subtitle{
+    max-width:1160px;
+    margin:0 0 18px;
+    color:var(--muted);
+    font-size:15.5px;
+    line-height:1.45;
+    font-style:italic;
+  }
+  .frame{
+    border:1px solid var(--rule);
+    background:linear-gradient(180deg,#fffdf8 0%,#fbfaf6 56%,#f8f6ee 100%);
+    padding:18px 22px 20px;
+  }
+  svg{display:block;width:100%;height:auto}
+  .caption{
+    margin-top:13px;
+    font-size:13.5px;
+    line-height:1.55;
+    color:#30363d;
+  }
+  .caption b{font-weight:700;color:var(--ink)}
+  .sans{font-family:Arial,Helvetica,sans-serif}
+  .serif{font-family:Georgia,"Times New Roman",serif}
+  @media print{
+    html,body{background:#fff}
+    .page{width:auto;margin:0;box-shadow:none;page-break-after:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="figtag">Figure · Algorithm 1</div>
+  <h1>FIP-PPFL System Initialization and Reference Bootstrapping</h1>
+  <p class="subtitle">Clean geometric architecture view for thesis use: key generation and client registration, model/verifier initialization, and public-data reference bootstrapping into a unit trusted direction <em>g</em><sub>ref</sub><sup>(0)</sup>.</p>
+
+  <div class="frame">
+    <svg viewBox="0 0 1500 835" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geometric system architecture diagram for Algorithm 1 FIP-PPFL initialization and reference bootstrapping">
+      <defs>
+        <marker id="arrowNavy" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L12,6 L0,12 Z" fill="#11334d"/>
+        </marker>
+        <marker id="arrowInk" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L12,6 L0,12 Z" fill="#101418"/>
+        </marker>
+        <marker id="arrowGrey" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L12,6 L0,12 Z" fill="#5b6470"/>
+        </marker>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/>
+          <feOffset dy="1"/>
+          <feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#11334d" stroke-width="1.1" opacity=".52"/>
+        </pattern>
+        <linearGradient id="bandFill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#eef3f8"/>
+          <stop offset="100%" stop-color="#e6edf3"/>
+        </linearGradient>
+        <linearGradient id="paperGrad" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#fffdf8"/>
+          <stop offset="100%" stop-color="#f4f1e7"/>
+        </linearGradient>
+        <symbol id="client" viewBox="0 0 70 78">
+          <rect x="2" y="14" width="66" height="58" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.35"/>
+          <rect x="2" y="14" width="66" height="10" fill="#11334d"/>
+          <circle cx="9" cy="19" r="1.55" fill="#fbfaf6"/>
+          <circle cx="14.5" cy="19" r="1.55" fill="#fbfaf6"/>
+          <circle cx="20" cy="19" r="1.55" fill="#fbfaf6"/>
+          <circle cx="35" cy="38" r="6.8" fill="none" stroke="#101418" stroke-width="1.25"/>
+          <path d="M19 62 c4 -10 10 -14 16 -14 c6 0 12 4 16 14" fill="none" stroke="#101418" stroke-width="1.25" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="server" viewBox="0 0 112 112">
+          <rect x="2" y="6" width="108" height="100" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <rect x="2" y="6" width="108" height="14" fill="#11334d"/>
+          <text x="56" y="16.4" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" fill="#fbfaf6" letter-spacing="1.2">SERVER</text>
+          <g stroke="#101418" stroke-width="1.05" fill="#f3f1ea">
+            <rect x="10" y="28" width="92" height="14" rx="1.5"/>
+            <rect x="10" y="46" width="92" height="14" rx="1.5"/>
+            <rect x="10" y="64" width="92" height="14" rx="1.5"/>
+            <rect x="10" y="82" width="92" height="14" rx="1.5"/>
+          </g>
+          <g fill="#11334d">
+            <circle cx="94" cy="35" r="1.5"/><circle cx="88" cy="35" r="1.5"/>
+            <circle cx="94" cy="53" r="1.5"/><circle cx="88" cy="53" r="1.5"/>
+            <circle cx="94" cy="71" r="1.5"/><circle cx="88" cy="71" r="1.5"/>
+            <circle cx="94" cy="89" r="1.5"/><circle cx="88" cy="89" r="1.5"/>
+          </g>
+        </symbol>
+        <symbol id="vault" viewBox="0 0 112 112">
+          <rect x="2" y="2" width="108" height="108" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <circle cx="56" cy="56" r="35" fill="none" stroke="#101418" stroke-width="1.4"/>
+          <circle cx="56" cy="56" r="24" fill="none" stroke="#101418" stroke-width="1.1"/>
+          <g stroke="#101418" stroke-width="1.4" stroke-linecap="round">
+            <line x1="56" y1="13" x2="56" y2="22"/>
+            <line x1="56" y1="90" x2="56" y2="99"/>
+            <line x1="13" y1="56" x2="22" y2="56"/>
+            <line x1="90" y1="56" x2="99" y2="56"/>
+          </g>
+          <circle cx="56" cy="56" r="3" fill="#11334d"/>
+          <g transform="translate(41,46)" fill="none" stroke="#11334d" stroke-width="1.4">
+            <circle cx="4" cy="4" r="3"/>
+            <line x1="7" y1="4" x2="22" y2="4"/>
+            <line x1="18" y1="4" x2="18" y2="9"/>
+            <line x1="22" y1="4" x2="22" y2="8"/>
+          </g>
+        </symbol>
+        <symbol id="dataset" viewBox="0 0 112 92">
+          <g fill="#fbfaf6" stroke="#101418" stroke-width="1.35">
+            <ellipse cx="56" cy="14" rx="43" ry="9"/>
+            <path d="M13 14 v18 c0 5 19.2 9 43 9 s43 -4 43 -9 v-18"/>
+            <path d="M13 32 v18 c0 5 19.2 9 43 9 s43 -4 43 -9 v-18" fill="#f3f1ea"/>
+            <path d="M13 50 v18 c0 5 19.2 9 43 9 s43 -4 43 -9 v-18" fill="#f3f1ea"/>
+          </g>
+          <g fill="none" stroke="#101418" stroke-width="1" opacity=".45">
+            <ellipse cx="56" cy="32" rx="43" ry="9"/>
+            <ellipse cx="56" cy="50" rx="43" ry="9"/>
+          </g>
+        </symbol>
+        <symbol id="shield" viewBox="0 0 100 110">
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 C28 100 8 84 8 58 V18 Z" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 Z" fill="#11334d" opacity=".07"/>
+          <text x="50" y="57" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="20" fill="#11334d">FIP</text>
+          <text x="50" y="76" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.5" fill="#101418">VERIFIER</text>
+        </symbol>
+      </defs>
+
+      <rect x="0" y="0" width="1500" height="835" fill="url(#paperGrad)"/>
+
+      <!-- Phase bands -->
+      <rect x="20" y="22" width="465" height="430" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="500" y="22" width="465" height="430" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="980" y="22" width="500" height="430" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+
+      <!-- Phase headers -->
+      <g font-family="Arial,Helvetica,sans-serif">
+        <g>
+          <circle cx="42" cy="46" r="13" fill="#11334d"/>
+          <text x="42" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">A</text>
+          <text x="64" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE A</text>
+          <text x="64" y="58" font-size="15" font-weight="700" fill="#101418">Key Generation &amp; Registration</text>
+        </g>
+        <g>
+          <circle cx="522" cy="46" r="13" fill="#11334d"/>
+          <text x="522" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">B</text>
+          <text x="544" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE B</text>
+          <text x="544" y="58" font-size="15" font-weight="700" fill="#101418">Model &amp; Verifier Initialization</text>
+        </g>
+        <g>
+          <circle cx="1002" cy="46" r="13" fill="#11334d"/>
+          <text x="1002" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">C</text>
+          <text x="1024" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE C</text>
+          <text x="1024" y="58" font-size="15" font-weight="700" fill="#101418">Reference Bootstrapping</text>
+        </g>
+      </g>
+
+      <!-- Phase A: TKA -->
+      <g>
+        <g transform="translate(75,88)" filter="url(#shadow)"><use href="#vault" width="112" height="112"/></g>
+        <text x="131" y="218" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" letter-spacing=".06em" fill="#101418">Trusted Key Authority</text>
+        <text x="131" y="234" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12.5" fill="#5b6470">TKA</text>
+
+        <text x="241" y="116" font-family="Georgia,Times New Roman,serif" font-size="14" fill="#101418">(<tspan font-style="italic">pk</tspan>, <tspan font-style="italic">sk</tspan>) ← PaillierKeyGen(1<tspan font-size="10" baseline-shift="super">λ</tspan>)</text>
+        <g transform="translate(208,139)">
+          <rect x="0" y="0" width="100" height="34" rx="3" fill="url(#hatch)" stroke="#11334d" stroke-width="1.2"/>
+          <rect x="0" y="0" width="100" height="34" rx="3" fill="#fbfaf6" opacity=".55"/>
+          <text x="50" y="14" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">SEALED</text>
+          <text x="50" y="27" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13.5" fill="#101418">sk</text>
+        </g>
+        <text x="258" y="187" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">private key remains sealed</text>
+
+        <g transform="translate(207,212)">
+          <rect x="0" y="0" width="108" height="30" rx="3" fill="#11334d"/>
+          <text x="54" y="13" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" fill="#fbfaf6" letter-spacing=".14em">RELEASED</text>
+          <text x="54" y="25" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#fbfaf6">pk, S</text>
+        </g>
+        <path d="M187,177 C200,202 201,213 207,225" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+
+        <text x="40" y="279" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#11334d" letter-spacing=".14em">N CLIENTS</text>
+        <text x="40" y="295" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#5b6470">register and receive (pk, S)</text>
+
+        <g transform="translate(35,313)">
+          <g transform="translate(0,0)"><use href="#client" width="56" height="62"/><text x="28" y="77" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11" font-style="italic" fill="#101418">TagID<tspan font-size="9" baseline-shift="sub">1</tspan></text></g>
+          <g transform="translate(85,0)"><use href="#client" width="56" height="62"/><text x="28" y="77" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11" font-style="italic" fill="#101418">TagID<tspan font-size="9" baseline-shift="sub">2</tspan></text></g>
+          <g transform="translate(170,0)"><use href="#client" width="56" height="62"/><text x="28" y="77" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11" font-style="italic" fill="#101418">TagID<tspan font-size="9" baseline-shift="sub">3</tspan></text></g>
+          <text x="258" y="35" font-family="Georgia,Times New Roman,serif" font-size="20" fill="#5b6470">…</text>
+          <g transform="translate(290,0)"><use href="#client" width="56" height="62"/><text x="28" y="77" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11" font-style="italic" fill="#101418">TagID<tspan font-size="9" baseline-shift="sub">N-1</tspan></text></g>
+          <g transform="translate(375,0)"><use href="#client" width="56" height="62"/><text x="28" y="77" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11" font-style="italic" fill="#101418">TagID<tspan font-size="9" baseline-shift="sub">N</tspan></text></g>
+        </g>
+
+        <path d="M261,242 L261,302 L80,302 L80,311" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M261,302 L165,302 L165,311" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M261,302 L250,302 L250,311" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M261,302 L370,302 L370,311" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M261,302 L455,302 L455,311" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+
+        <g transform="translate(324,249)">
+          <rect x="0" y="0" width="145" height="23" rx="2" fill="#fbfaf6" stroke="#11334d" stroke-width="1"/>
+          <text x="72.5" y="15.5" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="10" fill="#11334d">register C<tspan baseline-shift="sub" font-size="8">i</tspan> → assign TagID<tspan baseline-shift="sub" font-size="8">i</tspan></text>
+        </g>
+      </g>
+
+      <!-- Phase B: Server and Verifier -->
+      <g>
+        <rect x="528" y="80" width="440" height="164" rx="6" fill="none" stroke="#11334d" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/>
+        <rect x="530" y="74" width="126" height="15" fill="#eef3f8"/>
+        <text x="536" y="85" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" letter-spacing=".14em" fill="#11334d">SERVER BOUNDARY</text>
+
+        <g transform="translate(701,91)" filter="url(#shadow)"><use href="#server" width="112" height="112"/></g>
+        <text x="757" y="218" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" letter-spacing=".06em" fill="#101418">FIP-PPFL Server</text>
+
+        <g transform="translate(540,108)">
+          <rect x="0" y="0" width="138" height="62" rx="3" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="10" y="18" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">GLOBAL MODEL</text>
+          <text x="69" y="38" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="12.8" fill="#101418"><tspan font-style="italic">θ</tspan><tspan font-size="10" baseline-shift="super">(0)</tspan> ← InitModel(<tspan font-style="italic">f</tspan><tspan font-size="10" baseline-shift="sub">θ</tspan>)</text>
+          <text x="69" y="52" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="9.2" fill="#5b6470">zero initialization for logistic regression experiments</text>
+        </g>
+        <g transform="translate(540,180)">
+          <rect x="0" y="0" width="138" height="56" rx="3" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="10" y="18" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">UPDATE TABLE</text>
+          <text x="69" y="42" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="18" fill="#101418"><tspan font-style="italic">U</tspan><tspan font-size="12" baseline-shift="super">(0)</tspan> ← ∅</text>
+        </g>
+
+        <path d="M315,227 C480,92 600,91 701,120" fill="none" stroke="#11334d" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#arrowNavy)"/>
+        <text x="530" y="104" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#5b6470">pk, S to server</text>
+
+        <path d="M609,170 L609,265 L76,265" fill="none" stroke="#101418" stroke-width="1.35"/>
+        <path d="M76,265 L76,311" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M161,265 L161,311" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M246,265 L246,311" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M366,265 L366,311" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M451,265 L451,311" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <rect x="498" y="253" width="114" height="18" fill="#fbfaf6"/>
+        <text x="555" y="266" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">broadcast θ<tspan font-size="10" baseline-shift="super">(0)</tspan></text>
+
+        <g transform="translate(872,108)" filter="url(#shadow)"><use href="#shield" width="86" height="94"/></g>
+        <text x="915" y="218" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.5" font-weight="700" letter-spacing=".06em" fill="#101418">FIP Verifier Module</text>
+        <text x="915" y="232" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11" fill="#5b6470">server-side; no external auditor</text>
+      </g>
+
+      <!-- Phase C: Reference bootstrapping -->
+      <g>
+        <g transform="translate(1010,107)" filter="url(#shadow)"><use href="#dataset" width="112" height="92"/></g>
+        <text x="1066" y="218" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" letter-spacing=".06em" fill="#101418">Trusted Public Bootstrap Dataset</text>
+        <text x="1066" y="235" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="14" fill="#11334d">D<tspan font-size="10" baseline-shift="sub">init</tspan></text>
+
+        <g transform="translate(1170,108)">
+          <rect x="0" y="0" width="290" height="92" rx="3" fill="#fbfaf6" stroke="#101418" stroke-width="1.4"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">COMPUTE BOOTSTRAP GRADIENT</text>
+          <text x="145" y="56" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="20" fill="#101418"><tspan font-style="italic">g̃</tspan><tspan font-size="11" baseline-shift="sub">ref</tspan><tspan font-size="13" baseline-shift="super">(0)</tspan> = ∇<tspan font-style="italic">θ</tspan> L(<tspan font-style="italic">f</tspan><tspan font-size="11" baseline-shift="sub">θ</tspan>; D<tspan font-size="11" baseline-shift="sub">init</tspan>)</text>
+          <text x="145" y="80" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#5b6470">evaluated at θ = θ<tspan font-size="10" baseline-shift="super">(0)</tspan></text>
+        </g>
+        <path d="M1124,154 L1168,154" fill="none" stroke="#101418" stroke-width="1.4" marker-end="url(#arrowInk)"/>
+
+        <g transform="translate(1170,212)">
+          <rect x="0" y="0" width="290" height="76" rx="3" fill="#fbfaf6" stroke="#101418" stroke-width="1.4"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">NORMALIZE</text>
+          <text x="145" y="50" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="18" fill="#101418"><tspan font-style="italic">g</tspan><tspan font-size="10" baseline-shift="sub">ref</tspan><tspan font-size="12" baseline-shift="super">(0)</tspan> = <tspan font-style="italic">g̃</tspan><tspan font-size="10" baseline-shift="sub">ref</tspan><tspan font-size="12" baseline-shift="super">(0)</tspan> / max(||<tspan font-style="italic">g̃</tspan><tspan font-size="10" baseline-shift="sub">ref</tspan><tspan font-size="12" baseline-shift="super">(0)</tspan>||<tspan font-size="10" baseline-shift="sub">2</tspan>, ε)</text>
+        </g>
+        <path d="M1315,200 L1315,210" fill="none" stroke="#101418" stroke-width="1.4" marker-end="url(#arrowInk)"/>
+
+        <g transform="translate(1170,302)">
+          <rect x="0" y="0" width="290" height="42" rx="3" fill="#11334d"/>
+          <text x="145" y="17" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#fbfaf6" letter-spacing=".14em">STORE AT FIP VERIFIER</text>
+          <text x="145" y="33" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#fbfaf6">trusted reference for round 1</text>
+        </g>
+        <path d="M1315,288 L1315,300" fill="none" stroke="#101418" stroke-width="1.4" marker-end="url(#arrowInk)"/>
+        <path d="M1170,323 C1112,322 1040,245 958,162" fill="none" stroke="#11334d" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#arrowNavy)"/>
+        <text x="1095" y="282" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">g<tspan font-size="9" baseline-shift="sub">ref</tspan><tspan font-size="9" baseline-shift="super">(0)</tspan> stored in verifier</text>
+      </g>
+
+      <!-- Divider -->
+      <line x1="20" y1="478" x2="1480" y2="478" stroke="#cdc8b6" stroke-width="1"/>
+      <text x="20" y="472" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".22em" fill="#11334d">GEOMETRIC INSET · NORMALIZATION TO A UNIT DIRECTION IN ℝ<tspan baseline-shift="super" font-size="8">d</tspan> (2-D SLICE)</text>
+
+      <!-- Geometric inset and notes -->
+      <g transform="translate(0,500)">
+        <!-- Explanatory note -->
+        <g transform="translate(40,8)">
+          <text x="0" y="14" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" letter-spacing=".14em" fill="#11334d">REFERENCE BOOTSTRAP INTUITION</text>
+          <text x="0" y="42" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">Public bootstrap data generates a raw gradient</text>
+          <text x="0" y="62" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418"><tspan font-style="italic">g̃</tspan><tspan font-size="10" baseline-shift="sub">ref</tspan><tspan font-size="11" baseline-shift="super">(0)</tspan>, then only its direction is retained.</text>
+          <text x="0" y="90" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">The normalized vector becomes the trusted</text>
+          <text x="0" y="110" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">geometric anchor for round 1 alignment checks.</text>
+          <line x1="0" y1="132" x2="365" y2="132" stroke="#cdc8b6"/>
+          <text x="0" y="170" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">This figure uses thesis-level notation only:</text>
+          <text x="0" y="190" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">pk, sk, θ<tspan font-size="10" baseline-shift="super">(0)</tspan>, U<tspan font-size="10" baseline-shift="super">(0)</tspan>, D<tspan font-size="10" baseline-shift="sub">init</tspan>, g̃<tspan font-size="10" baseline-shift="sub">ref</tspan><tspan font-size="10" baseline-shift="super">(0)</tspan>, g<tspan font-size="10" baseline-shift="sub">ref</tspan><tspan font-size="10" baseline-shift="super">(0)</tspan>.</text>
+        </g>
+
+        <!-- Axes and vectors -->
+        <g transform="translate(500,15)">
+          <rect x="-10" y="-10" width="380" height="270" rx="3" fill="#fbfaf6" stroke="#cdd7e0"/>
+          <g stroke="#e6e0cb" stroke-width=".7">
+            <line x1="20" y1="125" x2="350" y2="125"/>
+            <line x1="185" y1="20" x2="185" y2="240"/>
+            <g opacity=".5">
+              <line x1="60" y1="20" x2="60" y2="240"/>
+              <line x1="100" y1="20" x2="100" y2="240"/>
+              <line x1="140" y1="20" x2="140" y2="240"/>
+              <line x1="230" y1="20" x2="230" y2="240"/>
+              <line x1="270" y1="20" x2="270" y2="240"/>
+              <line x1="310" y1="20" x2="310" y2="240"/>
+              <line x1="20" y1="60" x2="350" y2="60"/>
+              <line x1="20" y1="90" x2="350" y2="90"/>
+              <line x1="20" y1="160" x2="350" y2="160"/>
+              <line x1="20" y1="195" x2="350" y2="195"/>
+              <line x1="20" y1="230" x2="350" y2="230"/>
+            </g>
+          </g>
+          <line x1="20" y1="125" x2="350" y2="125" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+          <line x1="185" y1="240" x2="185" y2="20" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+          <text x="345" y="143" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan font-size="9" baseline-shift="sub">1</tspan></text>
+          <text x="195" y="22" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan font-size="9" baseline-shift="sub">2</tspan></text>
+          <circle cx="185" cy="125" r="60" fill="none" stroke="#11334d" stroke-width="1.2" stroke-dasharray="3 3"/>
+          <text x="252" y="80" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11" fill="#11334d">unit circle</text>
+          <text x="252" y="94" font-family="Georgia,Times New Roman,serif" font-size="10" fill="#5b6470">||·||<tspan font-size="9" baseline-shift="sub">2</tspan> = 1</text>
+          <line x1="185" y1="125" x2="273" y2="58" stroke="#5b6470" stroke-width="2" marker-end="url(#arrowGrey)"/>
+          <text x="278" y="55" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#5b6470" font-style="italic">g̃<tspan font-size="9" baseline-shift="sub">ref</tspan><tspan font-size="10" baseline-shift="super">(0)</tspan></text>
+          <text x="278" y="69" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#5b6470" font-style="italic">raw</text>
+          <line x1="185" y1="125" x2="232.6" y2="88.7" stroke="#11334d" stroke-width="2.7" marker-end="url(#arrowNavy)"/>
+          <circle cx="232.6" cy="88.7" r="3.5" fill="#11334d"/>
+          <text x="194" y="80" font-family="Georgia,Times New Roman,serif" font-size="14" fill="#11334d" font-style="italic" font-weight="700">g<tspan font-size="9" baseline-shift="sub">ref</tspan><tspan font-size="10" baseline-shift="super">(0)</tspan></text>
+          <text x="120" y="56" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#11334d" font-style="italic">normalized</text>
+          <path d="M233,93 L268,63" stroke="#5b6470" stroke-width=".9" stroke-dasharray="2 2" fill="none"/>
+          <text x="247" y="84" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#5b6470" font-style="italic" transform="rotate(-37 247 84)">divide by norm</text>
+          <circle cx="185" cy="125" r="2.6" fill="#101418"/>
+          <text x="172" y="143" font-family="Georgia,Times New Roman,serif" font-size="10" fill="#5b6470" font-style="italic">0</text>
+          <text x="180" y="258" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">2-D slice of the d-dimensional parameter space</text>
+        </g>
+
+        <!-- Output card -->
+        <g transform="translate(940,30)">
+          <rect x="0" y="0" width="500" height="240" rx="3" fill="#fbfaf6" stroke="#11334d" stroke-width="1.4"/>
+          <rect x="0" y="0" width="500" height="34" rx="3" fill="#11334d"/>
+          <text x="14" y="22" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#fbfaf6" letter-spacing=".18em">OUTPUT OF ALGORITHM 1</text>
+          <g font-family="Georgia,Times New Roman,serif" fill="#101418">
+            <g transform="translate(20,58)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Registered clients C<tspan baseline-shift="sub" font-size="9">1</tspan>, C<tspan baseline-shift="sub" font-size="9">2</tspan>, …, C<tspan baseline-shift="sub" font-size="9">N</tspan> with anonymous TagID<tspan baseline-shift="sub" font-size="9">i</tspan></text></g>
+            <g transform="translate(20,86)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Paillier public key pk and fixed-point scale S distributed; secret key sk sealed at TKA</text></g>
+            <g transform="translate(20,114)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Initial θ<tspan baseline-shift="super" font-size="10">(0)</tspan> = InitModel(f<tspan baseline-shift="sub" font-size="9">θ</tspan>) and U<tspan baseline-shift="super" font-size="10">(0)</tspan> = ∅</text></g>
+            <g transform="translate(20,142)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Trusted unit reference direction g<tspan baseline-shift="sub" font-size="10">ref</tspan><tspan baseline-shift="super" font-size="10">(0)</tspan> stored for round 1</text></g>
+          </g>
+          <line x1="20" y1="172" x2="480" y2="172" stroke="#cdc8b6"/>
+          <text x="20" y="194" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".14em" fill="#11334d">GEOMETRIC INVARIANT</text>
+          <text x="20" y="216" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#101418">||g<tspan baseline-shift="sub" font-size="10">ref</tspan><tspan baseline-shift="super" font-size="10">(0)</tspan>||<tspan baseline-shift="sub" font-size="10">2</tspan> = 1  ⇒  reference magnitude removed.</text>
+          <text x="20" y="232" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#101418">Used as the initial trusted direction for FIP alignment.</text>
+        </g>
+      </g>
+    </svg>
+
+    <div class="caption">
+      <b>Figure.</b> Editable academic-style geometric diagram for <b>Algorithm 1</b>. The TKA generates the Paillier key pair and keeps <i>sk</i> sealed while releasing only <i>pk</i> and the fixed-point scale <i>S</i>. The server initializes <i>θ</i><sup>(0)</sup> ← InitModel(<i>f</i><sub>θ</sub>) (zero initialization for the logistic-regression experiments) together with <i>U</i><sup>(0)</sup> = ∅, broadcasts <i>θ</i><sup>(0)</sup> to the registered clients, and the server-side FIP Verifier stores the initial trusted reference direction. The trusted public bootstrap set <i>D</i><sub>init</sub> produces the raw gradient <i>g̃</i><sub>ref</sub><sup>(0)</sup>, which is normalized to <i>g</i><sub>ref</sub><sup>(0)</sup> using max(||<i>g̃</i><sub>ref</sub><sup>(0)</sup>||<sub>2</sub>, ε). The bottom inset shows the geometric normalization from a raw gradient vector to a unit direction in a 2-D slice of the parameter space.
+    </div>
+  </div>
+</div>
+</body>
+</html>

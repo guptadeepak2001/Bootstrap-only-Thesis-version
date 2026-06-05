@@ -1,0 +1,70 @@
+ % Thesis framework file. See individual files for details.
+\documentclass{iitthesis}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{ragged2e}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc} % if using PDFLaTeX (older systems)
+\DeclareUnicodeCharacter{202F}{\,}
+%\include{jacket_front}
+%\cleardoublepage
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\renewcommand{\headrulewidth}{0pt} % remove the header rule
+\begin{document}
+	\justifying
+	
+	% Frontmatter. Add other pages as needed.
+	\pagenumbering{roman}
+	%	\include{0_jacket_front}
+	\include{1_firstpage}
+	\include{2_frontmatter}
+	\addcontentsline{toc}{chapter}{Abstract}
+	\include{3_abstract}
+	\cleardoublepage
+	\tableofcontents
+	\cleardoublepage
+	\addcontentsline{toc}{chapter}{List of Figures}
+	\listoffigures
+	\addcontentsline{toc}{chapter}{List of Tables}
+	\listoftables
+	\newpage
+	\thispagestyle{empty} % no page number
+	\null
+	\newpage
+
+	\addcontentsline{toc}{chapter}{List of Abbreviations}
+	%\addcontentsline{toc}{chapter}{Abstract}
+	\textbf{\LARGE List of Abbreviations}
+	% Define your acronyms manually
+	\begin{description}
+		\item \textbf{AMF} - Access and Mobility Management Function
+		\item \textbf{SCTP} - Stream Control Transmission Protocol
+		
+	\end{description}
+	
+	\newpage
+	\thispagestyle{empty}
+	\cleardoublepage
+	
+	
+	%	\usepackage{pdflscape}
+	% Main thesis section
+	\pagenumbering{arabic}
+	\input{10.Chapter1/Chapter1} 
+	\input{11.Chapter2/Chapter2} 
+	
+	%
+	\singlespacing
+	%	 \bibliographystyle{plainnat}
+	%	\bibliographystyle{IEEEtran}
+	%	\bibliographystyle{abbrvnat}
+	\nocite{*}
+	\bibliographystyle{unsrtnat}
+	\bibliography{references}
+
+	
+	
+\end{document}

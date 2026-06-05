@@ -1,0 +1,548 @@
+12
+
+Chapter 4. Preliminaries
+
+The adversary in this thesis controls up to f < N/2 Byzantine clients. Such
+an adversary is free to relabel its own data, hand in any syntactically valid
+ciphertext it likes, coordinate with other malicious clients, and listen in on every
+public broadcast. The empirical part instantiates this model with targeted and
+untargeted label flipping, at malicious rates f /N ∈ {10%, 20%, 30%, 50%}.
+
+4.6
+
+Security and Privacy Goals
+
+The protocol is designed against four targets. Privacy: neither the server nor
+the Verifier should learn any coordinate, norm, or pairwise distance over the
+(t)
+(t)
+(t)
+client gradients beyond the scalar score si = ⟨gi , gref ⟩. Byzantine resilience:
+an update is accepted only when the direction part is positive and the score
+(t)
+(t)
+lies inside the magnitude window (τmin , τmax ). Convergence: the average of the
+accepted updates has to satisfy the descent-alignment plus step-size pair stated
+in Chapter 5. Efficiency: the verifier should run in O(N d + N log N ), and the
+aggregation step in O(|A(t) |d) for the accepted set A(t) .
+
+5 Proposed Framework: FIP-FL
+5.1
+
+System Architecture
+
+FIP-FL is built around four logical roles: the N clients, an Aggregation Server,
+a FIP Verifier, and a Trusted Key Authority (or TKA). In a single round, the
+clients put their Paillier ciphertexts on the wire, the Verifier turns each ciphertext
+into one alignment score, only the accepted ciphertexts make it to the aggregation
+server, and the TKA touches at most scalar scores or aggregate updates — never
+an individual plaintext gradient.
+This way of cutting the system keeps each role’s responsibility narrow. The
+clients train locally and encrypt; the Verifier scores and filters; the server averages
+whatever survives the audit; and the TKA does only the decryptions that the
+protocol explicitly asks for. The Verifier itself is allowed to look at the encrypted
+updates and the plaintext reference direction R(t) , but it is never given an
+individual plaintext gradient. The TKA, on the other side, decrypts the scalar
+FIP scores and the aggregate updates, but it does not see the audit logic at all.
+
+5.2
+
+System Setup and Key Distribution
+
+The setup phase is run exactly once, before round 1 starts. Algorithm 1 keeps
+the three kinds of state apart on purpose. The cryptographic state is the TKA’s
+job, the model state begins from a clean global model on the server, and the
+geometric state — the unit-norm reference direction — is derived from a small
+piece of public bootstrap data and stored at the Verifier. From round 2 onwards
+this same reference direction is refreshed from the accepted aggregate updates
+rather than from any new public data.
+13
+
+14
+
+Chapter 5. Proposed Framework: FIP-FL
+
+Algorithm 1 FIP-FL System Initialization and Reference Bootstrapping
+Require: Number of clients N , model fθ , public bootstrap set Dinit , security
+parameter λ, fixed-point scale s
+Ensure: Registered clients, Paillier keys, initial global model θ (0) , trusted
+(0)
+reference direction gref
+Key generation and registration
+1: (pk, sk) ← PaillierKeyGen(1λ ) at the Trusted Key Authority
+2: TKA keeps sk sealed and releases only pk to the clients and the FIP-FL
+server
+3: for i ← 1 to N do
+4:
+Register client Ci and assign anonymous tag TagIDi
+5:
+Send (pk, s) to client Ci
+6: end for
+Model and verifier initialisation
+7: Initialise global model parameters θ (0) ← 0
+8: Broadcast θ (0) to all registered clients
+9: Initialise encrypted-update table U (0) ← ∅
+Reference bootstrapping
+10: Compute the trusted bootstrap gradient on public data:
+(0)
+eref
+11: g
+← ∇θ L(fθ ; Dinit ) θ=θ(0)
+12: Normalise the reference
+direction:
+
+
+(0)
+(0)
+(0)
+eref / max g
+eref , ε
+13: gref ← g
+14:
+
+2
+(0)
+Store gref at the FIP Verifier for round 1
+
+The public bootstrap set plays a role at exactly one point in the protocol:
+(0)
+it gives us gref at the zero model. From round t ≥ 1 onwards we just call this
+reference direction R(t) .
+
+5.3
+
+Per-Round Protocol
+
+Once setup is done, every round t ≥ 1 goes through the same five steps that the
+SenSys poster lists — encrypted gradient, FIP score, direction filter, magnitude
+window, secure aggregation, and reference refresh.
+
+15
+
+5.3.1
+
+Chapter 5. Proposed Framework: FIP-FL
+
+Phase I: Local Training and Encrypted Update
+Generation
+
+In Phase I, each client runs E epochs of mini-batch SGD on its own shard,
+averages the gradients, flattens the weight and bias parameters into a single
+d-dimensional vector, encrypts each coordinate under Paillier, and ships the
+resulting ciphertext vector off to the Verifier. Algorithm 2 writes out the honest
+version of this; a malicious client tampers with its labels before this step ever
+begins, so its arithmetic on the device is the same.
+Algorithm 2 Client-Side Local Training and Encrypted Gradient Submission
+Require: Client Ci with data Di , round model θ (t) , public key pk, scale s,
+epochs E, batch size B, learning rate η
+(t)
+Ensure: Encrypted submission Mi
+1: θi ← θ (t)
+(t)
+2: gi ← 0, mi ← 0
+3: for e ← 1 to E do
+4:
+for all mini-batches B ⊂ Di of size B do
+5:
+h ← ∇θ L(fθi ; B)
+(t)
+(t)
+6:
+gi ← gi + h, mi ← mi + 1
+7:
+θi ← θi − ηh
+8:
+end for
+9: end for
+(t)
+(t)
+10: gi ← gi / max(mi , 1)
+
+
+(t)
+(t)
+(t)
+11: Flatten gi into coordinates gi,1 , . . . , gi,d
+12: for k ← 1 to d do 
+
+(t)
+(t)
+13:
+gbi,k ← Encodes gi,k
+ 
+(t)
+(t)
+14:
+[[gi,k ]] ← Encpk gbi,k
+15: end for 
+
+(t) d
+(t)
+16: Mi ← TagIDi , {[[gi,k ]]}k=1
+(t)
+
+17: Send Mi
+
+5.3.2
+
+to the FIP Verifier
+
+Phase II: Homomorphic FIP Score Computation
+
+In Phase II, the Verifier forms the projection of the client update onto R(t) while
+the update itself is still in ciphertext form. The Paillier identities for plaintext-
+
+16
+
+Chapter 5. Proposed Framework: FIP-FL
+
+scalar multiplication and ciphertext addition take care of the inner product.
+(t)
+(t)
+After this is done, only the scalar si = ⟨gi , R(t) ⟩ ever gets handed to the TKA
+(t)
+for decryption; the individual coordinates of gi stay sealed. Algorithm 3 writes
+this out step by step.
+
+Algorithm 3 Homomorphic Functional Inner Product Score Computation
+Require: Encrypted submissions U (t) , reference R(t) , public key pk, secret key
+sk held by TKA, scale s
+Ensure: FIP score map S (t)
+1: S (t) ← ∅
+
+
+b(t) ← Encodes R(t) for k = 1, . . . , d
+2: Encode reference coordinates R
+k
+
+ k
+(t) d
+3: for all TagIDi , {[[gi,k ]]}k=1 ∈ U (t) do
+4:
+5:
+6:
+7:
+8:
+9:
+10:
+
+(t)
+
+[[b
+si ]] ← Encpk (0)
+for k ← 1 to d do
+Rbk(t)
+
+(t)
+(t)
+(t)
+[[b
+si ]] ← [[b
+si ]] · [[gi,k ]]
+mod n2
+end for
+(t)
+Send [[b
+si ]] toTKA for scalar decryption
+(t)
+(t)
+sbi ← Decsk [[b
+si ]]
+ 
+(t)
+(t)
+si ← Decodes2 sbi
+(t)
+
+S (t) [TagIDi ] ← si
+12: end for
+13: return S (t)
+11:
+
+5.3.3
+
+Phase III: Two-Stage Geometric Audit
+
+The audit is, by design, only two stages deep — there is no third stage in the
+thesis pipeline. Stage one is the direction filter : any non-positive FIP score is
+rejected immediately, because such a score means the client is pushing against
+the reference direction. Stage two is the magnitude window : among the surviving
+(t)
+(t)
+(t)
+positive scores, only those that satisfy τmin ≤ si ≤ τmax are accepted. The
+lower edge of the window is what catches the suspiciously weak but technically
+positive updates, and the upper edge is what catches the cases that look aligned
+but are simply too loud. Algorithm 4 contains the full procedure.
+
+17
+
+Chapter 5. Proposed Framework: FIP-FL
+
+Algorithm 4 Two-Stage Geometric Audit for Malicious Client Detection
+Require: FIP scores S (t) , encrypted submissions U (t) , direction threshold ϵdir ,
+MAD multiplier γmad , floor map α(ρ), stability floor ε
+Ensure: Accepted encrypted set A(t) , rejected tag set D(t)
+(t)
+1: P (t) ← ∅,
+ D ←∅ 
+(t)
+2: for all TagIDi , si
+∈ S (t) do
+(t)
+
+if si ≤ ϵdir then
+4:
+D(t) ← D(t) ∪ {(TagIDi , Direction)}
+5:
+else
+6:
+P (t) ← P (t) ∪ {TagIDi }
+7:
+end if
+8: end for
+9: if P (t) = ∅ then
+10:
+return ∅, D(t)
+11: end if
+(t)
+12: X (t) ← {si : TagIDi ∈ P (t) }
+
+13: µ(t) ← Median X (t)
+ 
+(t)
+14: MAD ← max Median {|x − µ(t) | : x ∈ X (t) } , ε
+3:
+
+(t)
+
+15: ρ(t) ←
+16:
+17:
+
+|D(t) |+ {i∈P (t) :|si −µ(t) |>γmad MAD(t) }
+
+(t)
+ (t) |S |
+(t)
+(t)
+τmin ← α ρ µ
+(t)
+τmax ← µ(t) + γmad MAD(t)
+
+18: A(t) ← ∅
+19: for all TagIDi ∈ P (t) do
+(t)
+
+(t)
+
+(t)
+
+if τmin ≤ si ≤ τmax then
+21:
+A(t) ← A(t) ∪ {U (t) [TagIDi ]}
+22:
+else
+23:
+D(t) ← D(t) ∪ {(TagIDi , Magnitude)}
+24:
+end if
+25: end for
+26: return A(t) , D (t)
+20:
+
+5.3.4
+
+Phase IV: Secure Aggregation
+
+Phase IV is short. The ciphertexts that the audit rejected are simply dropped;
+they are never decrypted at all. Whatever survives is folded into one pooled
+
+18
+
+Chapter 5. Proposed Framework: FIP-FL
+
+encrypted sum, and only that sum is later opened.
+
+5.3.5
+
+Phase V: Reference Update and Model Distribution
+
+In Phase V the model is moved by the averaged accepted gradient, and the
+reference direction is refreshed through an exponential moving average with
+momentum β. The refresh is followed by a normalisation step, which is what
+guarantees that the FIP scores in the next round are still directional rather than
+dominated by drift in ∥R∥. There is one corner case worth calling out: if the
+audit rejects every client in a round, the model and the reference are simply held
+unchanged for the next round. Algorithm 5 combines the secure aggregation
+step, the model update, and the reference refresh in one block.
+
+19
+
+Chapter 5. Proposed Framework: FIP-FL
+
+Algorithm 5 Secure Aggregation and Momentum-Based Reference Update
+Require: Accepted encrypted set A(t) , model θ (t) , reference R(t) , public key pk,
+secret key sk held by TKA, scale s, learning rate η, momentum β, stability
+floor ε
+Ensure: Updated model θ (t+1) , updated reference R(t+1)
+1: if A(t) = ∅ then
+2:
+θ (t+1) ← θ (t) , R(t+1) ← R(t)
+3:
+Broadcast θ (t+1) and keep the previous reference
+4:
+return θ (t+1) , R(t+1)
+5: end if
+6: m ← |A(t) |
+7: for k ← 1 to d do
+b(t) ]] ← Encpk (0)
+8:
+[[G
+k
+
+
+(t)
+9:
+for all TagIDi , {[[gi,ℓ ]]}dℓ=1 ∈ A(t) do
+b(t) ]] ← [[G
+b(t) ]] · [[g (t) ]] mod n2
+10:
+[[G
+k
+
+k
+
+i,k
+
+end for
+b(t) ]] to TKA for aggregate decryption
+12:
+Send [[G
+k
+
+
+(t)
+(t)
+b
+b
+13:
+Gk ← Decsk [[Gk ]]
+
+
+(t)
+b(t) /m
+14:
+gglobal,k ← Decodes G
+k
+15: end for
+(t)
+16: θ (t+1) ← θ (t) − ηgglobal
+e (t+1) ← βR(t) + (1 − β)g(t)
+17: R
+
+ global
+(t+1)
+(t+1)
+(t+1)
+e
+e
+,ε
+18: R
+←R
+/ max R
+11:
+
+2
+
+19: Store R(t+1) at the FIP Verifier and broadcast θ (t+1)
+20: return θ (t+1) , R(t+1)
+
+5.4
+
+Theoretical Analysis
+
+The three theorems collected below match, one to one, the four design targets
+stated in Section 4.6 (privacy, Byzantine resilience, and convergence; the efficiency
+target is a complexity statement and is read off directly from the algorithms
+above).
+
+20
+
+Chapter 5. Proposed Framework: FIP-FL
+
+5.4.1
+
+Gradient Privacy
+
+Theorem 5.1 (Gradient Privacy). In every round t, the FIP Verifier reveals
+(t)
+(t)
+exactly one scalar per client, namely the projection si = ⟨gi , R(t) ⟩ ∈ R. For a
+(t)
+(t)
+gradient of dimension d ≫ 1, recovering gi from si is information-theoretically
+(t)
+(t)
+impossible: the linear system R(t)⊤ gi = si is under-determined and admits a
+(d − 1)-dimensional affine solution space. Equivalently, the mutual information
+(t) (t)
+(t)
+(t)
+satisfies I(gi ; si ) ≤ H(si ) ≪ H(gi ).
+
+(t)
+
+Proof. The FIP Verifier’s only operation on ciphertext [ gi ] is the homomorphic
+(t)
+(t)
+inner product of (4.8), which yields [[si ]]. Given si and R(t) , the preimage of
+g 7→ ⟨g, R(t) ⟩ is a (d − 1)-dimensional affine hyperplane. Gradients differing by
+a vector orthogonal to R(t) are indistinguishable from the scalar alone, and the
+(t) (t)
+(t)
+(t)
+data-processing inequality gives I(gi ; si ) ≤ H(si ) ≪ H(gi ).
+
+5.4.2
+
+Attack Resilience
+
+Theorem 5.2 (Attack Resilience). Any malicious update gadv accepted by the
+FIP-FL filter in round t must satisfy simultaneously
+⟨gadv , R(t) ⟩ > 0
+(t)
+
+(t)
+τmin ≤ ⟨gadv , R(t) ⟩ ≤ τmax
+(t)
+
+(direction constraint),
+
+(5.1)
+
+(magnitude constraint),
+
+(5.2)
+
+(t)
+
+where τmin and τmax are computed from the round-wise positive-score distribution.
+The two constraints jointly rule out direction-reversal, scaling-to-zero, and destabilising large-norm attacks while keeping the audit independent of any external
+auditor.
+
+(t)
+
+(t)
+
+Proof. The audit applies the direction check first and the τmin /τmax magnitude
+window second; an adversary that fails either of the two clauses is dropped.
+Three concrete adversarial recipes line up with the three failure modes. A direct
+poisoning gradient of the shape gadv ≈ −ghonest gives a non-positive score and
+is killed by stage one. A near-zero scaled update produces a positive but tiny
+(t)
+score that falls under τmin . A destabilising large-norm update gives an aligned
+(t)
+score that overshoots τmax = µ(t) + 5 · MAD(t) .
+
+

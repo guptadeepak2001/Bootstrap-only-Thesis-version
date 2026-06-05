@@ -1,0 +1,72 @@
+\contentsline {chapter}{List of Publications}{xi}{Doc-Start}%
+\contentsline {chapter}{Abstract}{xiii}{Item.1}%
+\contentsline {chapter}{List of Figures}{xvii}{chapter*.1}%
+\contentsline {chapter}{List of Tables}{xix}{chapter*.2}%
+\contentsline {chapter}{List of Abbreviations}{xxi}{chapter*.3}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Background and Context}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}The Research Gap}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Research Objectives and Contributions}{2}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Background and Motivation}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Federated Learning and FedAvg}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}IID and Non-IID Federations}{5}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Privacy-Preserving Federated Learning}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Poisoning Attack Taxonomy}{6}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Literature Survey}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Robust Aggregation Rules}{7}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Detection-Based Defences}{7}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Auditor-Based PPFL Baseline}{7}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Positioning of FIP-FL}{8}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Preliminaries}{9}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Notation}{9}{section.4.1}%
+\contentsline {section}{\numberline {4.2}The Paillier Cryptosystem}{9}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Functional Inner Product}{10}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Robust Statistics}{11}{section.4.4}%
+\contentsline {section}{\numberline {4.5}System and Threat Model}{11}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Security and Privacy Goals}{12}{section.4.6}%
+\contentsline {chapter}{\numberline {5}Proposed Framework: FIP-FL}{13}{chapter.5}%
+\contentsline {section}{\numberline {5.1}System Architecture}{13}{section.5.1}%
+\contentsline {section}{\numberline {5.2}System Setup and Key Distribution}{13}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Per-Round Protocol}{14}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Phase I: Local Training and Encrypted Update Generation}{15}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Phase II: Homomorphic FIP Score Computation}{15}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Phase III: Adaptive Bootstrap-Only Stage-1 Audit}{16}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}Phase IV: Secure Aggregation}{17}{subsection.5.3.4}%
+\contentsline {subsection}{\numberline {5.3.5}Phase V: Model Update and Distribution}{18}{subsection.5.3.5}%
+\contentsline {section}{\numberline {5.4}Theoretical Analysis}{18}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Gradient Privacy}{19}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Attack Resilience}{19}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}Convergence Guarantee}{20}{subsection.5.4.3}%
+\contentsline {chapter}{\numberline {6}Experimental Setup}{21}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Datasets}{21}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Data Partitioning}{22}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Attack Models}{23}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Evaluation Metrics}{24}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Implementation and Hardware}{25}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Results and Analysis}{27}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Non-IID Partition, Untargeted Attacks}{27}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}MNIST}{27}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}KDDCup99}{28}{subsection.7.1.2}%
+\contentsline {paragraph}{Observations.}{28}{section*.7}%
+\contentsline {section}{\numberline {7.2}Non-IID Partition, Targeted Attacks}{28}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}MNIST}{29}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}KDDCup99}{30}{subsection.7.2.2}%
+\contentsline {paragraph}{Observations.}{30}{section*.11}%
+\contentsline {section}{\numberline {7.3}IID Partition, Untargeted Attacks}{31}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}MNIST}{31}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}KDDCup99}{31}{subsection.7.3.2}%
+\contentsline {paragraph}{Observations.}{31}{section*.15}%
+\contentsline {section}{\numberline {7.4}IID Partition, Targeted Attacks}{32}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}MNIST}{32}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}KDDCup99}{33}{subsection.7.4.2}%
+\contentsline {paragraph}{Observations.}{33}{section*.19}%
+\contentsline {section}{\numberline {7.5}Aggregate Findings Across the Grid}{33}{section.7.5}%
+\contentsline {chapter}{\numberline {8}Comparative Analysis}{35}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Privacy}{35}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Computational Complexity}{36}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Communication Complexity}{36}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Robustness and Engineering Trade-Offs}{37}{section.8.4}%
+\contentsline {section}{\numberline {8.5}Scheme-versus-Scheme Accuracy Comparison}{38}{section.8.5}%
+\contentsline {chapter}{\numberline {9}Conclusion and Future Work}{39}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Summary of the Thesis}{39}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Limitations and Future Work}{40}{section.9.2}%

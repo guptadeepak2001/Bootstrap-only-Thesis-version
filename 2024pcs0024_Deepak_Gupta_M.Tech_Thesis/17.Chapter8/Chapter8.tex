@@ -1,0 +1,85 @@
+\chapter{Comparative Analysis}
+\label{Comparison:chap:chap8}
+\graphicspath{{17.Chapter8/Images/}}
+
+This chapter places FIP-FL alongside the Byzantine-resilient FL defences that were already covered in Chapter~\ref{Literature:chap:chap3}, with the auditor-based baseline of Yazdinejad et al.~\cite{yazdinejad2024robust} taking centre stage. The comparison runs over six axes --- privacy leakage, computation, communication, robustness under non-IID skew, engineering cost, and the canonical MNIST non-IID targeted benchmark.
+
+\section{Privacy}
+\label{sec:comp-privacy}
+
+The auditor-based scheme has to decrypt cluster-level statistics every round: a projected Gaussian-mixture model along with the Mahalanobis-distance statistics that the filter uses. Even though no individual gradient is ever reconstructed, the cluster means and covariances themselves still leak structural information about the client population. In a non-IID deployment, those statistics can correlate with demographics, hospital specialisation, keyboard language, or any number of other sensitive client traits.
+
+FIP-FL is much more spare. The only thing decrypted per client per round is the scalar FIP score $s_i^{(t)}=\langle \mathbf{g}_i^{(t)},\mathbf{R}^{(t)}\rangle$. There are no cluster means, no covariance matrices, no projection coefficients, no pairwise distances. The privacy improvement is categorical rather than incremental: the verifier sees a single alignment number, and the model update is still derived only from an aggregate.
+
+\section{Computational Complexity}
+\label{sec:comp-compute}
+
+\begin{table}[H]
+\centering
+\caption{Per-round computational cost. $N$: clients; $|\mathcal{A}|$: accepted clients; $d$: model dimension; $B$: batch size; $E$: local epochs.}
+\label{tab:comp-computation}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Entity} & \textbf{Auditor-based~\cite{yazdinejad2024robust}} & \textbf{FIP-FL} \\
+\midrule
+Client              & $\mathcal{O}(dBE)$ & $\mathcal{O}(dBE)$ \\
+Verifier / Auditor  & $\mathcal{O}(NKD+Nd\log d)+\mathcal{O}(d^3)$ & $\mathcal{O}(Nd+N\log N)$ \\
+Aggregation Server  & $\mathcal{O}(dN\log N)$ & $\mathcal{O}(|\mathcal{A}|d)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The client side is identical in cost because both schemes are running ordinary local SGD on each device. The differences live at the verifier and at the aggregation server. The auditor has to pay for the projection step, the mixture fit, and the covariance inversion. FIP-FL spends its budget on $N$ homomorphic inner products plus the median and MAD statistics; that is the entire verifier-side cost. After the audit, the server only sums the accepted ciphertexts, which gives $\mathcal{O}(|\mathcal{A}|d)$ work in place of sorting or preprocessing the full set of $N$ updates.
+
+\section{Communication Complexity}
+\label{sec:comp-comm}
+
+\begin{table}[H]
+\centering
+\caption{Per-round communication cost by directed link.}
+\label{tab:comp-comm}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Link} & \textbf{Auditor-based~\cite{yazdinejad2024robust}} & \textbf{FIP-FL} \\
+\midrule
+Client $\to$ Verifier & $\mathcal{O}(Nd)$ & $\mathcal{O}(Nd)$ \\
+Verifier $\to$ Server & $\mathcal{O}(L(Z+N))$ & $\mathcal{O}(|\mathcal{A}|d)$ \\
+Server $\to$ Clients  & $\mathcal{O}(d)$ & $\mathcal{O}(d)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The first leg of communication --- the client-to-verifier payload --- is the same in both designs, since both schemes need the encrypted updates to reach the verifier somehow. The savings show up after the audit. FIP-FL never forwards a rejected ciphertext, so the verifier-to-server traffic shrinks with the rejection rate, and the extra auditor-to-server hop that the auditor-based pipeline relies on simply does not exist here.
+
+\section{Robustness and Engineering Trade-Offs}
+\label{sec:comp-robust-engineering}
+
+The detector inside the auditor-based scheme leans on the assumption that the honest-client cluster is both tighter and more populous than the malicious cluster --- an assumption that gets noticeably weaker once label skew is in the mix. FIP-FL takes a different tack: it tests, for each individual update, whether the update is aligned with the trusted reference direction and whether its score lies inside the adaptive magnitude window. The whole admissibility check stays one-dimensional, and that one-dimensional behaviour is what carries the audit through the heterogeneous cases.
+
+A useful side-effect of this design is that it limits cascade behaviour after a hard round. Only the updates that clear both checks ever enter the aggregate, and the next round's reference is refreshed by an exponential moving average rather than by a full replacement, which prevents a single noisy round from completely re-orienting the audit. The Phase~II FIP computations are independent across clients, so they parallelise cleanly --- on the 25-core workstation described in Section~\ref{sec:setup-impl} this gave a wall-clock speed-up of about $13\times$. The single-reference design also avoids the extra homomorphic inner products that a multi-reference cone would have demanded.
+
+\section{Scheme-versus-Scheme Accuracy Comparison}
+\label{sec:comp-accuracy}
+
+\begin{table}[H]
+\centering
+\caption{Accuracy on MNIST non-IID under a $50\%$ malicious-client rate. Entries are percentages; baseline values are from~\cite{yazdinejad2024robust}.}
+\label{tab:comp-accuracy}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Scheme} & \textbf{Targeted} ($T_{\text{acc}}$) & \textbf{Untargeted} (ACC) \\
+\midrule
+Krum~\cite{blanchard2017machine}              & 71.4 & 78.3 \\
+Auror~\cite{shen2016auror}                    & 32.5 & 49.9 \\
+PEFL~\cite{liu2021privacy}                    & 46.4 & 57.4 \\
+Sybils / FoolsGold~\cite{fung2020limitations} & 89.7 & 89.5 \\
+FL-Trust~\cite{cao2021fltrust}                & 37.8 & 43.4 \\
+ShieldFL~\cite{ma2022shieldfl}                & 90.1 & 89.4 \\
+Auditor-based~\cite{yazdinejad2024robust}     & 96.5 & 96.3 \\
+\midrule
+\textbf{FIP-FL (this thesis)}                 & \textbf{97.69} & 88.82 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In the table above, FIP-FL records the best targeted accuracy of every entry, and it does so while resting on weaker trust assumptions than the auditor-based row. Its untargeted number is competitive with FoolsGold and ShieldFL but does not quite reach the auditor-based result, and that gap is the clearest empirical place where future work could push further. For the purposes of this thesis the relevant point is the qualitative one: FIP-FL produces the strongest targeted-class recovery without decrypting any cluster statistics and without bringing in an external auditor.

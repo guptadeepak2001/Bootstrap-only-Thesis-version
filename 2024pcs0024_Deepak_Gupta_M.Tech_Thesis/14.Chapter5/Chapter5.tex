@@ -1,0 +1,272 @@
+\chapter{Proposed Framework: FIP-FL}
+\label{FIPFL:chap:chap5}
+\graphicspath{{14.Chapter5/Images/}}
+
+\section{System Architecture}
+\label{sec:fip-arch}
+
+FIP-FL is built around four logical roles: the $N$ clients, an Aggregation Server, a FIP Verifier, and a Trusted Key Authority (or TKA). In a single round, the clients put their Paillier ciphertexts on the wire, the Verifier turns each ciphertext into one alignment score, only the accepted ciphertexts make it to the aggregation server, and the TKA touches at most scalar scores or aggregate updates --- never an individual plaintext gradient.
+
+The system is organized so that each component has a clearly limited role. Clients perform local training and encrypt their updates. The Verifier evaluates these encrypted updates and filters suspicious ones. The server aggregates only the updates that pass the audit, while the TKA is responsible solely for the decryptions explicitly required by the protocol.
+
+This separation is intentional. The Verifier can access encrypted client updates and the plaintext reference direction $\mathbf{R}^{(t)}$, but it never sees any individual gradient in plaintext form. Conversely, the TKA decrypts scalar FIP scores and aggregated updates, yet it has no access to the audit logic itself.
+
+\section{System Setup and Key Distribution}
+\label{sec:fip-setup}
+
+The setup phase is executed only once, before round~1. As described in Algorithm~\ref{alg:fip-ppfl-init}, the protocol keeps the three forms of state deliberately separate. The cryptographic state is maintained by the TKA. The model state begins with a clean global model stored on the server. The geometric state, namely the unit-norm reference direction, is initialized using a small public bootstrap dataset and then stored at the Verifier.
+
+\begin{algorithm}[t]
+\caption{FIP-FL System Initialization and Reference Bootstrapping}
+\label{alg:fip-ppfl-init}
+\begin{algorithmic}[1]
+\Require Number of clients $N$, model $f_{\boldsymbol{\theta}}$, public bootstrap set $\mathcal{D}_{\text{init}}$, security parameter $\lambda$, fixed-point scale $s$
+\Ensure Registered clients, Paillier keys, initial global model $\boldsymbol{\theta}^{(0)}$, trusted reference direction $\mathbf{g}_{\text{ref}}^{(0)}$
+
+\Statex \textbf{Key generation and registration}
+\State $(pk, sk) \gets \textsc{PaillierKeyGen}(1^{\lambda})$ at the Trusted Key Authority
+\State TKA keeps $sk$ sealed and releases only $pk$ to the clients and the FIP-FL server
+\For{$i \gets 1$ \textbf{to} $N$}
+    \State Register client $C_i$ and assign anonymous tag $\text{TagID}_i$
+    \State Send $(pk, s)$ to client $C_i$
+\EndFor
+
+\Statex \textbf{Model and verifier initialisation}
+\State Initialise global model parameters $\boldsymbol{\theta}^{(0)} \gets \mathbf{0}$
+\State Broadcast $\boldsymbol{\theta}^{(0)}$ to all registered clients
+\State Initialise encrypted-update table $\mathcal{U}^{(0)} \gets \emptyset$
+
+\Statex \textbf{Reference bootstrapping}
+\State Compute the trusted bootstrap gradient on public data:
+\State $\widetilde{\mathbf{g}}_{\text{ref}}^{(0)} \gets \nabla_{\boldsymbol{\theta}}\mathcal{L}\!\left(f_{\boldsymbol{\theta}};\mathcal{D}_{\text{init}}\right)\big|_{\boldsymbol{\theta}=\boldsymbol{\theta}^{(0)}}$
+\State Normalise the reference direction:
+\State $\mathbf{g}_{\text{ref}}^{(0)} \gets \widetilde{\mathbf{g}}_{\text{ref}}^{(0)} / \max\!\left(\left\|\widetilde{\mathbf{g}}_{\text{ref}}^{(0)}\right\|_{2}, \varepsilon\right)$
+\State Store $\mathbf{g}_{\text{ref}}^{(0)}$ at the FIP Verifier for round~$1$
+\end{algorithmic}
+\end{algorithm}
+
+The public bootstrap set plays a role at exactly one point in the protocol: it gives us $\mathbf{g}_{\text{ref}}^{(0)}$ at the zero model. From round~$t\ge 1$ onwards we just call this reference direction $\mathbf{R}^{(t)}$.
+
+\section{Per-Round Protocol}
+\label{sec:fip-round}
+
+After initialization, each round $t\ge 1$ follows the same core procedure described in the SenSys poster: encrypted gradient submission, FIP score computation, bootstrap-stage filtering, secure aggregation, and global model update.
+
+\subsection{Phase I: Local Training and Encrypted Update Generation}
+\label{sec:fip-phaseI}
+
+In Phase~I, each client runs $E$ epochs of mini-batch SGD on its own shard, averages the gradients, flattens the weight and bias parameters into a single $d$-dimensional vector, encrypts each coordinate under Paillier, and ships the resulting ciphertext vector off to the Verifier. Algorithm~\ref{alg:fip-client-submit} writes out the honest version of this; a malicious client tampers with its labels before this step ever begins, so its arithmetic on the device is the same.
+
+\begin{algorithm}[t]
+\caption{Client-Side Local Training and Encrypted Gradient Submission}
+\label{alg:fip-client-submit}
+\begin{algorithmic}[1]
+\Require Client $C_i$ with data $\mathcal{D}_i$, round model $\boldsymbol{\theta}^{(t)}$, public key $pk$, scale $s$, epochs $E$, batch size $B$, learning rate $\eta$
+\Ensure Encrypted submission $\mathcal{M}_i^{(t)}$
+
+\State $\boldsymbol{\theta}_{i} \gets \boldsymbol{\theta}^{(t)}$
+\State $\mathbf{g}_{i}^{(t)} \gets \mathbf{0}$, $m_i \gets 0$
+\For{$e \gets 1$ \textbf{to} $E$}
+    \ForAll{mini-batches $\mathcal{B} \subset \mathcal{D}_i$ of size $B$}
+        \State $\mathbf{h} \gets \nabla_{\boldsymbol{\theta}}\mathcal{L}\!\left(f_{\boldsymbol{\theta}_{i}};\mathcal{B}\right)$
+        \State $\mathbf{g}_{i}^{(t)} \gets \mathbf{g}_{i}^{(t)} + \mathbf{h}$, $m_i \gets m_i + 1$
+        \State $\boldsymbol{\theta}_{i} \gets \boldsymbol{\theta}_{i} - \eta \mathbf{h}$
+    \EndFor
+\EndFor
+\State $\mathbf{g}_{i}^{(t)} \gets \mathbf{g}_{i}^{(t)} / \max(m_i,1)$
+\State Flatten $\mathbf{g}_{i}^{(t)}$ into coordinates $\left(g_{i,1}^{(t)},\ldots,g_{i,d}^{(t)}\right)$
+\For{$k \gets 1$ \textbf{to} $d$}
+    \State $\widehat{g}_{i,k}^{(t)} \gets \textsc{Encode}_{s}\!\left(g_{i,k}^{(t)}\right)$
+    \State $[\![g_{i,k}^{(t)}]\!] \gets \textsc{Enc}_{pk}\!\left(\widehat{g}_{i,k}^{(t)}\right)$
+\EndFor
+\State $\mathcal{M}_i^{(t)} \gets \left(\text{TagID}_i,\{[\![g_{i,k}^{(t)}]\!]\}_{k=1}^{d}\right)$
+\State Send $\mathcal{M}_i^{(t)}$ to the FIP Verifier
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Phase II: Homomorphic FIP Score Computation}
+\label{sec:fip-phaseII}
+
+In Phase~II, the Verifier forms the projection of the client update onto $\mathbf{R}^{(t)}$ \emph{while the update itself is still in ciphertext form}. The Paillier identities for plaintext-scalar multiplication and ciphertext addition take care of the inner product. After this is done, only the scalar $s_i^{(t)}=\langle \mathbf{g}_i^{(t)},\mathbf{R}^{(t)}\rangle$ ever gets handed to the TKA for decryption; the individual coordinates of $\mathbf{g}_i^{(t)}$ stay sealed. Algorithm~\ref{alg:fip-score} writes this out step by step.
+
+\begin{algorithm}[t]
+\caption{Homomorphic Functional Inner Product Score Computation}
+\label{alg:fip-score}
+\begin{algorithmic}[1]
+\Require Encrypted submissions $\mathcal{U}^{(t)}$, reference $\mathbf{R}^{(t)}$, public key $pk$, secret key $sk$ held by TKA, scale $s$
+\Ensure FIP score map $\mathcal{S}^{(t)}$
+
+\State $\mathcal{S}^{(t)} \gets \emptyset$
+\State Encode reference coordinates $\widehat{R}_{k}^{(t)} \gets \textsc{Encode}_{s}\!\left(R_{k}^{(t)}\right)$ for $k=1,\ldots,d$
+\ForAll{$\left(\text{TagID}_i,\{[\![g_{i,k}^{(t)}]\!]\}_{k=1}^{d}\right) \in \mathcal{U}^{(t)}$}
+    \State $[\![\widehat{s}_{i}^{(t)}]\!] \gets \textsc{Enc}_{pk}(0)$
+    \For{$k \gets 1$ \textbf{to} $d$}
+        \State $[\![\widehat{s}_{i}^{(t)}]\!] \gets [\![\widehat{s}_{i}^{(t)}]\!] \cdot \left([\![g_{i,k}^{(t)}]\!]\right)^{\widehat{R}_{k}^{(t)}} \bmod n^{2}$
+    \EndFor
+    \State Send $[\![\widehat{s}_{i}^{(t)}]\!]$ to TKA for scalar decryption
+    \State $\widehat{s}_{i}^{(t)} \gets \textsc{Dec}_{sk}\!\left([\![\widehat{s}_{i}^{(t)}]\!]\right)$
+    \State $s_i^{(t)} \gets \textsc{Decode}_{s^{2}}\!\left(\widehat{s}_{i}^{(t)}\right)$
+    \State $\mathcal{S}^{(t)}[\text{TagID}_i] \gets s_i^{(t)}$
+\EndFor
+\State \Return $\mathcal{S}^{(t)}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Phase III: Adaptive Bootstrap-Only Stage-1 Audit}
+\label{sec:fip-phaseIII}
+
+The audit begins with a direction test on the bootstrap FIP scores. Clients whose scores exceed the direction threshold are accepted, while the remaining clients are placed in a rejected set. If this initial pass leaves too few accepted clients, borderline rejected clients are restored within a noise-aware band around the threshold.
+
+The final step uses the attack-rate setting to keep only the lowest-scoring rejected clients. All other rejected clients are restored to the accepted set. The complete bootstrap-stage procedure is given in Algorithm~\ref{alg:stage1_audit}.
+
+\begin{algorithm}[t]
+\caption{Adaptive Bootstrap-Only Stage-1 Audit}
+\label{alg:stage1_audit}
+\begin{algorithmic}[1]
+\Require Bootstrap FIP scores $S^{(t)}$, direction threshold $\epsilon_{\mathrm{dir}}$, attack-rate setting $\rho$, noise scale $\sigma_{\mathrm{noise}}$
+\Ensure Accepted set $\mathcal{A}^{(t)}$, rejected set $\mathcal{R}^{(t)}$
+
+\State $\mathcal{A}^{(t)} \gets \emptyset$
+\State $\mathcal{R}^{(t)} \gets \emptyset$
+
+\ForAll{$\left(\text{TagID}_i,s_i^{(t)}\right) \in S^{(t)}$}
+    \If{$s_i^{(t)} > \epsilon_{\mathrm{dir}}$}
+        \State $\mathcal{A}^{(t)} \gets \mathcal{A}^{(t)} \cup \{\text{TagID}_i\}$
+    \Else
+        \State $\mathcal{R}^{(t)} \gets \mathcal{R}^{(t)} \cup \{\text{TagID}_i\}$
+    \EndIf
+\EndFor
+
+\State $K_{\min} \gets \left\lceil 0.5N \right\rceil$
+\State $\delta_R \gets \max\!\left(3\cdot\sigma_{\mathrm{noise}},\,0.03\right)$
+
+\While{$|\mathcal{A}^{(t)}| < K_{\min}$}
+    \State Select $C_j \in \mathcal{R}^{(t)}$ with the largest bootstrap score
+    \If{$\left|s_j^{(t)}-\epsilon_{\mathrm{dir}}\right| \le \delta_R$}
+        \State $\mathcal{A}^{(t)} \gets \mathcal{A}^{(t)} \cup \{C_j\}$
+        \State $\mathcal{R}^{(t)} \gets \mathcal{R}^{(t)} \setminus \{C_j\}$
+    \Else
+        \State \textbf{break}
+    \EndIf
+\EndWhile
+
+\State $B \gets \mathrm{round}(\rho N)$
+\State Sort $\mathcal{R}^{(t)}$ in ascending order of bootstrap score
+\State $\mathcal{R}_{\mathrm{keep}}^{(t)} \gets$ the $B$ lowest-score rejects in $\mathcal{R}^{(t)}$
+\State $\mathcal{A}^{(t)} \gets \mathcal{A}^{(t)} \cup \left(\mathcal{R}^{(t)}\setminus\mathcal{R}_{\mathrm{keep}}^{(t)}\right)$
+\State $\mathcal{R}^{(t)} \gets \mathcal{R}_{\mathrm{keep}}^{(t)}$
+
+\State \Return $\mathcal{A}^{(t)},\mathcal{R}^{(t)}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Phase IV: Secure Aggregation}
+\label{sec:fip-phaseIV}
+
+Phase~IV is short. The ciphertexts that the audit rejected are simply dropped; they are never decrypted at all. Whatever survives is folded into one pooled encrypted sum, and only that sum is later opened.
+
+\subsection{Phase V: Model Update and Distribution}
+\label{sec:fip-phaseV}
+
+In Phase~V, the server updates the global model using the averaged accepted gradient. The server decrypts only the aggregate update, never an individual client update. If all client updates are rejected in a given round, the current model is carried forward unchanged to the next round.
+
+Algorithm~\ref{alg:secure_aggregation} presents secure aggregation and model update together in a single procedure. The bootstrap reference remains fixed during this step.
+
+\begin{algorithm}[t]
+\caption{Secure Aggregation and Model Update}
+\label{alg:secure_aggregation}
+\begin{algorithmic}[1]
+\Require Accepted encrypted set $\mathcal{A}^{(t)}$, model $\boldsymbol{\theta}^{(t)}$, public key $pk$, secret key $sk$, fixed-point scale $s$, learning rate $\eta$
+\Ensure Updated model $\boldsymbol{\theta}^{(t+1)}$
+
+\If{$\mathcal{A}^{(t)}=\emptyset$}
+    \State $\boldsymbol{\theta}^{(t+1)} \gets \boldsymbol{\theta}^{(t)}$
+    \State Broadcast $\boldsymbol{\theta}^{(t+1)}$
+    \State \Return $\boldsymbol{\theta}^{(t+1)}$
+\EndIf
+
+\State $m \gets |\mathcal{A}^{(t)}|$
+
+\For{$k \gets 1$ \textbf{to} $d$}
+    \State $[\![\widehat{G}_{k}^{(t)}]\!] \gets \textsc{Enc}_{pk}(0)$
+    \ForAll{$\left(\text{TagID}_i,\{[\![g_{i,\ell}^{(t)}]\!]\}_{\ell=1}^{d}\right) \in \mathcal{A}^{(t)}$}
+        \State $[\![\widehat{G}_{k}^{(t)}]\!] \gets [\![\widehat{G}_{k}^{(t)}]\!] \cdot [\![g_{i,k}^{(t)}]\!] \bmod n^{2}$
+    \EndFor
+    \State Send $[\![\widehat{G}_{k}^{(t)}]\!]$ to TKA for aggregate decryption
+    \State $\widehat{G}_{k}^{(t)} \gets \textsc{Dec}_{sk}\!\left([\![\widehat{G}_{k}^{(t)}]\!]\right)$
+    \State $g_{\text{global},k}^{(t)} \gets \textsc{Decode}_{s}\!\left(\widehat{G}_{k}^{(t)}\right)/m$
+\EndFor
+
+\State $\boldsymbol{\theta}^{(t+1)} \gets \boldsymbol{\theta}^{(t)}-\eta\mathbf{g}_{\text{global}}^{(t)}$
+\State Broadcast $\boldsymbol{\theta}^{(t+1)}$
+\Comment{Bootstrap reference remains fixed}
+\State \Return $\boldsymbol{\theta}^{(t+1)}$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Theoretical Analysis}
+\label{sec:fip-theory}
+
+The three theorems collected below match, one to one, the four design targets stated in Section~4.6 (privacy, Byzantine resilience, and convergence; the efficiency target is a complexity statement and is read off directly from the algorithms above).
+
+\subsection{Gradient Privacy}
+
+\begin{theorem}[Gradient Privacy]
+\label{thm:fip-privacy}
+In every round $t$, the FIP Verifier reveals exactly one scalar per client, namely the projection $s_i^{(t)} = \langle \mathbf{g}_i^{(t)}, \mathbf{R}^{(t)} \rangle \in \mathbb{R}$. For a gradient of dimension $d \gg 1$, recovering $\mathbf{g}_i^{(t)}$ from $s_i^{(t)}$ is information-theoretically impossible: the linear system $\mathbf{R}^{(t)\top}\mathbf{g}_i^{(t)} = s_i^{(t)}$ is under-determined and admits a $(d-1)$-dimensional affine solution space. Equivalently, the mutual information satisfies $I(\mathbf{g}_i^{(t)}; s_i^{(t)}) \le H(s_i^{(t)}) \ll H(\mathbf{g}_i^{(t)})$.
+\end{theorem}
+
+\begin{proof}
+The FIP Verifier's only operation on ciphertext $[\![\mathbf{g}_i^{(t)}]\!]$ is the homomorphic inner product of \eqref{eq:fip-homo}, which yields $[\![s_i^{(t)}]\!]$. Given $s_i^{(t)}$ and $\mathbf{R}^{(t)}$, the preimage of $\mathbf{g}\mapsto\langle\mathbf{g},\mathbf{R}^{(t)}\rangle$ is a $(d-1)$-dimensional affine hyperplane. Gradients differing by a vector orthogonal to $\mathbf{R}^{(t)}$ are indistinguishable from the scalar alone, and the data-processing inequality gives $I(\mathbf{g}_i^{(t)}; s_i^{(t)}) \le H(s_i^{(t)}) \ll H(\mathbf{g}_i^{(t)})$.
+\end{proof}
+
+\subsection{Attack Resilience}
+
+\begin{theorem}[Attack Resilience]
+\label{thm:fip-security}
+Any malicious update $\mathbf{g}_{\text{adv}}$ accepted by the FIP-FL filter in round $t$ must satisfy both
+\begin{align}
+    \langle \mathbf{g}_{\text{adv}}, \mathbf{R}^{(t)} \rangle &> 0 & &\text{(direction constraint)}, \\
+    \tau_{\min}^{(t)} \le \langle \mathbf{g}_{\text{adv}}, \mathbf{R}^{(t)} \rangle &\le \tau_{\max}^{(t)} & &\text{(magnitude constraint)},
+\end{align}
+where $\tau_{\min}^{(t)}$ and $\tau_{\max}^{(t)}$ are computed from the positive-score distribution in that round. Together, these two conditions prevent direction-reversing attacks, scaling-to-zero attacks, and destabilizing large-norm attacks, while keeping the audit process independent of any external auditor.
+\end{theorem}
+
+\begin{proof}
+The audit first applies the direction test and then the $\tau_{\min}^{(t)}$ to $\tau_{\max}^{(t)}$ magnitude window. Any adversarial update that violates either condition is rejected.
+
+These conditions correspond naturally to three common adversarial strategies. A direct poisoning update of the form $\mathbf{g}_{\text{adv}}\approx-\mathbf{g}_{\text{honest}}$ produces a non-positive score and is removed in the first stage. A heavily down-scaled update may remain positive, but its score becomes too small and falls below $\tau_{\min}^{(t)}$. A large destabilizing update may still align with the reference direction, but its score exceeds $\tau_{\max}^{(t)}=\mu^{(t)}+5\cdot\text{MAD}^{(t)}$, and it is therefore filtered out.
+\end{proof}
+
+\subsection{Convergence Guarantee}
+
+\begin{theorem}[Descent under $L$-Smoothness]
+\label{thm:fip-convergence}
+Let $F(\mathbf{w})$ be $L$-smooth, and let $\Delta_{\text{global}}^{(t)}$ denote the mean of the accepted updates in round $t$. If the accepted aggregate is aligned with the descent direction of the true gradient, that is,
+\begin{equation}
+    \langle \nabla F(\mathbf{w}^{(t)}),\, \Delta_{\text{global}}^{(t)} \rangle > 0,
+\end{equation}
+then any learning rate
+\begin{equation}
+    0 < \eta < \frac{2\langle \nabla F(\mathbf{w}^{(t)}),\, \Delta_{\text{global}}^{(t)} \rangle}{L\|\Delta_{\text{global}}^{(t)}\|_2^2}
+\end{equation}
+gives a strict one-round loss decrease:
+\begin{equation}
+    F(\mathbf{w}^{(t+1)}) < F(\mathbf{w}^{(t)}).
+\end{equation}
+Consequently, if this alignment holds in expectation over accepted rounds, the expected global loss decreases monotonically.
+\end{theorem}
+
+\begin{proof}
+Starting from the $L$-smoothness descent lemma we get
+\begin{equation}
+    F(\mathbf{w}^{(t)}-\eta\Delta_{\text{global}}^{(t)})
+    \le
+    F(\mathbf{w}^{(t)})
+    -\eta\langle\nabla F(\mathbf{w}^{(t)}),\Delta_{\text{global}}^{(t)}\rangle
+    +\frac{L\eta^2}{2}\|\Delta_{\text{global}}^{(t)}\|_2^2 .
+\end{equation}
+The key idea is that the alignment assumption makes the linear term strictly negative, while the bound on $\eta$ ensures that the quadratic term does not dominate it. Under this step-size condition, the right-hand side remains strictly smaller than $F(\mathbf{w}^{(t)})$.
+
+In practice, the FIP-FL filter is designed to make this assumption reasonable. Only updates with positive projection onto the reference direction and controlled scalar magnitude are included in $\Delta_{\text{global}}^{(t)}$. Importantly, the theorem does not require the reference direction to equal the true gradient; it states the average descent condition that the accepted aggregate must satisfy.
+\end{proof}

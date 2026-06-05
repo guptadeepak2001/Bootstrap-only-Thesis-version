@@ -1,0 +1,30 @@
+\chapter{Introduction}
+\label{Intro:chap:chap1}
+\graphicspath{{10.Chapter1/Images/}}
+
+\section{Background and Context}
+
+Federated Learning, FL for short, was put forward by McMahan and his coauthors~\cite{mcmahan2017communication} as a way of training a single global model without ever pulling the raw data into one place. The clients keep their samples on their own devices and send back only a gradient or a parameter update. That property is what makes the FL recipe useful for things like mobile keyboards, medical records, fraud-detection feeds, and anywhere else that the data is sensitive and naturally distributed.
+
+But keeping the data local is, by itself, not really enough. The shared gradients can still leak training samples~\cite{zhu2019deep}, leak membership, or leak distributional traits of the underlying records. The line of work that hardens this channel is called Privacy-Preserving Federated Learning, or PPFL. In privacy-preserving federated learning, three ideas keep coming up: differential privacy, secure aggregation, and homomorphic encryption. My work sits squarely in the third camp. By choosing additive homomorphic encryption, I let the server add together encrypted model updates while never seeing an individual gradient in plain text.
+
+\section{The Research Gap}
+
+That strong privacy shield has a flipside. Once every update reaches the server as ciphertext, the usual checks for bad behaviour stop working. A single dishonest client can flip labels, stretch its gradients, or inject a poison vector, and the server cannot tell. Well-known robust rules such as Krum~\cite{blanchard2017machine}, the coordinate-wise median, the trimmed mean~\cite{yin2018byzantine}, and Bulyan~\cite{guerraoui2018hidden} all need plaintext inputs. Detectors like Auror~\cite{shen2016auror}, FL-Trust~\cite{cao2021fltrust}, and PEFL~\cite{liu2021privacy} face the same roadblock because they rely on gradients they can read.
+
+The most relevant baseline that does work over encrypted gradients is the auditor-based scheme of Yazdinejad et al.~\cite{yazdinejad2024robust}. It is effective. But it depends on a trusted auditor, it decrypts cluster-level summaries to make decisions, it carries an $\mathcal{O}(d^3)$ covariance-inversion cost, and under non-IID partitions it exposes structural population information. The piece that is genuinely missing in the literature, then, is a defence that is at once auditor-free, robust, linear in $d$, and still usable when the federation is realistically heterogeneous.
+
+\section{Research Objectives and Contributions}
+
+What this thesis sets out to do is design, analyse, and evaluate FIP-FL --- a Byzantine-resilient PPFL framework in which no auditor is involved. The verifier looks at each encrypted client update through a single functional inner product (FIP) against a trusted reference direction; only one scalar per client per round ever needs to be decrypted. That scalar is then put through a two-stage geometric audit, namely a direction filter followed by a median-and-MAD magnitude window.
+
+The main contributions of the thesis are the following.
+\begin{enumerate}
+    \item \textbf{An auditor-free PPFL architecture.} FIP-FL drops the external auditor entirely and does its verification straight on the ciphertexts, using a scalar FIP score.
+    \item \textbf{A two-stage geometric audit.} The direction stage discards the updates that point the wrong way, and the magnitude stage discards the ones that are either too weak or too aggressive even when the direction looks right.
+    \item \textbf{Formal guarantees.} The thesis proves scalar-gradient privacy, gives the admissibility region left to an attacker, derives monotone descent under $L$-smoothness, and shows lower verifier complexity than the auditor-based baseline.
+    \item \textbf{Empirical validation.} FIP-FL is run on MNIST and on KDDCup99, under both IID and non-IID partitions, against targeted and untargeted label flipping, and with the malicious-client rate swept all the way to $50\%$.
+    \item \textbf{Engineering efficiency.} The verifier ends up running in $\mathcal{O}(Nd+N\log N)$, in place of an $\mathcal{O}(d^3)$ covariance step, and parallelising Phase~II gives roughly a $13\times$ wall-clock speed-up on 25 cores.
+\end{enumerate}
+
+The research underlying this thesis has been accepted as a poster at the ACM/IEEE International Conference on Embedded Artificial Intelligence and Sensing Systems (SenSys~2026), Saint-Malo, France, May 2026.

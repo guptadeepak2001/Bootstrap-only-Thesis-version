@@ -1,0 +1,93 @@
+\chapter{Preliminaries}
+\label{Preliminaries:chap:chap4}
+\graphicspath{{13.Chapter4/Images/}}
+
+\section{Notation}
+\label{sec:prelim-notation}
+
+Scalars are lowercase italics ($a$, $\eta$), vectors are lowercase bold ($\mathbf{x}$, $\boldsymbol{\theta}$), and matrices are uppercase bold ($\mathbf{W}$, $\mathbf{M}$). For $\mathbf{a},\mathbf{b}\in\mathbb{R}^{d}$,
+\begin{equation}
+    \langle \mathbf{a},\mathbf{b}\rangle=\sum_{k=1}^{d}a_kb_k,\qquad
+    \|\mathbf{a}\|_2=\sqrt{\langle \mathbf{a},\mathbf{a}\rangle}.
+\end{equation}
+A Paillier ciphertext is written $[\![m]\!]=\mathrm{Enc}_{pk}(m)$. The main FL symbols are $N$ clients, model dimension $d$, round index $t$, local epochs $E$, batch size $B$, learning rate $\eta$, and Paillier security parameter $\lambda$.
+
+\section{The Paillier Cryptosystem}
+\label{sec:prelim-paillier}
+
+The additive homomorphic scheme my implementation rests on is Paillier~\cite{paillier1999public}. Fix a security parameter $\lambda$. The Trusted Key Authority then draws two primes $p$ and $q$, sets $n=pq$, takes the generator $g=n+1$, and locks away the secret key $sk=(\ell,\alpha)$ with $\ell=\mathrm{lcm}(p-1,q-1)$ and $\alpha=\ell^{-1}\bmod n$. Throughout the thesis every experiment fixes $\lambda=1024$.
+
+For plaintext $m\in\mathbb{Z}_n$ and random $r\in\mathbb{Z}_n^*$,
+\begin{equation}
+    \mathrm{Enc}_{pk}(m)=g^mr^n \pmod{n^2},
+    \label{eq:paillier-enc}
+\end{equation}
+and decryption is
+\begin{equation}
+    \mathrm{Dec}_{sk}(c)=L(c^\ell\bmod n^2)\alpha \pmod n,\qquad L(x)=\frac{x-1}{n}.
+    \label{eq:paillier-dec}
+\end{equation}
+For plaintexts $m_1,m_2$ and known integer $a$,
+\begin{align}
+    \mathrm{Enc}_{pk}(m_1)\mathrm{Enc}_{pk}(m_2)
+        &\equiv \mathrm{Enc}_{pk}(m_1+m_2) \pmod{n^2}, \label{eq:paillier-add}\\
+    \mathrm{Enc}_{pk}(m_1)^a
+        &\equiv \mathrm{Enc}_{pk}(a m_1) \pmod{n^2}. \label{eq:paillier-mul}
+\end{align}
+Between them, these two identities cover everything FIP-FL ever asks for: encrypted sums and encrypted linear functionals. The protocol never once multiplies two ciphertexts together.
+
+Gradients are real-valued, so before encryption they are turned into fixed-point integers. For a scale $s$,
+\begin{equation}
+    \mathrm{encode}(x)=\mathrm{round}(sx),\qquad
+    \mathrm{decode}(z)=z/s.
+    \label{eq:fixed-point}
+\end{equation}
+Signed values live inside the Paillier plaintext ring through centered modular encoding: a negative $-a$ is stored as $n-a$ and read back from the interval $(-n/2,n/2]$. Negative plaintext scalars that turn up during homomorphic multiplication are dealt with by modular inverses. The experiments fix $s=10{,}000$. One bookkeeping detail is worth flagging here: an encrypted FIP score multiplies an encoded update coordinate by an encoded reference coordinate, so once decrypted it has to be divided by $s^2$ to land back on the right scale.
+
+\section{Functional Inner Product}
+\label{sec:prelim-fip}
+
+When the gradient vectors are flat real vectors, the Functional Inner Product used throughout this thesis is just the ordinary Euclidean dot product
+\begin{equation}
+    \langle \mathbf{g}_i,\mathbf{g}_{\mathrm{ref}}\rangle
+        =\sum_{k=1}^{d}g_i^{(k)}g_{\mathrm{ref}}^{(k)}.
+    \label{eq:fip-discrete}
+\end{equation}
+The name deliberately echoes inner-product functional encryption~\cite{abdalla2015simple}, which likewise reveals only an inner product of an otherwise hidden vector; in FIP-FL, however, that functional is realised through Paillier homomorphic operations rather than a dedicated functional-encryption scheme. In plain terms, the FIP score measures how well a client's gradient update aligns with the trusted reference direction, nothing more than that. Feed \eqref{eq:fip-discrete} into the Paillier identities for plaintext-scalar multiplication and ciphertext addition, and the score can be assembled entirely under encryption:
+\begin{equation}
+    [\![\langle \mathbf{g}_i,\mathbf{g}_{\mathrm{ref}}\rangle]\!]
+    =
+    \prod_{k=1}^{d}
+    [\![g_i^{(k)}]\!]^{\,\mathrm{encode}(g_{\mathrm{ref}}^{(k)})}
+    \pmod{n^2}.
+    \label{eq:fip-homo}
+\end{equation}
+This lone scalar is the only thing ever decrypted, and even that step belongs to the TKA. Not a single coordinate of $\mathbf{g}_i$ is exposed anywhere in the round.
+
+\section{Robust Statistics}
+\label{sec:prelim-robust}
+
+Because FIP-FL ultimately threshold-tests one scalar per client, one-dimensional robust statistics are all that the audit needs. For a score set $\mathcal{S}=\{s_1,\ldots,s_N\}$,
+\begin{equation}
+    \tilde{\mu}=\mathrm{median}(\mathcal{S}),\qquad
+    \mathrm{MAD}=\mathrm{median}\{|s_i-\tilde{\mu}|:s_i\in\mathcal{S}\}.
+\end{equation}
+Both the median and the MAD are well known to remain stable when up to roughly half the data is contaminated, which is the regime we care about here. The window the audit applies is the adaptive band
+\begin{equation}
+    \tau_{\min}^{(t)}=\alpha(\rho^{(t)})\tilde{\mu}^{(t)},\qquad
+    \tau_{\max}^{(t)}=\tilde{\mu}^{(t)}+\gamma_{\mathrm{mad}}\mathrm{MAD}^{(t)},
+    \label{eq:mad-window}
+\end{equation}
+with $\gamma_{\mathrm{mad}}=5$. A score that drops below the lower edge is essentially a too-weak positive contribution, while one that shoots above the upper edge points to an update that is aligned all right but is throwing too much weight around.
+
+\section{System and Threat Model}
+\label{sec:prelim-threat}
+
+The FIP-FL protocol has four roles. The clients submit encrypted gradients. The Aggregation Server takes whatever ciphertexts the audit has accepted and broadcasts the new model. The FIP Verifier is the role that actually computes the scalar FIP scores and runs the two-stage check. The Trusted Key Authority (TKA) generates the Paillier keys and is allowed to decrypt only those scalar scores and aggregates that the protocol explicitly asks it to. The Verifier may be co-located with the server in practice; in either case, no external auditor enters the trust model.
+
+The adversary in this thesis controls up to $f<N/2$ Byzantine clients. Such an adversary is free to relabel its own data, hand in any syntactically valid ciphertext it likes, coordinate with other malicious clients, and listen in on every public broadcast. The empirical part instantiates this model with targeted and untargeted label flipping, at malicious rates $f/N\in\{10\%,20\%,30\%,50\%\}$.
+
+\section{Security and Privacy Goals}
+\label{sec:prelim-goals}
+
+The protocol is designed against four targets. \emph{Privacy}: neither the server nor the Verifier should learn any coordinate, norm, or pairwise distance over the client gradients beyond the scalar score $s_i^{(t)}=\langle\mathbf{g}_i^{(t)},\mathbf{g}_{\mathrm{ref}}^{(t)}\rangle$. \emph{Byzantine resilience}: an update is accepted only when the direction part is positive and the score lies inside the magnitude window $(\tau_{\min}^{(t)},\tau_{\max}^{(t)})$. \emph{Convergence}: the average of the accepted updates has to satisfy the descent-alignment plus step-size pair stated in Chapter~\ref{FIPFL:chap:chap5}. \emph{Efficiency}: the verifier should run in $\mathcal{O}(Nd+N\log N)$, and the aggregation step in $\mathcal{O}(|\mathcal{A}^{(t)}|d)$ for the accepted set $\mathcal{A}^{(t)}$.

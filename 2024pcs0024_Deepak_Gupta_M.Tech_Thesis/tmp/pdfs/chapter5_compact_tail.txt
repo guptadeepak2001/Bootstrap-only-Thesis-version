@@ -1,0 +1,54 @@
+20                                            Chapter 5. Proposed Framework: FIP-FL
+
+                                                                                (t)
+remain positive, but its score becomes too small and falls below τmin . A large
+destabilizing update may still align with the reference direction, but its score
+          (t)
+exceeds τmax = µ(t) + 5 · MAD(t) , and it is therefore filtered out.
+
+
+
+5.4.3       Convergence Guarantee
+
+Theorem 5.3 (Descent under L-Smoothness). Let F (w) be L-smooth, and
+     (t)
+let ∆global denote the mean of the accepted updates in round t. If the accepted
+aggregate is aligned with the descent direction of the true gradient, that is,
+
+                                                (t)
+                                ⟨∇F (w(t) ), ∆global ⟩ > 0,                              (5.3)
+
+then any learning rate
+
+                                                        (t)
+                                       2⟨∇F (w(t) ), ∆global ⟩
+                             0<η<                 (t)
+                                                                                         (5.4)
+                                            L∥∆global ∥22
+
+gives a strict one-round loss decrease:
+
+                                  F (w(t+1) ) < F (w(t) ).                               (5.5)
+
+Consequently, if this alignment holds in expectation over accepted rounds, the
+expected global loss decreases monotonically.
+
+
+Proof. Starting from the L-smoothness descent lemma we get
+
+                   (t)                                   (t)        Lη 2 (t)
+     F (w(t) − η∆global ) ≤ F (w(t) ) − η⟨∇F (w(t) ), ∆global ⟩ +       ∥∆global ∥22 .   (5.6)
+                                                                     2
+
+The key idea is that the alignment assumption makes the linear term strictly
+negative, while the bound on η ensures that the quadratic term does not dominate
+it. Under this step-size condition, the right-hand side remains strictly smaller
+than F (w(t) ).
+
+   In practice, the FIP-FL filter is designed to make this assumption reasonable.
+Only updates with positive projection onto the reference direction and controlled
+                                       (t)
+scalar magnitude are included in ∆global . Importantly, the theorem does not
+require the reference direction to equal the true gradient; it states the average
+descent condition that the accepted aggregate must satisfy.
+

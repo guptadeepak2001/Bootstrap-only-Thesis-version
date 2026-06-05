@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Thesis.aux
+Reallocating 'name_of_file' (item size: 1) to 16 items.
+A level-1 auxiliary file: 1_firstpage.aux
+Reallocating 'name_of_file' (item size: 1) to 18 items.
+A level-1 auxiliary file: 2_frontmatter.aux
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+A level-1 auxiliary file: 3_abstract.aux
+Reallocating 'name_of_file' (item size: 1) to 9 items.
+The style file: unsrtnat.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+Warning--empty year in samarakoon5GNIDDComprehensiveNetwork
+You've used 1 entry,
+            2481 wiz_defined-function locations,
+            560 strings with 4914 characters,
+and the built_in function-call counts, 467 in all, are:
+= -- 20
+> -- 51
+< -- 0
++ -- 18
+- -- 16
+* -- 43
+:= -- 88
+add.period$ -- 2
+call.type$ -- 1
+change.case$ -- 2
+chr.to.int$ -- 1
+cite$ -- 2
+duplicate$ -- 14
+empty$ -- 31
+format.name$ -- 17
+if$ -- 85
+int.to.chr$ -- 1
+int.to.str$ -- 2
+missing$ -- 0
+newline$ -- 12
+num.names$ -- 3
+pop$ -- 13
+preamble$ -- 1
+purify$ -- 1
+quote$ -- 0
+skip$ -- 13
+stack$ -- 0
+substring$ -- 2
+swap$ -- 2
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 7
+warning$ -- 1
+while$ -- 2
+width$ -- 0
+write$ -- 16
+(There was 1 warning)

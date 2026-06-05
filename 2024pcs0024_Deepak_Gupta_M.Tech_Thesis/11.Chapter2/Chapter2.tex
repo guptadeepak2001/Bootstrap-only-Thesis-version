@@ -1,0 +1,29 @@
+\chapter{Background and Motivation}
+\label{Background:chap:chap2}
+\graphicspath{{11.Chapter2/Images/}}
+
+\section{Federated Learning and FedAvg}
+
+Take $N$ clients. Client $i$ holds private data $\mathcal{D}_i=\{(x_k^{(i)},y_k^{(i)})\}_{k=1}^{n_i}$, and the total sample count is $n=\sum_i n_i$. The federated objective is then the size-weighted empirical risk
+\begin{equation}
+    F(\mathbf{w})=\sum_{i=1}^{N}\frac{n_i}{n}F_i(\mathbf{w}),\qquad
+    F_i(\mathbf{w})=\frac{1}{n_i}\sum_{k=1}^{n_i}\ell(f_{\mathbf{w}}(x_k^{(i)}),y_k^{(i)}).
+\end{equation}
+The FedAvg algorithm of McMahan et al.~\cite{mcmahan2017communication} attacks this objective in the obvious way: send $\mathbf{w}^{(t)}$ down to every client, let each client run local SGD on its own shard, and average back what comes up. Writing the descent direction submitted by client $i$ as $\Delta\boldsymbol{\theta}_i^{(t)}=\mathbf{w}^{(t)}-\mathbf{w}_i^{(t+1)}$, the server step boils down to
+\begin{equation}
+    \mathbf{w}^{(t+1)}=\mathbf{w}^{(t)}-\sum_{i=1}^{N}\frac{n_i}{n}\Delta\boldsymbol{\theta}_i^{(t)}.
+\end{equation}
+So the server is left with a coordinate-wise weighted sum, and the raw samples themselves never have to move.
+
+\section{IID and Non-IID Federations}
+
+Many FedAvg studies pretend every client sees the same data distribution. Real deployments are messier. Phones, clinics, and sensors each carry their own label mix and feature quirks. I focus on label skew, meaning a client only sees part of the label set. Honest gradients then point in different directions, so any defence must separate natural drift from a real attack.
+
+\section{Privacy-Preserving Federated Learning}
+
+Raw gradients leak more than most people realise. A curious server can rebuild samples or test membership~\cite{zhu2019deep}. Three main defences exist: differential privacy, secure aggregation, and homomorphic encryption. Differential privacy adds noise but also hides useful signal. Secure aggregation protects each update yet cannot drop a bad one before the sum~\cite{bonawitz2017practical}. Homomorphic schemes keep everything encrypted while still allowing limited math. Paillier~\cite{paillier1999public} handles addition and scaling cheaply; BFV and CKKS~\cite{cheon2017homomorphic} support richer operations at a higher cost. I go with Paillier because my audit is simple: measure each encrypted update against a public reference vector through an inner product, all in linear time.
+
+\section{Poisoning Attack Taxonomy}
+
+\nocite{bhagoji2019analyzing}
+I look at two label-flipping tricks. The untargeted version cycles every label and drags overall accuracy down. The targeted one maps a single source class to a target class and hurts that prediction. I leave out sign flips, scaling, model replacement, backdoors~\cite{bagdasaryan2020backdoor}, and collusion, though my audit still checks the direction and size of every update to keep those threats in mind.

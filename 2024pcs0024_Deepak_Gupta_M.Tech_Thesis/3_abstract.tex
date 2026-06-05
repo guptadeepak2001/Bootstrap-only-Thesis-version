@@ -1,0 +1,23 @@
+% Abstract page
+\thispagestyle{plain}
+\begin{center}
+	\textbf{\Large Abstract}
+\end{center}
+
+\begingroup
+\onehalfspacing
+\setlength{\parskip}{6pt}
+
+Federated Learning, or FL, lets many clients jointly fit one model without sending their raw data anywhere. To tighten the privacy story, recent work wraps every client update in an additive homomorphic cipher, giving the family known as Privacy-Preserving Federated Learning (PPFL). The catch is that the same cipher which keeps a curious server out of the gradients also keeps the server from telling honest clients apart from bad ones. A Byzantine client can simply flip its labels and silently push the global model in a wrong direction, pulling accuracy down or planting a back-door on one chosen class.
+
+Most defences here bring in an auditor: a trusted third party that decrypts cluster-level statistics of the incoming updates and screens out the bad ones with distributional models. They work, but at a price. The auditor is itself a new trust anchor, the very thing PPFL was meant to remove. Decrypting cluster summaries also leaks structural information about the gradients, and the cubic covariance step makes cost grow much faster than $d$. A defence that is at once fully encrypted, free of any extra trust anchor, and linear in $d$ has so far been missing.
+
+Functional Inner Product--Federated Learning, the framework developed in this thesis, is built around one idea: the verifier never needs to see a raw gradient. Working entirely under Paillier encryption, it computes one projection score per client: the Functional Inner Product (FIP) of that client's update against a momentum-tracked reference direction. Once the FIP scalar is decrypted, two checks are applied: a direction filter, then a median--MAD magnitude window. The chapters that follow analyse this protocol along three axes: how much a scalar score actually reveals about the gradient, what region of update-space is still open to an attacker, and whether descent is preserved when the loss is $L$-smooth.
+
+I built the framework end-to-end and ran it on MNIST and KDDCup99, with both IID and non-IID client splits, and with targeted and untargeted label-flipping attacks at malicious-client rates up to fifty percent. Across this grid, FIP-FL stays robust without any external auditor.
+
+\endgroup
+
+\newpage
+\thispagestyle{empty}
+\cleardoublepage

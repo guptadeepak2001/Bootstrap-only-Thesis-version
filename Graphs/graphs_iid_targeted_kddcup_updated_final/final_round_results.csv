@@ -1,0 +1,5 @@
+attack_rate,n_malicious_clients,malicious_clients,n_accepted_clients,n_rejected_clients,round,ACC,t_acc,o_acc,TPR,FPR,true_positives,false_positives,detection_result,round_time_sec,attack_rate_num,overall_error_percent
+10%,1,C4,9,1,300,0.9973,0.996,0.8462,1.0,0.0,1,0,PERFECT,26.01,10.0,0.27000000000000357
+20%,2,C3|C5,8,2,300,0.9973,0.9955,0.8558,1.0,0.0,2,0,PERFECT,26.59,20.0,0.27000000000000357
+30%,3,C1|C2|C8,7,3,300,0.9972,0.995,0.8558,1.0,0.0,3,0,PERFECT,25.68,30.0,0.28000000000000247
+50%,5,C0|C1|C5|C6|C8,5,5,300,0.9973,0.9955,0.8558,1.0,0.0,5,0,PERFECT,25.51,50.0,0.27000000000000357

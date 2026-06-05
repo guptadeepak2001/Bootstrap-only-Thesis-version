@@ -1,0 +1,5 @@
+attack_rate,attack_rate_pct,n_malicious_clients,round,ACC,t_acc,o_acc,TPR,FPR,true_positives,false_positives,n_accepted_clients,n_rejected_clients,round_time_sec,attack_rate_num,overall_error_percent
+10%,10,1,300,0.8854,0.9769,0.864,1.0,0.0,1,0,9,1,141.84,10.0,11.460000000000004
+20%,20,2,300,0.8979,0.9787,0.8801,1.0,0.0,2,0,8,2,140.25,20.0,10.209999999999997
+30%,30,3,300,0.8327,0.9716,0.7964,1.0,0.0,3,0,7,3,143.47,30.0,16.73
+50%,50,5,300,0.8276,0.9804,0.7924,1.0,0.0,5,0,5,5,149.12,50.0,17.24

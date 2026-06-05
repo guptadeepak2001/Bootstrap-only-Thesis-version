@@ -1,0 +1,235 @@
+6 Experimental Setup
+This chapter pins down the empirical setting in which FIP-FL is run: which
+datasets we use, how the data is split among the clients, what attack the adversary
+mounts, which numbers we look at, and the implementation and hardware stack
+that the experiments actually live on.
+
+6.1
+
+Datasets
+
+The evaluation grid runs on two benchmarks — one image task and one intrusiondetection task. The high-level statistics are listed in Table 6.1.
+Table 6.1: Datasets used in the evaluation of FIP-FL.
+
+Dataset
+
+Modality
+
+Classes
+
+Features
+
+Samples
+
+MNIST
+
+Image
+
+10
+
+784
+
+60,000/10,000
+
+KDDCup99
+
+Tabular
+
+5
+
+41
+
+≈ 494K (10%)
+
+MNIST. The MNIST corpus has 60,000 training and 10,000 test grayscale
+images at 28 × 28, labelled over the digits {0, 1, . . . , 9}. Every image is flattened
+to a 784-dimensional vector and rescaled into the unit interval. The same dataset
+is the headline benchmark in Yazdinejad et al. [1], which makes it the direct
+comparison point against the auditor-based baseline.
+KDDCup99. KDDCup99 is the canonical network-intrusion benchmark. The
+full archive contains around 4.9 million labelled connection records; the experiments here use the standard 10% subset, which is roughly 494,000 records.
+Each record exposes 41 features mixing traffic counters and protocol flags, and
+23
+
+24
+
+Chapter 6. Experimental Setup
+
+the labels are collapsed into five classes — Normal, DoS, Probe, R2L and
+U2R. Categorical fields are one-hot encoded and every feature is standardised.
+The class distribution is strongly imbalanced, which is exactly what makes this
+dataset a useful stress test: it forces the audit to behave even when the priors
+are far from uniform.
+Model architecture. For both datasets, I use a single-layer softmax logisticregression classifier. This follows the model choice used in the SenSys 2026
+poster and in the auditor-based baseline. The parameter dimension is d =
+(input dim) · C + C, where the last term accounts for the bias. I keep the model
+small for two reasons. First, Paillier encryption with λ = 1024 bits remains
+practical when d is only a few thousand. Second, the convex and L-smooth
+assumptions used in Theorem 5.3 hold naturally for softmax logistic regression,
+while they would only be approximate for a deep network.
+
+6.2
+
+Data Partitioning
+
+Each dataset is sliced into N = 10 disjoint client shards, and I run the experiments
+under two partition regimes. In the IID regime the training set is shuffled once
+and dealt out into equal-sized shards, so each client ends up with roughly
+|Dtrain |/N samples and the expected label histogram on every shard matches the
+global one.
+For the non-IID regime I use label skew. With a C-class task, client i gets a
+primary label set Li ⊂ {0, 1, . . . , C − 1} of size ⌈C/2⌉, and the overlap between
+successive clients is ⌊C/4⌋. The client data are assigned using an 80/20 rule. For
+each client, 80% of the data comes from its primary labels, while the remaining
+20% is sampled from the full training set. This ensures that every client still
+contains a small number of samples from all classes. The setup follows the SenSys
+2026 evaluation protocol and is close to the non-IID setting used by Yazdinejad
+et al. [1]. This partition is intentionally difficult because honest clients may
+disagree in their descent directions. Therefore, the audit must allow normal
+heterogeneity while still detecting malicious updates.
+
+25
+
+6.3
+
+Chapter 6. Experimental Setup
+
+Attack Models
+
+Two pre-training label-flipping attacks make up the empirical sweep. Neither
+needs the adversary to know anything about Paillier or about the FIP-FL audit
+logic; both are plain data-side manipulations.
+Untargeted label flipping. A malicious client relabels each local sample by a
+fixed cyclic offset,
+(i, mal)
+(i)
+yk
+= (yk + κ) mod C.
+(6.1)
+On MNIST I take κ = 5, which gives a no-fixed-point permutation of the ten
+digits, and on KDDCup99 I take κ = 2 because the task only has five classes.
+The aim of this attack is to drag overall accuracy down by pulling each malicious
+client’s local gradient toward a deliberately wrong classification objective.
+Targeted label flipping. A malicious client touches only a single source class
+cs and remaps it to a chosen target class ct ,
+(i, mal)
+yk
+
+=
+
+
+c
+
+(i)
+
+t
+
+if yk = cs ,
+
+y (i)
+
+otherwise.
+
+k
+
+(6.2)
+
+On MNIST the chosen source–target pair is (cs , ct ) = (0, 7), and on KDDCup99
+I use the analogous pair drawn from the two classes that dominate in the skew
+regime. The point of this attack is to break one semantic class while leaving
+overall accuracy looking reasonable, so the relevant diagnostic metric is the
+target-class accuracy rather than the overall one.
+Malicious-client rates. For every combination of dataset, partition and attack
+type, the malicious-client fraction is swept over f /N ∈ {10%, 20%, 30%, 50%}.
+The 50% row is the most demanding stress test, sitting right at the boundary
+that majority-based aggregation can in principle survive.
+
+6.4
+
+Evaluation Metrics
+
+The experiments use five metrics. Three measure model utility on held-out test
+data, and two measure the verifier’s ability to separate malicious clients from
+honest ones.
+
+26
+
+Chapter 6. Experimental Setup
+
+Target accuracy (Tacc). Target accuracy measures performance only on test
+samples from the targeted source class cs :
+Tacc =
+
+|{(x, y) ∈ Dtest : y = cs , fˆ(x) = cs }|
+.
+|{(x, y) ∈ Dtest : y = cs }|
+
+(6.3)
+
+A successful targeted attack lowers this value, while an effective defence keeps
+it close to the clean baseline. For untargeted attacks, class 0 is used as a fixed
+reference class so that the rows remain comparable.
+Other-label accuracy (Oacc). Other-label accuracy measures performance
+on all test samples whose labels are not cs :
+Oacc =
+
+|{(x, y) ∈ Dtest : y ̸= cs , fˆ(x) = y}|
+.
+|{(x, y) ∈ Dtest : y ̸= cs }|
+
+(6.4)
+
+Together, Tacc and Oacc show whether the attack mainly affects the target class
+or also damages the rest of the task.
+Overall accuracy (ACC). Overall accuracy is the standard test accuracy over
+all classes:
+|{(x, y) ∈ Dtest : fˆ(x) = y}|
+.
+(6.5)
+ACC =
+|Dtest |
+This is the main utility metric for untargeted attack experiments.
+True positive rate (TPR). TPR is the fraction of malicious clients rejected
+by the FIP-FL audit:
+TPR =
+
+|{i : client i is malicious and is rejected}|
+.
+|{i : client i is malicious}|
+
+(6.6)
+
+A higher TPR means that fewer malicious clients pass through the verifier.
+False positive rate (FPR). FPR is the fraction of honest clients that are
+incorrectly rejected:
+FPR =
+
+|{i : client i is honest and is rejected}|
+.
+|{i : client i is honest}|
+
+(6.7)
+
+It represents the cost of filtering. All five metrics are averaged over three
+independent seeds. Standard deviation is reported only when it exceeds 0.5
+percentage points.
+
+27
+
+6.5
+
+Chapter 6. Experimental Setup
+
+Implementation and Hardware
+
+The implementation is written in Python 3. NumPy is used for linear algebra,
+scikit-learn provides the dataset loaders and feature pipelines, and Paillier
+encryption is implemented using the phe library with a 1024-bit modulus. The
+FIP Verifier and Aggregation Server run as separate Python processes and
+communicate through in-memory queues. The clients are simulated as worker
+processes. Both encryption and the homomorphic inner-product computation
+are parallelised using multiprocessing.
+The wall-clock results in Chapter 8 were measured on a Linux workstation
+with a 25-core CPU and 128 GB of RAM.
+
+

@@ -1,0 +1,160 @@
+ % Thesis framework file. See individual files for details.
+\documentclass{iitthesis}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{float}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
+
+% Theorem environments, numbered per chapter.
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+\usepackage{ragged2e}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc} % if using PDFLaTeX (older systems)
+\DeclareUnicodeCharacter{202F}{\,}
+\usepackage{microtype} % protrusion + tight-line management
+\setlength{\headheight}{15pt}
+
+% Compact spacing for front-matter lists; body text keeps the thesis template spacing.
+\newcommand{\CompactFrontMatterList}[1]{%
+	\begingroup
+	\singlespacing
+	\setlength{\parskip}{0pt}%
+	#1%
+	\endgroup
+}
+
+\renewcommand{\chaptermark}[1]{\markboth{Chapter \thechapter.\ #1}{}}
+\fancypagestyle{thesismain}{%
+	\fancyhf{}%
+	\fancyhead[L]{\small\thepage}%
+	\fancyhead[R]{\small\nouppercase{\leftmark}}%
+	\renewcommand{\headrulewidth}{0.4pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+}
+\makeatletter
+\renewcommand{\cleardoublepage}{%
+	\clearpage
+	\if@twoside
+		\ifodd\c@page
+		\else
+			\hbox{}\thispagestyle{empty}\newpage
+			\if@twocolumn\hbox{}\newpage\fi
+		\fi
+	\fi
+}
+\makeatother
+
+% Names that should never be hyphenated by TeX
+\hyphenation{Yamuna Prasad Mahendra Gurve Deepak Gupta}
+%\include{jacket_front}
+%\cleardoublepage
+
+\pagestyle{plain}
+\begin{document}
+	\justifying
+	
+	% Frontmatter. Add other pages as needed.
+	\pagenumbering{roman}
+	%	\include{0_jacket_front}
+	\include{1_firstpage}
+	\include{2_frontmatter}
+	\addcontentsline{toc}{chapter}{Abstract}
+	\include{3_abstract}
+	\cleardoublepage
+	\CompactFrontMatterList{\tableofcontents}
+	\cleardoublepage
+	\addcontentsline{toc}{chapter}{List of Figures}
+	\CompactFrontMatterList{\listoffigures}
+	\cleardoublepage
+	\addcontentsline{toc}{chapter}{List of Tables}
+	\CompactFrontMatterList{\listoftables}
+	\cleardoublepage
+
+	\addcontentsline{toc}{chapter}{List of Abbreviations}
+	\begingroup
+	\singlespacing
+	\setlength{\parskip}{0pt}
+	\noindent\textbf{\LARGE List of Abbreviations}
+	\vspace{0.45cm}
+	\small
+	\begin{description}
+		\setlength{\itemsep}{1pt}
+		\setlength{\parsep}{0pt}
+		\setlength{\topsep}{0pt}
+		\item \textbf{ACC} \, --- Overall Accuracy
+		\item \textbf{BFV} \, --- Brakerski--Fan--Vercauteren (homomorphic encryption scheme)
+		\item \textbf{BGV} \, --- Brakerski--Gentry--Vaikuntanathan (homomorphic encryption scheme)
+		\item \textbf{CKKS} \, --- Cheon--Kim--Kim--Song (approximate homomorphic encryption)
+		\item \textbf{DCR} \, --- Decisional Composite Residuosity
+		\item \textbf{DoS} \, --- Denial of Service
+		\item \textbf{DP} \, --- Differential Privacy
+		\item \textbf{FedAvg} \, --- Federated Averaging
+		\item \textbf{FHE} \, --- Fully Homomorphic Encryption
+		\item \textbf{FIP} \, --- Functional Inner Product
+		\item \textbf{FIP-FL} \, --- Functional Inner Product Federated Learning (proposed framework)
+		\item \textbf{FL} \, --- Federated Learning
+		\item \textbf{FPR} \, --- False Positive Rate
+		\item \textbf{GMM} \, --- Gaussian Mixture Model
+		\item \textbf{HE} \, --- Homomorphic Encryption
+		\item \textbf{IID} \, --- Independent and Identically Distributed
+		\item \textbf{KDD} \, --- Knowledge Discovery in Databases
+		\item \textbf{MAD} \, --- Median Absolute Deviation
+		\item \textbf{MNIST} \, --- Modified National Institute of Standards and Technology (database)
+		\item \textbf{$O_\text{acc}$} \, --- Other-label Accuracy
+		\item \textbf{PCA} \, --- Principal Component Analysis
+		\item \textbf{PPFL} \, --- Privacy-Preserving Federated Learning
+		\item \textbf{R2L} \, --- Remote-to-Local (KDDCup attack class)
+		\item \textbf{SenSys} \, --- ACM/IEEE International Conference on Embedded Artificial Intelligence and Sensing Systems
+		\item \textbf{SGD} \, --- Stochastic Gradient Descent
+		\item \textbf{SHA} \, --- Secure Hash Algorithm
+		\item \textbf{SMPC} \, --- Secure Multiparty Computation
+		\item \textbf{$T_\text{acc}$} \, --- Target-class Accuracy
+		\item \textbf{TF-IDF} \, --- Term Frequency -- Inverse Document Frequency
+		\item \textbf{TKA} \, --- Trusted Key Authority
+		\item \textbf{TPR} \, --- True Positive Rate
+		\item \textbf{U2R} \, --- User-to-Root (KDDCup attack class)
+	\end{description}
+	\endgroup
+
+	\newpage
+	\thispagestyle{empty}
+	\cleardoublepage
+
+
+	%	\usepackage{pdflscape}
+	% Main thesis section
+	\pagenumbering{arabic}
+	\fancypagestyle{plain}{%
+		\fancyhf{}%
+		\fancyfoot[C]{\small\thepage}%
+		\renewcommand{\headrulewidth}{0pt}%
+		\renewcommand{\footrulewidth}{0pt}%
+	}
+	\pagestyle{thesismain}
+	\input{10.Chapter1/Chapter1}
+	\input{11.Chapter2/Chapter2}
+	\input{12.Chapter3/Chapter3}
+	\input{13.Chapter4/Chapter4}
+	\input{14.Chapter5/Chapter5}
+	\input{15.Chapter6/Chapter6}
+	\input{16.Chapter7/Chapter7}
+	\input{17.Chapter8/Chapter8}
+	\input{18.Chapter9/Chapter9}
+	
+	%
+	\singlespacing
+	\bibliographystyle{unsrtnat}
+	\bibliography{references}
+
+	
+	
+\end{document}

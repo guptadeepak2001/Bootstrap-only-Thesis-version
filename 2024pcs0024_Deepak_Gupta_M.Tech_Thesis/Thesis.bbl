@@ -1,0 +1,134 @@
+\begin{thebibliography}{17}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Yazdinejad et~al.(2024)Yazdinejad, Dehghantanha, Karimipour,
+  Srivastava, and Parizi]{yazdinejad2024robust}
+Abbas Yazdinejad, Ali Dehghantanha, Hadis Karimipour, Gautam Srivastava, and
+  Reza~M. Parizi.
+\newblock A robust privacy-preserving federated learning model against model
+  poisoning attacks.
+\newblock \emph{{IEEE} Transactions on Information Forensics and Security},
+  19:\penalty0 6693--6708, 2024.
+
+\bibitem[McMahan et~al.(2017)McMahan, Moore, Ramage, Hampson, and
+  y~Arcas]{mcmahan2017communication}
+H.~Brendan McMahan, Eider Moore, Daniel Ramage, Seth Hampson, and
+  Blaise~Ag{\"u}era y~Arcas.
+\newblock Communication-efficient learning of deep networks from decentralized
+  data.
+\newblock In \emph{Proceedings of the 20th International Conference on
+  Artificial Intelligence and Statistics (AISTATS)}, volume~54, pages
+  1273--1282, 2017.
+
+\bibitem[Zhu et~al.(2019)Zhu, Liu, and Han]{zhu2019deep}
+Ligeng Zhu, Zhijian Liu, and Song Han.
+\newblock Deep leakage from gradients.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~32, 2019.
+
+\bibitem[Blanchard et~al.(2017)Blanchard, El~Mhamdi, Guerraoui, and
+  Stainer]{blanchard2017machine}
+Peva Blanchard, El~Mahdi El~Mhamdi, Rachid Guerraoui, and Julien Stainer.
+\newblock Machine learning with adversaries: {Byzantine}-tolerant gradient
+  descent.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~30, 2017.
+
+\bibitem[Yin et~al.(2018)Yin, Chen, Ramchandran, and
+  Bartlett]{yin2018byzantine}
+Dong Yin, Yudong Chen, Kannan Ramchandran, and Peter Bartlett.
+\newblock {Byzantine}-robust distributed learning: Towards optimal statistical
+  rates.
+\newblock In \emph{Proceedings of the 35th International Conference on Machine
+  Learning (ICML)}, pages 5650--5659, 2018.
+
+\bibitem[El~Mhamdi et~al.(2018)El~Mhamdi, Guerraoui, and
+  Rouault]{guerraoui2018hidden}
+El~Mahdi El~Mhamdi, Rachid Guerraoui, and S{\'e}bastien Rouault.
+\newblock The hidden vulnerability of distributed learning in {Byzantium}.
+\newblock In \emph{Proceedings of the 35th International Conference on Machine
+  Learning (ICML)}, pages 3521--3530, 2018.
+
+\bibitem[Shen et~al.(2016)Shen, Tople, and Saxena]{shen2016auror}
+Shiqi Shen, Shruti Tople, and Prateek Saxena.
+\newblock {Auror}: Defending against poisoning attacks in collaborative deep
+  learning systems.
+\newblock In \emph{Proceedings of the 32nd Annual Conference on Computer
+  Security Applications (ACSAC)}, pages 508--519, 2016.
+
+\bibitem[Cao et~al.(2021)Cao, Fang, Liu, and Gong]{cao2021fltrust}
+Xiaoyu Cao, Minghong Fang, Jia Liu, and Neil~Zhenqiang Gong.
+\newblock {FLTrust}: {Byzantine}-robust federated learning via trust
+  bootstrapping.
+\newblock In \emph{Network and Distributed System Security Symposium (NDSS)},
+  2021.
+
+\bibitem[Liu et~al.(2021)Liu, Li, Xu, Chen, Huang, and Lu]{liu2021privacy}
+Xiaoyuan Liu, Hongwei Li, Guowen Xu, Zongqi Chen, Xiaoming Huang, and Rongxing
+  Lu.
+\newblock Privacy-enhanced federated learning against poisoning adversaries.
+\newblock \emph{{IEEE} Transactions on Information Forensics and Security},
+  16:\penalty0 4574--4588, 2021.
+
+\bibitem[Bonawitz et~al.(2017)Bonawitz, Ivanov, Kreuter, Marcedone, McMahan,
+  Patel, Ramage, Segal, and Seth]{bonawitz2017practical}
+Keith Bonawitz, Vladimir Ivanov, Ben Kreuter, Antonio Marcedone, H.~Brendan
+  McMahan, Sarvar Patel, Daniel Ramage, Aaron Segal, and Karn Seth.
+\newblock Practical secure aggregation for privacy-preserving machine learning.
+\newblock In \emph{Proceedings of the {ACM} Conference on Computer and
+  Communications Security (CCS)}, pages 1175--1191, 2017.
+
+\bibitem[Paillier(1999)]{paillier1999public}
+Pascal Paillier.
+\newblock Public-key cryptosystems based on composite degree residuosity
+  classes.
+\newblock In \emph{Advances in Cryptology -- EUROCRYPT '99}, pages 223--238.
+  Springer, 1999.
+
+\bibitem[Cheon et~al.(2017)Cheon, Kim, Kim, and Song]{cheon2017homomorphic}
+Jung~Hee Cheon, Andrey Kim, Miran Kim, and Yongsoo Song.
+\newblock Homomorphic encryption for arithmetic of approximate numbers.
+\newblock In \emph{Advances in Cryptology -- ASIACRYPT 2017}, pages 409--437.
+  Springer, 2017.
+
+\bibitem[Bhagoji et~al.(2019)Bhagoji, Chakraborty, Mittal, and
+  Calo]{bhagoji2019analyzing}
+Arjun~Nitin Bhagoji, Supriyo Chakraborty, Prateek Mittal, and Seraphin Calo.
+\newblock Analyzing federated learning through an adversarial lens.
+\newblock In \emph{Proceedings of the 36th International Conference on Machine
+  Learning (ICML)}, pages 634--643, 2019.
+
+\bibitem[Bagdasaryan et~al.(2020)Bagdasaryan, Veit, Hua, Estrin, and
+  Shmatikov]{bagdasaryan2020backdoor}
+Eugene Bagdasaryan, Andreas Veit, Yiqing Hua, Deborah Estrin, and Vitaly
+  Shmatikov.
+\newblock How to backdoor federated learning.
+\newblock In \emph{Proceedings of the 23rd International Conference on
+  Artificial Intelligence and Statistics (AISTATS)}, pages 2938--2948, 2020.
+
+\bibitem[Fung et~al.(2020)Fung, Yoon, and Beschastnikh]{fung2020limitations}
+Clement Fung, Chris J.~M. Yoon, and Ivan Beschastnikh.
+\newblock The limitations of federated learning in {Sybil} settings.
+\newblock In \emph{23rd International Symposium on Research in Attacks,
+  Intrusions and Defenses (RAID)}, pages 301--316, 2020.
+
+\bibitem[Ma et~al.(2022)Ma, Ma, Miao, Li, and Deng]{ma2022shieldfl}
+Zhuoran Ma, Jianfeng Ma, Yinbin Miao, Yuan Li, and Robert~H. Deng.
+\newblock {ShieldFL}: Mitigating model poisoning attacks in privacy-preserving
+  federated learning.
+\newblock \emph{{IEEE} Transactions on Information Forensics and Security},
+  17:\penalty0 1639--1654, 2022.
+
+\bibitem[Abdalla et~al.(2015)Abdalla, Bourse, De~Caro, and
+  Pointcheval]{abdalla2015simple}
+Michel Abdalla, Florian Bourse, Angelo De~Caro, and David Pointcheval.
+\newblock Simple functional encryption schemes for inner products.
+\newblock In \emph{Public-Key Cryptography -- PKC 2015}, volume 9020 of
+  \emph{Lecture Notes in Computer Science}, pages 733--751. Springer, 2015.
+\newblock \doi{10.1007/978-3-662-46447-2_33}.
+
+\end{thebibliography}

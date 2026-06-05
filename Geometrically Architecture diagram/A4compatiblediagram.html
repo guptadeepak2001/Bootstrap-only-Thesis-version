@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>FIP-PPFL — Working Prototype (Geometric Flow)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("9133e479-11b8-4ff2-b1b4-598d9af07cb4") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("ad35d797-07b0-4547-8de1-19e0b69d2ac1") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("ddbf8f3e-beea-416e-a8c5-158996287566") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("28c55871-0fe6-4476-98b8-0a380c08d130") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("27167e0a-3595-4232-9d63-6bcbc16de807") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("608c2264-593a-4742-934a-a73d99654a3e") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("46027802-76c1-45e6-93fa-2378110ee026") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("9133e479-11b8-4ff2-b1b4-598d9af07cb4") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("ad35d797-07b0-4547-8de1-19e0b69d2ac1") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("ddbf8f3e-beea-416e-a8c5-158996287566") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("28c55871-0fe6-4476-98b8-0a380c08d130") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("27167e0a-3595-4232-9d63-6bcbc16de807") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("608c2264-593a-4742-934a-a73d99654a3e") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("46027802-76c1-45e6-93fa-2378110ee026") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("9133e479-11b8-4ff2-b1b4-598d9af07cb4") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("ad35d797-07b0-4547-8de1-19e0b69d2ac1") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("ddbf8f3e-beea-416e-a8c5-158996287566") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("28c55871-0fe6-4476-98b8-0a380c08d130") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("27167e0a-3595-4232-9d63-6bcbc16de807") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("608c2264-593a-4742-934a-a73d99654a3e") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("46027802-76c1-45e6-93fa-2378110ee026") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("9133e479-11b8-4ff2-b1b4-598d9af07cb4") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("ad35d797-07b0-4547-8de1-19e0b69d2ac1") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("ddbf8f3e-beea-416e-a8c5-158996287566") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("28c55871-0fe6-4476-98b8-0a380c08d130") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("27167e0a-3595-4232-9d63-6bcbc16de807") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("608c2264-593a-4742-934a-a73d99654a3e") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("46027802-76c1-45e6-93fa-2378110ee026") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("9133e479-11b8-4ff2-b1b4-598d9af07cb4") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("ad35d797-07b0-4547-8de1-19e0b69d2ac1") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("ddbf8f3e-beea-416e-a8c5-158996287566") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("28c55871-0fe6-4476-98b8-0a380c08d130") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("27167e0a-3595-4232-9d63-6bcbc16de807") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("608c2264-593a-4742-934a-a73d99654a3e") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("46027802-76c1-45e6-93fa-2378110ee026") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("831434e6-d6c9-4427-a038-b49221ebba73") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fcae68d1-7ea5-4be4-bde0-fa04cf891b7a") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("5efbef85-01ba-4fd8-889f-d3794d7ec808") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("df16f307-af2b-49a9-9482-c5d13b255796") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("a4d595ab-a167-4234-808e-190374174cd5") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("b19fbce0-91ac-463d-bd6d-1fc95bd39ee9") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("831434e6-d6c9-4427-a038-b49221ebba73") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fcae68d1-7ea5-4be4-bde0-fa04cf891b7a") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("5efbef85-01ba-4fd8-889f-d3794d7ec808") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("df16f307-af2b-49a9-9482-c5d13b255796") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("a4d595ab-a167-4234-808e-190374174cd5") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("b19fbce0-91ac-463d-bd6d-1fc95bd39ee9") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("831434e6-d6c9-4427-a038-b49221ebba73") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fcae68d1-7ea5-4be4-bde0-fa04cf891b7a") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("5efbef85-01ba-4fd8-889f-d3794d7ec808") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("df16f307-af2b-49a9-9482-c5d13b255796") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("a4d595ab-a167-4234-808e-190374174cd5") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("b19fbce0-91ac-463d-bd6d-1fc95bd39ee9") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+  :root{
+    --bg:#fdfcfb;
+    --ink:#0d0d0d;
+    --muted:#555555;
+    --rule:#0d0d0d;
+    --soft:#e8edf4;
+    --hon:#1a5c38;
+    --hon-bg:#e8f3ec;
+    --mal:#c0392b;
+    --mal-bg:#fdecea;
+    --ref:#1a3a6e;
+    --ref-bg:#e8edf6;
+    --enc:#1a3a6e;
+    --enc-bg:#dce4f2;
+    --warn:#6a2d8f;
+    --warn-bg:#f0e8f4;
+    --panel:#fdfcfb;
+  }
+  html,body{margin:0;background:#fdfcfb;color:var(--ink);font-family:'Inter',sans-serif;}
+  .page{width:1600px;margin:0 auto;padding:48px 56px 56px;}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+  h1{font-size:42px;line-height:1.05;font-weight:800;letter-spacing:-.02em;margin:8px 0 6px;}
+  .sub{font-size:15px;color:var(--muted);max-width:1100px;line-height:1.5;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid var(--rule);border-radius:999px;background:#fff;white-space:nowrap;}
+  .sw{width:10px;height:10px;border-radius:2px;display:inline-block;border:1px solid var(--rule);}
+  .sw.hon{background:var(--hon-bg);}
+  .sw.mal{background:var(--mal-bg);}
+  .sw.enc{background:var(--enc-bg);}
+  .sw.ref{background:var(--ref-bg);}
+  .sw.warn{background:var(--warn-bg);}
+  .sw.tka{background:#f7f4f0;}
+
+  /* main canvas */
+  .canvas{margin-top:24px;border:1.5px solid #0d0d0d;background:#fdfcfb;border-radius:4px;padding:34px 30px 28px;position:relative;overflow:hidden;}
+  .canvas svg{display:block;width:100%;height:auto;}
+
+  /* cards row below the SVG */
+  .legend-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px;}
+  .lc{border:1.5px solid var(--rule);border-radius:5px;background:#fdfcfb;padding:14px 16px;}
+  .lc h4{margin:0 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;}
+  .lc p{margin:0;font-size:13px;line-height:1.5;color:#0d0d0d;}
+  .lc .mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:6px;display:block;}
+  .lc.tka{border-color:#0d0d0d;background:#f7f4f0;}
+  .lc.dir{border-color:var(--ref);background:var(--ref-bg);}
+  .lc.mag{border-color:#6a2d8f;background:#f0e8f4;}
+  .lc.agg{border-color:#1a6a7a;background:#dceef0;}
+
+  footer{margin-top:30px;padding-top:14px;border-top:1.5px solid var(--rule);display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+
+  /* SVG text helpers — controlled inline */
+</style>
+
+<style>
+  @page{size:A4 portrait; margin:0;}
+  html,body{margin:0;padding:0;background:#e9e6e1;color:var(--ink);font-family:'Inter',sans-serif;}
+  body{padding:8mm 0;}
+  .page{
+    width:210mm;
+    min-height:297mm;
+    margin:0 auto;
+    padding:10mm 10mm 8mm;
+    background:#fdfcfb;
+    box-shadow:0 1px 0 #d8d4c6,0 16px 36px rgba(20,20,20,.10);
+  }
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:10.5pt;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+  h1{font-size:24pt;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:6px 0 5px;}
+  .sub{font-size:10.3pt;color:var(--muted);max-width:none;line-height:1.42;margin:0;}
+  .legend{display:none !important;}
+  .canvas{margin-top:4.5mm;border:1.25px solid #0d0d0d;background:#fdfcfb;border-radius:4px;padding:3mm 2.5mm 2.5mm;position:relative;overflow:hidden;}
+  .canvas svg{display:block;width:100%;height:auto;}
+  .legend-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3.2mm;margin-top:4.2mm;}
+  .lc{border:1.25px solid var(--rule);border-radius:5px;background:#fdfcfb;padding:3.4mm 3.8mm;min-height:31mm;}
+  .lc h4{margin:0 0 1.7mm;font-size:10pt;letter-spacing:.05em;text-transform:uppercase;}
+  .lc p{margin:0;font-size:9.25pt;line-height:1.43;color:#0d0d0d;}
+  .lc .mono{font-family:'JetBrains Mono',monospace;font-size:8.7pt;color:var(--muted);margin-top:1.6mm;display:block;line-height:1.25;}
+  .lc.tka{border-color:#0d0d0d;background:#f7f4f0;}
+  .lc.dir{border-color:var(--ref);background:var(--ref-bg);}
+  .lc.mag{border-color:#6a2d8f;background:#f0e8f4;}
+  .lc.agg{border-color:#1a6a7a;background:#dceef0;}
+  footer{margin-top:4mm;padding-top:2.2mm;border-top:1.25px solid var(--rule);display:flex;justify-content:space-between;gap:6mm;font-family:'JetBrains Mono',monospace;font-size:8.4pt;color:var(--muted);}
+  @media print{
+    html,body{background:#fff;padding:0;}
+    .page{margin:0;box-shadow:none;}
+  }
+</style>
+
+</head>
+<body>
+
+<template id="__bundler_thumbnail" data-bg-color="#ffffff">
+  <svg viewBox="0 0 1600 1050" xmlns="http://www.w3.org/2000/svg">
+    <!-- Simplified poster thumbnail -->
+    <rect width="1600" height="1050" fill="#ffffff"/>
+    <!-- TKA box -->
+    <rect x="600" y="20" width="300" height="80" rx="6" fill="#f7f4f0" stroke="#0d0d0d" stroke-width="3"/>
+    <text x="750" y="68" text-anchor="middle" font-size="28" font-weight="700" font-family="sans-serif" fill="#0d0d0d">TKA</text>
+    <!-- Aggregator box -->
+    <rect x="500" y="200" width="940" height="600" rx="8" fill="#ffffff" stroke="#0d0d0d" stroke-width="3"/>
+    <!-- Direction filter -->
+    <rect x="720" y="250" width="280" height="280" rx="6" fill="#e8edf6" stroke="#1a3a6e" stroke-width="2"/>
+    <text x="860" y="300" text-anchor="middle" font-size="22" font-family="sans-serif" fill="#1a3a6e" font-weight="700">DIR FILTER</text>
+    <!-- Magnitude filter -->
+    <rect x="1050" y="250" width="280" height="280" rx="6" fill="#f0e8f4" stroke="#6a2d8f" stroke-width="2"/>
+    <text x="1190" y="300" text-anchor="middle" font-size="22" font-family="sans-serif" fill="#6a2d8f" font-weight="700">MAG FILTER</text>
+    <!-- Aggregation box -->
+    <rect x="700" y="580" width="280" height="90" rx="6" fill="#dceef0" stroke="#1a6a7a" stroke-width="2"/>
+    <text x="840" y="632" text-anchor="middle" font-size="18" font-family="sans-serif" fill="#1a6a7a" font-weight="700">AGGREGATION</text>
+    <!-- Clients -->
+    <rect x="58" y="250" width="160" height="400" rx="4" fill="#e8f3ec" stroke="#0d0d0d" stroke-width="2"/>
+    <text x="138" y="460" text-anchor="middle" font-size="22" font-family="sans-serif" fill="#1a5c38" font-weight="700">CLIENTS</text>
+    <!-- Rejected bin -->
+    <rect x="80" y="750" width="300" height="100" rx="6" fill="#fdecea" stroke="#c0392b" stroke-width="2"/>
+    <text x="230" y="810" text-anchor="middle" font-size="20" font-family="sans-serif" fill="#c0392b" font-weight="700">REJECTED</text>
+    <!-- Bidirectional arrow TKA <-> agg -->
+    <line x1="1500" y1="79" x2="1500" y2="710" stroke="#1a3a6e" stroke-width="3" stroke-dasharray="10 5"/>
+  </svg>
+</template>
+
+<div class="page">
+
+  <div class="eyebrow">Working Prototype · System Flow</div>
+  <h1>FIP-PPFL — Functional Inner Product · Privacy-Preserving Federated Learning</h1>
+  <p class="sub">
+    A trusted key authority publishes a Paillier public key. Clients train locally and submit encrypted
+    gradients. The aggregator audits each encrypted update against a benign reference using two
+    geometric criteria — first a directional check, then a magnitude window — and homomorphically
+    aggregates only the survivors. The single private key never leaves the key authority.
+  </p>
+
+  <div class="legend">
+    <span class="chip"><span class="sw tka"></span>Trusted Key Authority</span>
+    <span class="chip"><span class="sw hon"></span>Honest client</span>
+    <span class="chip"><span class="sw mal"></span>Malicious client</span>
+    <span class="chip"><span class="sw enc"></span>Paillier-encrypted gradient</span>
+    <span class="chip"><span class="sw ref"></span>Direction filter ⟨g, g_ref⟩</span>
+    <span class="chip"><span class="sw warn"></span>Magnitude filter τ_min ≤ ⟨gᵢ , g_ref⟩ ≤ τ_max</span>
+  </div>
+
+  <div class="canvas">
+    <svg viewBox="0 0 1600 1050" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+      <!-- ============== DEFS ============== -->
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#0d0d0d"></path>
+        </marker>
+        <marker id="arr-mal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#c0392b"></path>
+        </marker>
+        <marker id="arr-mag-rej" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#6a2d8f"></path>
+        </marker>
+        <marker id="arr-key" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#555555"></path>
+        </marker>
+        <marker id="arr-priv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#1a3a6e"></path>
+        </marker>
+        <!-- arr-priv-start: fixed left-pointing arrowhead for start of path at box 5 right edge -->
+        <marker id="arr-priv-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="180">
+          <path d="M0,0 L10,5 L0,10 z" fill="#1a3a6e"></path>
+        </marker>
+        <pattern id="hatch-rej" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+          <rect width="8" height="8" fill="#fdecea"></rect>
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#c0392b" stroke-width="1.5" opacity="0.55"></line>
+        </pattern>
+        <pattern id="hatch-acc" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+          <rect width="8" height="8" fill="#e8f3ec"></rect>
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#1a5c38" stroke-width="1.5" opacity="0.45"></line>
+        </pattern>
+      </defs>
+
+      <!-- ============== TRUSTED KEY AUTHORITY (top) ============== -->
+      <g id="tka">
+        <rect x="600" y="20" width="300" height="118" rx="6" fill="#f7f4f0" stroke="#0d0d0d" stroke-width="2"></rect>
+        <!-- key icon -->
+        <g transform="translate(620,40)">
+          <circle cx="14" cy="14" r="10" fill="none" stroke="#0d0d0d" stroke-width="2"></circle>
+          <line x1="22" y1="14" x2="42" y2="14" stroke="#0d0d0d" stroke-width="2"></line>
+          <line x1="34" y1="14" x2="34" y2="22" stroke="#0d0d0d" stroke-width="2"></line>
+          <line x1="40" y1="14" x2="40" y2="20" stroke="#0d0d0d" stroke-width="2"></line>
+        </g>
+        <text x="750" y="58" text-anchor="middle" font-size="18" font-weight="700">Trusted Key Authority</text>
+        <text x="750" y="80" text-anchor="middle" font-size="13" fill="#555555" font-family="JetBrains Mono, monospace">generates  (pub_key, priv_key)</text>
+        <!-- pub_key chip -->
+        <g transform="translate(620,92)">
+          <rect width="110" height="32" rx="4" fill="#dce4f2" stroke="#1a4a8a" stroke-width="1.5"></rect>
+          <text x="55" y="21" text-anchor="middle" font-size="13" font-weight="600" fill="#1a4a8a" font-family="JetBrains Mono, monospace">pub_key</text>
+        </g>
+        <!-- priv_key chip (locked, stays inside) -->
+        <g transform="translate(770,92)">
+          <rect width="110" height="32" rx="4" fill="#fff" stroke="#1a3a6e" stroke-width="1.5"></rect>
+          <text x="42" y="21" text-anchor="middle" font-size="13" font-weight="600" fill="#1a3a6e" font-family="JetBrains Mono, monospace">priv_key</text>
+          <!-- lock -->
+          <g transform="translate(78,8)">
+            <rect x="0" y="6" width="16" height="12" rx="2" fill="#1a3a6e"></rect>
+            <path d="M3,6 V3 a5,5 0 0 1 10,0 V6" fill="none" stroke="#1a3a6e" stroke-width="2"></path>
+          </g>
+        </g>
+        <text x="750" y="160" text-anchor="middle" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">priv_key never leaves the key authority</text>
+      </g>
+
+      <!-- pub_key broadcast lines (dashed) -->
+      <g stroke="#555555" stroke-width="1.5" stroke-dasharray="4 4" fill="none" marker-end="url(#arr-key)">
+        <!-- to clients column: route left to center of clients column (x=155), then down with gap above CLIENTS label -->
+        <path d="M675,138 L 155,138 L 155,242"></path>
+        <!-- to aggregator: route right then down into aggregator header -->
+        <path d="M825,138 L 1320,138 L 1320,240"></path>
+      </g>
+      <text x="380" y="128" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">pub_key → all clients</text>
+      <text x="1030" y="128" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">pub_key → aggregator</text>
+
+      <!-- ============== CLIENTS (left column) ============== -->
+      <g id="clients">
+        <text x="155" y="260" font-size="13" font-weight="600" fill="#0d0d0d" letter-spacing="2">CLIENTS</text>
+        <line x1="58" y1="270" x2="252" y2="270" stroke="#0d0d0d" stroke-width="1"></line>
+
+        <!-- C1..C4 honest -->
+        <!-- y positions: 290, 360, 430, 500 -->
+        <g transform="translate(58,290)">
+          <rect width="194" height="56" rx="4" fill="#e8f3ec" stroke="#0d0d0d" stroke-width="1.5"></rect>
+          <circle cx="22" cy="28" r="11" fill="#1a5c38"></circle>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C1</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">local SGD → g₁</text>
+        </g>
+        <g transform="translate(58,360)">
+          <rect width="194" height="56" rx="4" fill="#e8f3ec" stroke="#0d0d0d" stroke-width="1.5"></rect>
+          <circle cx="22" cy="28" r="11" fill="#1a5c38"></circle>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C2</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">local SGD → g₂</text>
+        </g>
+        <g transform="translate(58,430)">
+          <rect width="194" height="56" rx="4" fill="#e8f3ec" stroke="#0d0d0d" stroke-width="1.5"></rect>
+          <circle cx="22" cy="28" r="11" fill="#1a5c38"></circle>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C3</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">local SGD → g₃</text>
+        </g>
+        <g transform="translate(58,500)">
+          <rect width="194" height="56" rx="4" fill="#e8f3ec" stroke="#0d0d0d" stroke-width="1.5"></rect>
+          <circle cx="22" cy="28" r="11" fill="#1a5c38"></circle>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C4</text>
+          <text x="44" y="24" font-size="13" font-weight="600">Honest</text>
+          <text x="44" y="42" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">local SGD → g₄</text>
+        </g>
+        <!-- C5 malicious -->
+        <g transform="translate(58,580)">
+          <rect width="194" height="56" rx="4" fill="#fdecea" stroke="#c0392b" stroke-width="2"></rect>
+          <circle cx="22" cy="28" r="11" fill="#c0392b"></circle>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C5</text>
+          <text x="44" y="24" font-size="13" font-weight="700" fill="#c0392b">Malicious</text>
+          <text x="44" y="42" font-size="11" fill="#c0392b" font-family="JetBrains Mono, monospace">flipped labels → g₅</text>
+        </g>
+        <!-- C6 malicious (scaling) -->
+        <g transform="translate(58,650)">
+          <rect width="194" height="56" rx="4" fill="#fdecea" stroke="#c0392b" stroke-width="2"></rect>
+          <circle cx="22" cy="28" r="11" fill="#c0392b"></circle>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C6</text>
+          <text x="44" y="24" font-size="13" font-weight="700" fill="#c0392b">Malicious</text>
+          <text x="44" y="42" font-size="11" fill="#c0392b" font-family="JetBrains Mono, monospace">scaled update → g₆</text>
+        </g>
+
+        <!-- encrypt step bracket -->
+        <g>
+          <rect x="280" y="290" width="74" height="416" fill="#dce4f2" stroke="#1a4a8a" stroke-width="1.5" rx="5"></rect>
+          <text x="317" y="320" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a8a">Encrypt</text>
+          <text x="317" y="338" text-anchor="middle" font-size="11" fill="#1a4a8a" font-family="JetBrains Mono, monospace">E(gᵢ)</text>
+          <text x="317" y="358" text-anchor="middle" font-size="11" fill="#1a4a8a" font-family="JetBrains Mono, monospace">with</text>
+          <text x="317" y="376" text-anchor="middle" font-size="11" fill="#1a4a8a" font-family="JetBrains Mono, monospace">pub_key</text>
+          <!-- small lock -->
+          <g transform="translate(303,420)">
+            <rect x="0" y="9" width="22" height="18" rx="2" fill="#1a4a8a"></rect>
+            <path d="M4,9 V4 a7,7 0 0 1 14,0 V9" fill="none" stroke="#1a4a8a" stroke-width="2.2"></path>
+          </g>
+          <text x="317" y="478" text-anchor="middle" font-size="11" fill="#1a4a8a" font-family="JetBrains Mono, monospace">Paillier</text>
+          <text x="317" y="494" text-anchor="middle" font-size="11" fill="#1a4a8a" font-family="JetBrains Mono, monospace">additively</text>
+          <text x="317" y="510" text-anchor="middle" font-size="11" fill="#1a4a8a" font-family="JetBrains Mono, monospace">homomorphic</text>
+        </g>
+
+        <!-- arrows from clients to encrypt -->
+        <g stroke="#0d0d0d" stroke-width="1.5" fill="none" marker-end="url(#arr)">
+          <line x1="252" y1="318" x2="280" y2="318"></line>
+          <line x1="252" y1="388" x2="280" y2="388"></line>
+          <line x1="252" y1="458" x2="280" y2="458"></line>
+          <line x1="252" y1="528" x2="280" y2="528"></line>
+        </g>
+        <g stroke="#c0392b" stroke-width="1.8" fill="none" marker-end="url(#arr-mal)">
+          <line x1="252" y1="608" x2="280" y2="608"></line>
+          <line x1="252" y1="678" x2="280" y2="678"></line>
+        </g>
+      </g>
+
+      <!-- ============== AGGREGATOR (right column) ============== -->
+      <g id="aggregator">
+        <!-- container -->
+        <rect x="500" y="240" width="940" height="700" rx="8" fill="#fdfcfb" stroke="#0d0d0d" stroke-width="2"></rect>
+        <text x="520" y="266" font-size="13" font-weight="700" letter-spacing="2">AGGREGATOR  /  SERVER</text>
+
+        <!-- arrows from encrypt -> aggregator entry (encrypted bus) -->
+        <g stroke="#1a4a8a" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <path d="M354,318 C 420,318 440,300 500,300"></path>
+          <path d="M354,388 C 420,388 440,360 500,360"></path>
+          <path d="M354,458 C 420,458 440,420 500,420"></path>
+          <path d="M354,528 C 420,528 440,460 500,460"></path>
+        </g>
+        <g stroke="#c0392b" stroke-width="2" fill="none" marker-end="url(#arr-mal)" stroke-dasharray="6 3">
+          <path d="M354,608 C 420,608 440,520 500,520"></path>
+          <path d="M354,678 C 420,678 440,560 500,560"></path>
+        </g>
+
+        <!-- Encrypted gradient bus -->
+        <g>
+          <rect x="510" y="290" width="160" height="290" rx="5" fill="#dce4f2" stroke="#1a4a8a" stroke-width="1.5"></rect>
+          <text x="590" y="312" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a8a">Encrypted</text>
+          <text x="590" y="328" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a8a">gradients</text>
+          <text x="590" y="346" text-anchor="middle" font-size="11" fill="#1a4a8a" font-family="JetBrains Mono, monospace">{ E(gᵢ) }</text>
+
+          <!-- six encrypted blobs -->
+          <g font-family="JetBrains Mono, monospace" font-size="11">
+            <g transform="translate(528,360)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#1a4a8a"></rect><text x="62" y="15" text-anchor="middle" fill="#1a4a8a">E(g₁)</text></g>
+            <g transform="translate(528,386)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#1a4a8a"></rect><text x="62" y="15" text-anchor="middle" fill="#1a4a8a">E(g₂)</text></g>
+            <g transform="translate(528,412)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#1a4a8a"></rect><text x="62" y="15" text-anchor="middle" fill="#1a4a8a">E(g₃)</text></g>
+            <g transform="translate(528,438)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#1a4a8a"></rect><text x="62" y="15" text-anchor="middle" fill="#1a4a8a">E(g₄)</text></g>
+            <g transform="translate(528,464)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#c0392b"></rect><text x="62" y="15" text-anchor="middle" fill="#c0392b">E(g₅)</text></g>
+            <g transform="translate(528,490)"><rect width="124" height="22" rx="3" fill="#fff" stroke="#c0392b"></rect><text x="62" y="15" text-anchor="middle" fill="#c0392b">E(g₆)</text></g>
+          </g>
+          <text x="590" y="540" text-anchor="middle" font-size="10" fill="#555555" font-family="JetBrains Mono, monospace">never decrypted</text>
+          <text x="590" y="556" text-anchor="middle" font-size="10" fill="#555555" font-family="JetBrains Mono, monospace">at the server</text>
+        </g>
+
+        <!-- ============ DIRECTION FILTER (geometric) ============ -->
+        <!-- arrow into direction filter -->
+        <g stroke="#0d0d0d" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <line x1="670" y1="430" x2="720" y2="430"></line>
+        </g>
+
+        <g id="dir-filter">
+          <rect x="720" y="290" width="320" height="320" rx="6" fill="#e8edf6" stroke="#1a3a6e" stroke-width="2"></rect>
+          <text x="880" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a6e" letter-spacing="1.5">DIRECTION  FILTER</text>
+          <text x="880" y="330" text-anchor="middle" font-size="11" fill="#1a3a6e" font-family="JetBrains Mono, monospace">⟨ E(gᵢ) , g_ref ⟩  homomorphic</text>
+
+          <!-- 2D coordinate -->
+          <g transform="translate(880,470)">
+            <!-- accept cone (right half) -->
+            <path d="M0,0 L120,-90 A150,150 0 0 1 120,90 Z" fill="url(#hatch-acc)" opacity="0.95"></path>
+            <!-- reject cone (left half) -->
+            <path d="M0,0 L-120,-90 A150,150 0 0 0 -120,90 Z" fill="url(#hatch-rej)" opacity="0.95"></path>
+
+            <!-- axes -->
+            <line x1="-130" y1="0" x2="130" y2="0" stroke="#0d0d0d" stroke-width="1.2"></line>
+            <line x1="0" y1="-115" x2="0" y2="115" stroke="#0d0d0d" stroke-width="1.2"></line>
+
+            <!-- reference vector g_ref -->
+            <line x1="0" y1="0" x2="115" y2="-30" stroke="#1a3a6e" stroke-width="3" marker-end="url(#arr-priv)"></line>
+            <text x="92" y="-44" font-size="11" font-weight="700" fill="#1a3a6e" font-family="JetBrains Mono, monospace">g_ref</text>
+
+            <!-- honest gradients (cluster around g_ref direction) -->
+            <line x1="0" y1="0" x2="100" y2="-22" stroke="#1a5c38" stroke-width="2"></line>
+            <line x1="0" y1="0" x2="92" y2="-10" stroke="#1a5c38" stroke-width="2"></line>
+            <line x1="0" y1="0" x2="105" y2="-40" stroke="#1a5c38" stroke-width="2"></line>
+            <line x1="0" y1="0" x2="88" y2="-3" stroke="#1a5c38" stroke-width="2"></line>
+            <!-- malicious flipped: opposite direction -->
+            <line x1="0" y1="0" x2="-88" y2="22" stroke="#c0392b" stroke-width="2.4"></line>
+            <text x="-100" y="40" font-size="10" fill="#c0392b" font-family="JetBrains Mono, monospace">g₅ flipped</text>
+            <!-- malicious scaled: aligned but huge -->
+            <line x1="0" y1="0" x2="118" y2="-30" stroke="#c0392b" stroke-width="2.4" stroke-dasharray="3 2"></line>
+            <text x="80" y="-66" font-size="10" fill="#c0392b" font-family="JetBrains Mono, monospace">g₆ huge</text>
+
+            <!-- accept / reject labels -->
+            <text x="86" y="86" font-size="11" font-weight="700" fill="#1a5c38" font-family="JetBrains Mono, monospace">ACCEPT</text>
+            <text x="-118" y="86" font-size="11" font-weight="700" fill="#c0392b" font-family="JetBrains Mono, monospace">REJECT</text>
+          </g>
+
+          <!-- caption -->
+          <text x="880" y="592" text-anchor="middle" font-size="11" fill="#0d0d0d" font-family="JetBrains Mono, monospace">accept iff  ⟨gᵢ, g_ref⟩  &gt;  ε_dir</text>
+        </g>
+
+        <!-- arrow direction → magnitude -->
+        <g stroke="#0d0d0d" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <line x1="1040" y1="450" x2="1090" y2="450"></line>
+        </g>
+        <text x="1065" y="442" text-anchor="middle" font-size="10" fill="#555555" font-family="JetBrains Mono, monospace">survivors</text>
+
+        <!-- ============ MAGNITUDE FILTER ============ -->
+        <g id="mag-filter">
+          <rect x="1090" y="290" width="330" height="320" rx="6" fill="#f0e8f4" stroke="#6a2d8f" stroke-width="2"></rect>
+          <text x="1255" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#6a2d8f" letter-spacing="1.5">MAGNITUDE  WINDOW</text>
+          <text x="1255" y="330" text-anchor="middle" font-size="11" fill="#6a2d8f" font-family="JetBrains Mono, monospace">τ_min ≤ ⟨gᵢ , g_ref⟩ ≤ τ_max</text>
+
+          <!-- horizontal score bar -->
+          <g transform="translate(1115,420)">
+            <!-- baseline -->
+            <line x1="0" y1="60" x2="280" y2="60" stroke="#0d0d0d" stroke-width="1.5"></line>
+            <!-- ticks -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#555555">
+              <line x1="0" y1="55" x2="0" y2="65" stroke="#0d0d0d"></line>
+              <line x1="280" y1="55" x2="280" y2="65" stroke="#0d0d0d"></line>
+              <text x="0" y="80" text-anchor="middle">low</text>
+              <text x="280" y="80" text-anchor="middle">high</text>
+            </g>
+            <!-- accept window (between tau_min and tau_max) -->
+            <rect x="80" y="34" width="120" height="52" fill="url(#hatch-acc)" opacity="0.95"></rect>
+            <!-- reject zones -->
+            <rect x="0" y="34" width="80" height="52" fill="url(#hatch-rej)" opacity="0.95"></rect>
+            <rect x="200" y="34" width="80" height="52" fill="url(#hatch-rej)" opacity="0.95"></rect>
+
+            <!-- threshold tick marks -->
+            <line x1="80" y1="20" x2="80" y2="86" stroke="#6a2d8f" stroke-width="2" stroke-dasharray="3 2"></line>
+            <line x1="200" y1="20" x2="200" y2="86" stroke="#6a2d8f" stroke-width="2" stroke-dasharray="3 2"></line>
+            <text x="80" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#6a2d8f" font-family="JetBrains Mono, monospace">τ_min</text>
+            <text x="200" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#6a2d8f" font-family="JetBrains Mono, monospace">τ_max</text>
+
+            <!-- score points -->
+            <!-- honest cluster inside -->
+            <circle cx="115" cy="60" r="5" fill="#1a5c38" stroke="#0d0d0d" stroke-width="1.2"></circle>
+            <circle cx="135" cy="60" r="5" fill="#1a5c38" stroke="#0d0d0d" stroke-width="1.2"></circle>
+            <circle cx="155" cy="60" r="5" fill="#1a5c38" stroke="#0d0d0d" stroke-width="1.2"></circle>
+            <circle cx="175" cy="60" r="5" fill="#1a5c38" stroke="#0d0d0d" stroke-width="1.2"></circle>
+            <!-- C6 outside (high outlier scaled) -->
+            <circle cx="245" cy="60" r="6" fill="#c0392b" stroke="#0d0d0d" stroke-width="1.4"></circle>
+            <text x="245" y="106" text-anchor="middle" font-size="10" fill="#c0392b" font-family="JetBrains Mono, monospace">g₆ ✗</text>
+
+            <!-- C5 already filtered upstream — show ghosted on left -->
+            <circle cx="34" cy="60" r="5" fill="#c0392b" stroke="#0d0d0d" stroke-width="1" opacity="0.35"></circle>
+            <text x="34" y="106" text-anchor="middle" font-size="10" fill="#c0392b" opacity="0.55" font-family="JetBrains Mono, monospace">(already cut)</text>
+
+            <text x="155" y="-18" text-anchor="middle" font-size="11" font-weight="700" fill="#6a2d8f" font-family="JetBrains Mono, monospace">accept window</text>
+          </g>
+
+          <!-- caption -->
+          <text x="1255" y="595" text-anchor="middle" font-size="11" fill="#0d0d0d" font-family="JetBrains Mono, monospace" fill="#6a2d8f">μ = median(X),  τ_min = μ·α,  τ_max = μ + 5·MAD</text>
+        </g>
+
+        <!-- ============ SECURE AGGREGATION ============ -->
+        <!-- arrow magnitude → aggregation -->
+        <g stroke="#0d0d0d" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <path d="M1255,610 C 1255,650 1100,660 1000,660"></path>
+        </g>
+        <text x="1140" y="650" text-anchor="middle" font-size="10" fill="#555555" font-family="JetBrains Mono, monospace">accepted set  S(t)</text>
+
+        <g id="agg">
+          <rect x="700" y="650" width="300" height="120" rx="6" fill="#dceef0" stroke="#1a6a7a" stroke-width="2"></rect>
+          <text x="850" y="676" text-anchor="middle" font-size="13" font-weight="700" fill="#1a6a7a" letter-spacing="1.5">HOMOMORPHIC  AGGREGATION</text>
+          <text x="850" y="696" text-anchor="middle" font-size="12" fill="#1a6a7a" font-family="JetBrains Mono, monospace">E(Σ gᵢ)  =  ∏  E(gᵢ)   for i ∈ S(t)</text>
+          <text x="850" y="716" text-anchor="middle" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">computed entirely on ciphertexts</text>
+        </g>
+
+        <!-- arrow agg <-> TKA: single bidirectional line with arrowheads at both ends -->
+        <!-- line starts at RIGHT edge of box 5 (x=1000) and ends at RIGHT edge of TKA (x=900) -->
+        <g stroke="#1a3a6e" stroke-width="2.5" fill="none"
+           marker-end="url(#arr-priv)" marker-start="url(#arr-priv-start)"
+           stroke-dasharray="6 4">
+          <path d="M1000,710 L 1500,710 L 1500,79 L 900,79"></path>
+        </g>
+        <!-- Label alongside the vertical segment — placed well right of box 4 (ends x=1420), at x=1540 -->
+        <text font-size="13" fill="#1a3a6e" font-family="JetBrains Mono, monospace" font-weight="700"
+              transform="rotate(-90 1540 415)">
+          <tspan x="1540" y="415">E(Σ gᵢ)  ⇄  Σ gᵢ   via Dec_sk(·)</tspan>
+        </text>
+
+        <!-- decrypted aggregate -> global model update -->
+        <g id="model">
+          <rect x="700" y="810" width="300" height="100" rx="6" fill="#e8f3ec" stroke="#1a5c38" stroke-width="2"></rect>
+          <text x="850" y="838" text-anchor="middle" font-size="13" font-weight="700" fill="#1a5c38" letter-spacing="1.5">GLOBAL  MODEL  UPDATE</text>
+          <text x="850" y="858" text-anchor="middle" font-size="12" fill="#1a5c38" font-family="JetBrains Mono, monospace">w_{t+1}  =  w_t  −  η · (Σ gᵢ) / |S(t)|</text>
+          <text x="850" y="874" text-anchor="middle" font-size="10" fill="#555555" font-family="JetBrains Mono, monospace">only the aggregate is decrypted,</text>
+          <text x="850" y="887" text-anchor="middle" font-size="10" fill="#555555" font-family="JetBrains Mono, monospace">never any individual update</text>
+        </g>
+
+        <!-- arrow agg -> model -->
+        <g stroke="#0d0d0d" stroke-width="2" fill="none" marker-end="url(#arr)">
+          <line x1="850" y1="770" x2="850" y2="810"></line>
+        </g>
+
+      </g>
+
+      <!-- ============== REJECTED BIN ============== -->
+      <g id="rejected">
+        <rect x="80" y="800" width="380" height="140" rx="6" fill="#fdecea" stroke="#c0392b" stroke-width="2"></rect>
+        <text x="270" y="828" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b" letter-spacing="1.5">REJECTED  /  DROPPED</text>
+        <text x="270" y="850" text-anchor="middle" font-size="11" fill="#c0392b" font-family="JetBrains Mono, monospace">filtered out before aggregation — never decrypted</text>
+        <g font-family="JetBrains Mono, monospace" font-size="12">
+          <g transform="translate(108,866)">
+            <rect width="150" height="50" rx="4" fill="#fff" stroke="#c0392b"></rect>
+            <text x="75" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">C5 · g₅</text>
+            <text x="75" y="40" text-anchor="middle" font-size="11" fill="#c0392b">opposite direction</text>
+          </g>
+          <g transform="translate(282,866)">
+            <rect width="150" height="50" rx="4" fill="#fff" stroke="#c0392b"></rect>
+            <text x="75" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#c0392b">C6 · g₆</text>
+            <text x="75" y="40" text-anchor="middle" font-size="11" fill="#c0392b">magnitude outside window</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- arrows from filters into rejected bin -->
+      <!-- direction reject: blue (#1a3a6e) matching box 3 direction filter colour -->
+      <path d="M880,610 L 880,628 L 1435,628 L 1435,962 L 460,962 L 460,940"
+            stroke="#1a3a6e" stroke-width="2" fill="none" stroke-dasharray="6 3" marker-end="url(#arr-priv)"></path>
+      <!-- magnitude reject: amber (#1a5c38) — routes right at y=650, down at x=1458, across at y=982 -->
+      <path d="M1255,610 L 1255,650 L 1458,650 L 1458,982 L 270,982 L 270,940"
+            stroke="#6a2d8f" stroke-width="2" fill="none" stroke-dasharray="6 3" marker-end="url(#arr-mag-rej)"></path>
+      <!-- labels rotated along right channel — white bg rect placed before text so text renders on top -->
+      <!-- direction reject label: sits beside its line at x=1435, offset to x=1422 so clear of line — shifted down -->
+      <rect x="1409" y="785" width="115" height="16" rx="2" fill="white" opacity="0.92" transform="rotate(-90 1422 880)"></rect>
+      <text font-size="12" font-family="JetBrains Mono, monospace" font-weight="700"
+            fill="#1a3a6e" transform="rotate(-90 1422 880)">
+        <tspan x="1422" y="880">direction reject ✗</tspan>
+      </text>
+      <!-- magnitude reject label: sits beside its line at x=1458, moved to RIGHT side — x=1472 -->
+      <rect x="1458" y="785" width="115" height="16" rx="2" fill="white" opacity="0.92" transform="rotate(-90 1472 880)"></rect>
+      <text font-size="12" font-family="JetBrains Mono, monospace" font-weight="700"
+            fill="#6a2d8f" transform="rotate(-90 1472 880)">
+        <tspan x="1472" y="880">magnitude reject ✗</tspan>
+      </text>
+
+      <!-- step badges -->
+      <g font-family="JetBrains Mono, monospace" font-size="11" font-weight="700">
+        <!-- ① badge: moved left of arrow line and above CLIENTS text -->
+        <g transform="translate(120,252)"><circle cx="0" cy="0" r="11" fill="#0d0d0d"></circle><text x="0" y="4" text-anchor="middle" fill="#fff">1</text></g>
+        <g transform="translate(317,272)"><circle cx="0" cy="0" r="11" fill="#1a4a8a"></circle><text x="0" y="4" text-anchor="middle" fill="#fff">2</text></g>
+        <g transform="translate(722,272)"><circle cx="0" cy="0" r="11" fill="#1a3a6e"></circle><text x="0" y="4" text-anchor="middle" fill="#fff">3</text></g>
+        <g transform="translate(1092,272)"><circle cx="0" cy="0" r="11" fill="#1a5c38"></circle><text x="0" y="4" text-anchor="middle" fill="#fff">4</text></g>
+        <g transform="translate(702,640)"><circle cx="0" cy="0" r="11" fill="#1a6a7a"></circle><text x="0" y="4" text-anchor="middle" fill="#fff">5</text></g>
+        <g transform="translate(702,800)"><circle cx="0" cy="0" r="11" fill="#1a5c38"></circle><text x="0" y="4" text-anchor="middle" fill="#fff">6</text></g>
+      </g>
+
+      <!-- floor caption -->
+      <g>
+        <line x1="40" y1="980" x2="1520" y2="980" stroke="#0d0d0d" stroke-width="1"></line>
+        <text x="40" y="1010" font-size="12" font-weight="700" letter-spacing="2" fill="#0d0d0d">FLOW</text>
+        <text x="100" y="1010" font-size="12" fill="#0d0d0d" font-family="JetBrains Mono, monospace">
+          ① local training  →  ② Paillier encryption  →  ③ direction filter  →  ④ magnitude window  →  ⑤ homomorphic aggregation  →  ⑥ decrypted global update
+        </text>
+        <text x="40" y="1040" font-size="11" fill="#555555" font-family="JetBrains Mono, monospace">
+          Privacy property: every per-client gradient remains encrypted end-to-end. Only one scalar (the audit score) and the aggregate are ever decrypted, both via priv_key held only by the Trusted Key Authority.
+        </text>
+      </g>
+
+    </svg>
+  </div>
+
+  <div class="legend-cards">
+    <div class="lc tka">
+      <h4>① Trusted Key Authority</h4>
+      <p>Generates one Paillier keypair. Distributes the public key to all clients and the aggregator; keeps the private key sealed and uses it only for decryption of the audit score and the aggregate.</p>
+      <span class="mono">pub_key → broadcast<br>priv_key → never leaves</span>
+    </div>
+    <div class="lc dir">
+      <h4>③ Direction Filter</h4>
+      <p>Server computes the homomorphic inner product ⟨gᵢ, g_ref⟩ against a benign reference built on public data. Updates pointing in the wrong half-space are removed before any aggregation.</p>
+      <span class="mono">accept iff ⟨gᵢ, g_ref⟩ &gt; ε_dir</span>
+    </div>
+    <div class="lc mag">
+      <h4>④ Magnitude Window</h4>
+      <p>Robust statistics on the alignment scores. Median μ and MAD define an adaptive window; any client whose score is too small or too large is dropped — symmetric protection against shrinking and scaling attacks.</p>
+      <span class="mono">τ_min ≤ ⟨gᵢ, g_ref⟩ ≤ τ_max</span>
+    </div>
+    <div class="lc agg">
+      <h4>⑤ Secure Aggregation</h4>
+      <p>The encrypted gradients of the surviving set S(t) are summed homomorphically. Only the aggregate is sent to the key authority for decryption — individual gradients never appear in plaintext.</p>
+      <span class="mono">E(Σ gᵢ) = ∏ E(gᵢ),  i ∈ S(t)</span>
+    </div>
+  </div>
+
+  <footer>
+    <div>FIP-PPFL · System flow · Paillier additively homomorphic encryption</div>
+    <div>Geometric audit  ·  direction + magnitude  ·  no plaintext leak</div>
+  </footer>
+
+</div>
+
+
+</body></html>

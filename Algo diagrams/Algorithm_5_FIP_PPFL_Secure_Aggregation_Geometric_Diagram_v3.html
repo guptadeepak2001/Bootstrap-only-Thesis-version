@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Algorithm 5 — Secure Aggregation and Momentum-Based Reference Update</title>
+<style>
+  :root{
+    --paper:#fbfaf6;
+    --canvas:#e9e7df;
+    --ink:#101418;
+    --muted:#5b6470;
+    --rule:#d7d1bf;
+    --navy:#11334d;
+    --teal:#0f766e;
+    --warn:#8a2f2f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--canvas);color:var(--ink);font-family:Georgia,"Times New Roman",serif;}
+  .page{width:1600px;min-height:1080px;margin:28px auto;padding:42px 52px 46px;background:var(--paper);box-shadow:0 1px 0 #d8d4c6,0 18px 42px rgba(20,20,20,.08);}
+  .figtag{font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--navy);font-weight:700;}
+  h1{margin:7px 0 4px;font-size:27px;line-height:1.18;font-weight:600;letter-spacing:-.01em;}
+  .subtitle{max-width:1280px;margin:0 0 18px;color:var(--muted);font-size:15.5px;line-height:1.45;font-style:italic;}
+  .frame{border:1px solid var(--rule);background:linear-gradient(180deg,#fffdf8 0%,#fbfaf6 56%,#f8f6ee 100%);padding:18px 22px 20px;}
+  svg{display:block;width:100%;height:auto}
+  .caption{margin-top:13px;font-size:13.5px;line-height:1.58;color:#30363d;}
+  .caption b{font-weight:700;color:var(--ink)}
+  @media print{html,body{background:#fff}.page{width:auto;margin:0;box-shadow:none;page-break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="figtag">Figure · Algorithm 5</div>
+  <h1>Secure Aggregation and Momentum-Based Reference Update</h1>
+  <p class="subtitle">Geometric aggregation view for thesis use: if the accepted encrypted set is empty, the server keeps the current model and reference unchanged. Otherwise, it securely aggregates the accepted encrypted coordinates, decrypts only the aggregate coordinates at the TKA, forms the signed average global gradient using the fixed-point scale S, updates the model, then performs a momentum-based reference refresh and normalization before storing the new reference at the FIP Verifier and broadcasting the next model.</p>
+
+  <div class="frame">
+    <svg viewBox="0 0 1500 950" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geometric system architecture diagram for Algorithm 5 secure aggregation and momentum-based reference update">
+      <defs>
+        <marker id="arrowNavy" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#11334d"/></marker>
+        <marker id="arrowInk" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#101418"/></marker>
+        <marker id="arrowTeal" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#0f766e"/></marker>
+        <marker id="arrowGrey" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#5b6470"/></marker>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/><feOffset dy="1"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="bandFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#eef3f8"/><stop offset="100%" stop-color="#e6edf3"/></linearGradient>
+        <linearGradient id="paperGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fffdf8"/><stop offset="100%" stop-color="#f4f1e7"/></linearGradient>
+        <pattern id="matrix" patternUnits="userSpaceOnUse" width="14" height="14"><circle cx="3" cy="3" r="1.2" fill="#11334d" opacity=".35"/><circle cx="10" cy="7" r="1.2" fill="#0f766e" opacity=".3"/><circle cx="6" cy="11" r="1.2" fill="#101418" opacity=".15"/></pattern>
+        <symbol id="encset" viewBox="0 0 118 100">
+          <rect x="4" y="8" width="110" height="84" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.5"/>
+          <rect x="4" y="8" width="110" height="12" fill="#11334d"/>
+          <g fill="#f3f1ea" stroke="#101418" stroke-width="1.05"><rect x="14" y="28" width="90" height="12" rx="1.5"/><rect x="14" y="46" width="90" height="12" rx="1.5"/><rect x="14" y="64" width="90" height="12" rx="1.5"/></g>
+          <g fill="#11334d"><circle cx="92" cy="34" r="1.7"/><circle cx="92" cy="52" r="1.7"/><circle cx="92" cy="70" r="1.7"/></g>
+        </symbol>
+        <symbol id="model" viewBox="0 0 120 95">
+          <rect x="4" y="8" width="112" height="79" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.5"/>
+          <rect x="4" y="8" width="112" height="12" fill="#11334d"/>
+          <circle cx="30" cy="46" r="5" fill="#11334d"/><circle cx="60" cy="30" r="5" fill="#11334d"/><circle cx="60" cy="60" r="5" fill="#11334d"/><circle cx="90" cy="46" r="5" fill="#11334d"/>
+          <line x1="35" y1="46" x2="55" y2="30" stroke="#101418" stroke-width="1.2"/><line x1="35" y1="46" x2="55" y2="60" stroke="#101418" stroke-width="1.2"/><line x1="65" y1="30" x2="85" y2="46" stroke="#101418" stroke-width="1.2"/><line x1="65" y1="60" x2="85" y2="46" stroke="#101418" stroke-width="1.2"/>
+        </symbol>
+        <symbol id="shield" viewBox="0 0 100 110">
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 C28 100 8 84 8 58 V18 Z" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 Z" fill="#11334d" opacity=".07"/>
+          <text x="50" y="57" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="20" fill="#11334d">FIP</text>
+          <text x="50" y="76" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.5" fill="#101418">VERIFIER</text>
+        </symbol>
+        <symbol id="vault" viewBox="0 0 112 112">
+          <rect x="2" y="2" width="108" height="108" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <circle cx="56" cy="56" r="35" fill="none" stroke="#101418" stroke-width="1.4"/>
+          <circle cx="56" cy="56" r="24" fill="none" stroke="#101418" stroke-width="1.1"/>
+          <g stroke="#101418" stroke-width="1.4" stroke-linecap="round"><line x1="56" y1="13" x2="56" y2="22"/><line x1="56" y1="90" x2="56" y2="99"/><line x1="13" y1="56" x2="22" y2="56"/><line x1="90" y1="56" x2="99" y2="56"/></g>
+          <circle cx="56" cy="56" r="3" fill="#11334d"/>
+          <path d="M40,57 h30" stroke="#11334d" stroke-width="1.5"/>
+        </symbol>
+        <symbol id="server" viewBox="0 0 112 112">
+          <rect x="2" y="6" width="108" height="100" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <rect x="2" y="6" width="108" height="14" fill="#11334d"/>
+          <text x="56" y="16.4" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" fill="#fbfaf6" letter-spacing="1.2">SERVER</text>
+          <g stroke="#101418" stroke-width="1.05" fill="#f3f1ea"><rect x="10" y="28" width="92" height="14" rx="1.5"/><rect x="10" y="46" width="92" height="14" rx="1.5"/><rect x="10" y="64" width="92" height="14" rx="1.5"/><rect x="10" y="82" width="92" height="14" rx="1.5"/></g>
+          <g fill="#11334d"><circle cx="94" cy="35" r="1.5"/><circle cx="88" cy="35" r="1.5"/><circle cx="94" cy="53" r="1.5"/><circle cx="88" cy="53" r="1.5"/><circle cx="94" cy="71" r="1.5"/><circle cx="88" cy="71" r="1.5"/><circle cx="94" cy="89" r="1.5"/><circle cx="88" cy="89" r="1.5"/></g>
+        </symbol>
+      </defs>
+
+      <rect x="0" y="0" width="1500" height="950" fill="url(#paperGrad)"/>
+      <rect x="20" y="22" width="332" height="452" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="367" y="22" width="350" height="452" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="732" y="22" width="352" height="452" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="1099" y="22" width="381" height="452" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+
+      <g font-family="Arial,Helvetica,sans-serif">
+        <g><circle cx="42" cy="46" r="13" fill="#11334d"/><text x="42" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">A</text><text x="64" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE A</text><text x="64" y="58" font-size="15" font-weight="700" fill="#101418">Guard + Inputs</text></g>
+        <g><circle cx="389" cy="46" r="13" fill="#11334d"/><text x="389" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">B</text><text x="411" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE B</text><text x="411" y="58" font-size="15" font-weight="700" fill="#101418">Secure Coordinate Aggregation</text></g>
+        <g><circle cx="754" cy="46" r="13" fill="#11334d"/><text x="754" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">C</text><text x="776" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE C</text><text x="776" y="58" font-size="15" font-weight="700" fill="#101418">Decrypt Aggregate + Model Update</text></g>
+        <g><circle cx="1121" cy="46" r="13" fill="#11334d"/><text x="1121" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">D</text><text x="1143" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE D</text><text x="1143" y="58" font-size="15" font-weight="700" fill="#101418">Momentum Reference Refresh</text></g>
+      </g>
+
+      <!-- Phase A -->
+      <g>
+        <g transform="translate(54,92)" filter="url(#shadow)"><use href="#encset" width="122" height="102"/></g>
+        <text x="115" y="220" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Accepted Encrypted Set</text>
+        <text x="115" y="236" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13.5" fill="#11334d">𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+
+        <g transform="translate(210,88)" filter="url(#shadow)"><use href="#model" width="124" height="100"/></g>
+        <text x="272" y="214" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Current Model + Reference</text>
+        <text x="272" y="230" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#11334d">θ<tspan baseline-shift="super" font-size="10">(t)</tspan>, R<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+
+        <g transform="translate(42,274)">
+          <rect x="0" y="0" width="288" height="144" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">EMPTY-SET GUARD</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">if 𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan> = ∅ then</text>
+          <text x="16" y="74" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">θ<tspan baseline-shift="super" font-size="10">(t+1)</tspan> ← θ<tspan baseline-shift="super" font-size="10">(t)</tspan>, &nbsp;R<tspan baseline-shift="super" font-size="10">(t+1)</tspan> ← R<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="100" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">Broadcast θ<tspan baseline-shift="super" font-size="10">(t+1)</tspan> and keep previous reference</text>
+          <text x="16" y="124" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">return θ<tspan baseline-shift="super" font-size="10">(t+1)</tspan>, R<tspan baseline-shift="super" font-size="10">(t+1)</tspan></text>
+        </g>
+
+        <path d="M176,140 C188,140 198,140 208,139" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M115,240 L115,272" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M272,234 L272,272" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase B -->
+      <g>
+        <g transform="translate(385,90)">
+          <rect x="0" y="0" width="316" height="158" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">AGGREGATION LOOP</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">m ← |𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan>|</text>
+          <text x="16" y="74" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">for k = 1 … d : [[Ĝ<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] ← Enc<tspan baseline-shift="sub" font-size="10">pk</tspan>(0)</text>
+          <text x="16" y="100" font-family="Georgia,Times New Roman,serif" font-size="14.6" fill="#101418">for all (TagID<tspan baseline-shift="sub" font-size="10">i</tspan>, {[[ĝ<tspan baseline-shift="sub" font-size="9">i,ℓ</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan>]]}<tspan baseline-shift="super" font-size="10">d</tspan><tspan baseline-shift="sub" font-size="10">ℓ=1</tspan>) ∈ 𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="126" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">[[Ĝ<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] ← [[Ĝ<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] · [[ĝ<tspan baseline-shift="sub" font-size="10">i,k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] mod n²</text>
+          <text x="16" y="148" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">homomorphic product accumulates encrypted encoded coordinates [[ĝᵢ,ₖ⁽ᵗ⁾]]</text>
+        </g>
+
+        <g transform="translate(497,286)" filter="url(#shadow)"><use href="#server" width="112" height="112"/></g>
+        <text x="553" y="414" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.6" font-weight="700" letter-spacing=".06em" fill="#101418">Secure Aggregator</text>
+        <text x="553" y="430" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">works over accepted encrypted coordinates only</text>
+
+        <path d="M331,346 C365,346 372,170 384,170" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M543,249 L553,284" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase C -->
+      <g>
+        <g transform="translate(748,86)" filter="url(#shadow)"><use href="#vault" width="100" height="100"/></g>
+        <text x="798" y="214" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Trusted Key Authority</text>
+        <text x="798" y="230" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#5b6470">holds sealed sk; decrypts aggregate only</text>
+
+        <g transform="translate(884,88)" filter="url(#shadow)"><use href="#model" width="124" height="100"/></g>
+        <text x="946" y="214" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.8" font-weight="700" letter-spacing=".06em" fill="#101418">Global Gradient + Model</text>
+        <text x="946" y="230" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12.8" fill="#11334d">g<tspan baseline-shift="sub" font-size="10">global</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>, θ<tspan baseline-shift="super" font-size="10">(t+1)</tspan></text>
+
+        <g transform="translate(744,276)">
+          <rect x="0" y="0" width="330" height="154" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">DECRYPT AGGREGATE + MODEL STEP</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">Send [[Ĝ<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]] to TKA for decryption</text>
+          <text x="16" y="74" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">Ĝ<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ← Dec<tspan baseline-shift="sub" font-size="10">sk</tspan>([[Ĝ<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]])</text>
+          <text x="16" y="100" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">g<tspan baseline-shift="sub" font-size="10">global,k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan> ← Decode<tspan baseline-shift="sub" font-size="10">S</tspan>(Ĝ<tspan baseline-shift="sub" font-size="10">k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>) / m</text>
+          <text x="16" y="126" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">θ<tspan baseline-shift="super" font-size="10">(t+1)</tspan> ← θ<tspan baseline-shift="super" font-size="10">(t)</tspan> − η g<tspan baseline-shift="sub" font-size="10">global</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="148" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">average accepted gradient and apply one global model step</text>
+        </g>
+
+        <path d="M611,346 C674,346 698,140 747,140" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M848,138 C864,138 870,138 883,138" fill="none" stroke="#0f766e" stroke-width="1.6" marker-end="url(#arrowTeal)"/>
+        <path d="M946,234 L946,274" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <!-- Phase D -->
+      <g>
+        <g transform="translate(1118,90)">
+          <rect x="0" y="0" width="340" height="156" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">MOMENTUM REFERENCE UPDATE</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">Ṙ<tspan baseline-shift="super" font-size="10">(t+1)</tspan> ← β R<tspan baseline-shift="super" font-size="10">(t)</tspan> + (1−β) g<tspan baseline-shift="sub" font-size="10">global</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+          <text x="16" y="76" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">R<tspan baseline-shift="super" font-size="10">(t+1)</tspan> ← Ṙ<tspan baseline-shift="super" font-size="10">(t+1)</tspan> / max( ‖Ṙ<tspan baseline-shift="super" font-size="10">(t+1)</tspan>‖<tspan baseline-shift="sub" font-size="10">2</tspan>, ε )</text>
+          <text x="16" y="104" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">Store R<tspan baseline-shift="super" font-size="10">(t+1)</tspan> at the FIP Verifier</text>
+          <text x="16" y="130" font-family="Georgia,Times New Roman,serif" font-size="15.2" fill="#101418">Broadcast θ<tspan baseline-shift="super" font-size="10">(t+1)</tspan> and return both outputs</text>
+          <text x="16" y="150" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">momentum stabilizes the trusted reference direction across rounds</text>
+        </g>
+
+        <g transform="translate(1132,284)" filter="url(#shadow)"><use href="#shield" width="86" height="94"/></g>
+        <text x="1175" y="398" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.6" font-weight="700" letter-spacing=".06em" fill="#101418">FIP Verifier</text>
+        <text x="1175" y="414" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">stores the refreshed reference R<tspan baseline-shift="super" font-size="9">(t+1)</tspan></text>
+
+        <g transform="translate(1290,286)" filter="url(#shadow)"><use href="#server" width="112" height="112"/></g>
+        <text x="1346" y="414" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.6" font-weight="700" letter-spacing=".06em" fill="#101418">Broadcast</text>
+        <text x="1346" y="430" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">send θ<tspan baseline-shift="super" font-size="9">(t+1)</tspan> to all clients</text>
+
+        <path d="M1075,350 C1110,350 1124,170 1117,170" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M1276,150 C1289,150 1295,150 1302,150" fill="none" stroke="#0f766e" stroke-width="1.6" marker-end="url(#arrowTeal)"/>
+      </g>
+
+      <!-- divider -->
+      <g>
+        <line x1="20" y1="492" x2="1480" y2="492" stroke="#cdc8b6" stroke-width="1"/>
+        <text x="20" y="486" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".22em" fill="#11334d">GEOMETRIC INSET · SECURE AVERAGING FOLLOWED BY MOMENTUM-BASED REFERENCE REFINEMENT</text>
+      </g>
+
+      <!-- bottom left notes -->
+      <g transform="translate(40,520)">
+        <text x="0" y="14" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" letter-spacing=".14em" fill="#11334d">SECURE AGGREGATION INTUITION</text>
+        <text x="0" y="42" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">Only accepted encrypted submissions participate in aggregation.</text>
+        <text x="0" y="62" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">The server multiplies encrypted encoded coordinates across accepted clients,</text>
+        <text x="0" y="82" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">then the TKA decrypts only the aggregate coordinates, not any client update.</text>
+        <text x="0" y="110" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">The resulting average accepted gradient defines the global gradient and also helps</text>
+        <text x="0" y="130" font-family="Georgia,Times New Roman,serif" font-size="13.4" fill="#101418">refresh the trusted reference using momentum and normalization.</text>
+        <line x1="0" y1="156" x2="390" y2="156" stroke="#cdc8b6"/>
+        <text x="0" y="186" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">This figure uses thesis-level notation only:</text>
+        <text x="0" y="208" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">𝒜<tspan baseline-shift="super" font-size="10">(t)</tspan>, θ<tspan baseline-shift="super" font-size="10">(t)</tspan>, θ<tspan baseline-shift="super" font-size="10">(t+1)</tspan>, R<tspan baseline-shift="super" font-size="10">(t)</tspan>, R<tspan baseline-shift="super" font-size="10">(t+1)</tspan>, Ṙ<tspan baseline-shift="super" font-size="10">(t+1)</tspan>, g<tspan baseline-shift="sub" font-size="10">global</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>, m, pk, sk, S, η, β, ε.</text>
+        <line x1="0" y1="228" x2="390" y2="228" stroke="#cdc8b6"/>
+        <text x="0" y="256" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".14em" fill="#11334d">SIGNED DECODING NOTE</text>
+        <text x="0" y="278" font-family="Georgia,Times New Roman,serif" font-size="12.8" fill="#101418">Decode<tspan baseline-shift="sub" font-size="10">S</tspan>(·) maps Paillier plaintexts back to signed fixed-point</text>
+        <text x="0" y="298" font-family="Georgia,Times New Roman,serif" font-size="12.8" fill="#101418">values before dividing by m to recover g<tspan baseline-shift="sub" font-size="10">global</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>.</text>
+      </g>
+
+      <!-- bottom middle geometry -->
+      <g transform="translate(484,520)">
+        <rect x="-10" y="-10" width="452" height="304" rx="3" fill="#fbfaf6" stroke="#cdd7e0"/>
+        <g stroke="#e6e0cb" stroke-width=".7">
+          <line x1="24" y1="140" x2="406" y2="140"/>
+          <line x1="202" y1="24" x2="202" y2="258"/>
+          <g opacity=".5"><line x1="64" y1="24" x2="64" y2="258"/><line x1="104" y1="24" x2="104" y2="258"/><line x1="144" y1="24" x2="144" y2="258"/><line x1="244" y1="24" x2="244" y2="258"/><line x1="284" y1="24" x2="284" y2="258"/><line x1="324" y1="24" x2="324" y2="258"/><line x1="364" y1="24" x2="364" y2="258"/><line x1="24" y1="60" x2="406" y2="60"/><line x1="24" y1="100" x2="406" y2="100"/><line x1="24" y1="180" x2="406" y2="180"/><line x1="24" y1="220" x2="406" y2="220"/></g>
+        </g>
+        <line x1="24" y1="140" x2="406" y2="140" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <line x1="202" y1="258" x2="202" y2="24" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <text x="400" y="156" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+        <text x="212" y="28" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+
+        <line x1="202" y1="140" x2="300" y2="98" stroke="#5b6470" stroke-width="2.3" marker-end="url(#arrowGrey)"/>
+        <text x="308" y="98" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#5b6470" font-style="italic">g<tspan baseline-shift="sub" font-size="9">global</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        <text x="308" y="113" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#5b6470" font-style="italic">average accepted gradient</text>
+
+        <line x1="202" y1="140" x2="276" y2="64" stroke="#11334d" stroke-width="2.7" marker-end="url(#arrowNavy)"/>
+        <text x="284" y="62" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#11334d" font-style="italic">R<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        <line x1="202" y1="140" x2="334" y2="52" stroke="#0f766e" stroke-width="2.8" marker-end="url(#arrowTeal)"/>
+        <text x="342" y="50" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#0f766e" font-style="italic">R<tspan baseline-shift="super" font-size="10">(t+1)</tspan></text>
+        <text x="342" y="65" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#0f766e" font-style="italic">momentum-updated normalized reference</text>
+
+        <path d="M292,83 C307,74 318,67 327,59" fill="none" stroke="#0f766e" stroke-width="1.4" marker-end="url(#arrowTeal)"/>
+        <rect x="246" y="176" width="138" height="34" rx="4" fill="#e7f5f2" stroke="#0f766e"/>
+        <text x="315" y="198" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#0f766e">βR<tspan baseline-shift="super" font-size="9">(t)</tspan> + (1−β)g<tspan baseline-shift="sub" font-size="9">global</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text>
+        <text x="203" y="280" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">2-D slice illustrating secure averaging followed by reference refinement</text>
+      </g>
+
+      <!-- bottom right output card -->
+      <g transform="translate(956,526)">
+        <rect x="0" y="0" width="488" height="264" rx="3" fill="#fbfaf6" stroke="#11334d" stroke-width="1.4"/>
+        <rect x="0" y="0" width="488" height="34" rx="3" fill="#11334d"/>
+        <text x="14" y="22" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#fbfaf6" letter-spacing=".18em">OUTPUT OF ALGORITHM 5</text>
+        <g font-family="Georgia,Times New Roman,serif" fill="#101418">
+          <g transform="translate(20,58)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">If 𝒜<tspan baseline-shift="super" font-size="9">(t)</tspan> is empty, keep θ and R unchanged and broadcast θ<tspan baseline-shift="super" font-size="9">(t+1)</tspan></text></g>
+          <g transform="translate(20,86)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">Otherwise decrypt only aggregate coordinates and compute g<tspan baseline-shift="sub" font-size="9">global</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text></g>
+          <g transform="translate(20,114)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">Update the model by θ<tspan baseline-shift="super" font-size="9">(t+1)</tspan> = θ<tspan baseline-shift="super" font-size="9">(t)</tspan> − η g<tspan baseline-shift="sub" font-size="9">global</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan></text></g>
+          <g transform="translate(20,142)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.4">Refresh and normalize the reference to obtain R<tspan baseline-shift="super" font-size="9">(t+1)</tspan></text></g>
+          <g transform="translate(20,170)"><circle cx="6" cy="6" r="3.2" fill="#0f766e"/><text x="20" y="10" font-size="13.4">Store R<tspan baseline-shift="super" font-size="9">(t+1)</tspan> at the FIP Verifier and broadcast θ<tspan baseline-shift="super" font-size="9">(t+1)</tspan></text></g>
+        </g>
+        <line x1="20" y1="198" x2="468" y2="198" stroke="#cdc8b6"/>
+        <text x="20" y="220" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".14em" fill="#11334d">PRIVACY INVARIANT</text>
+        <text x="20" y="240" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#101418">Decode_S(·) interprets decrypted aggregate plaintexts as signed fixed-point values; individual accepted client updates are never individually decrypted.</text>
+      </g>
+    </svg>
+
+    <div class="caption">
+      <b>Figure.</b> Editable academic-style geometric diagram for <b>Algorithm 5</b>. The server first checks whether the accepted encrypted set <i>𝒜</i><sup>(t)</sup> is empty. If so, it keeps the current model and trusted reference unchanged, broadcasts <i>θ</i><sup>(t+1)</sup> = <i>θ</i><sup>(t)</sup>, and returns the unchanged pair. Otherwise it sets <i>m</i> = |<i>𝒜</i><sup>(t)</sup>| and, for each coordinate <i>k</i>, initializes an encrypted aggregate accumulator [[<i>Ĝ</i><sub>k</sub><sup>(t)</sup>]] ← Enc<sub>pk</sub>(0). It then homomorphically combines the accepted encrypted encoded coordinates by [[<i>Ĝ</i><sub>k</sub><sup>(t)</sup>]] ← [[<i>Ĝ</i><sub>k</sub><sup>(t)</sup>]] · [[<i>ĝ</i><sub>i,k</sub><sup>(t)</sup>]] mod <i>n</i><sup>2</sup>. Only the encrypted aggregate coordinates are sent to the TKA, where <i>Ĝ</i><sub>k</sub><sup>(t)</sup> ← Dec<sub>sk</sub>([[<i>Ĝ</i><sub>k</sub><sup>(t)</sup>]]) and the average global gradient is recovered by <i>g</i><sub>global,k</sub><sup>(t)</sup> ← Decode<sub>S</sub>(<i>Ĝ</i><sub>k</sub><sup>(t)</sup>)/<i>m</i>, where Decode<sub>S</sub>(·) maps Paillier plaintexts back to signed fixed-point values. The global model is then updated by <i>θ</i><sup>(t+1)</sup> ← <i>θ</i><sup>(t)</sup> − <i>ηg</i><sub>global</sub><sup>(t)</sup>. Finally, the trusted reference is refreshed with momentum as <i>Ṙ</i><sup>(t+1)</sup> ← <i>βR</i><sup>(t)</sup> + (1−<i>β</i>)<i>g</i><sub>global</sub><sup>(t)</sup>, and normalized as <i>R</i><sup>(t+1)</sup> ← <i>Ṙ</i><sup>(t+1)</sup> / max(‖<i>Ṙ</i><sup>(t+1)</sup>‖<sub>2</sub>, <i>ε</i>). The refreshed reference is stored at the FIP Verifier, and the updated model is broadcast for the next round.
+    </div>
+  </div>
+</div>
+</body>
+</html>

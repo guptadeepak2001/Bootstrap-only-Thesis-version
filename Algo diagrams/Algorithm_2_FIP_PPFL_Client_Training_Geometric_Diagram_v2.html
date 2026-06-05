@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Algorithm 2 — Client-Side Local Training and Encrypted Gradient Submission</title>
+<style>
+  :root{
+    --paper:#fbfaf6;
+    --canvas:#e9e7df;
+    --ink:#101418;
+    --muted:#5b6470;
+    --rule:#d7d1bf;
+    --navy:#11334d;
+    --teal:#0f766e;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--canvas);color:var(--ink);font-family:Georgia,"Times New Roman",serif;}
+  .page{width:1600px;min-height:1060px;margin:28px auto;padding:42px 52px 46px;background:var(--paper);box-shadow:0 1px 0 #d8d4c6,0 18px 42px rgba(20,20,20,.08);}
+  .figtag{font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--navy);font-weight:700;}
+  h1{margin:7px 0 4px;font-size:27px;line-height:1.18;font-weight:600;letter-spacing:-.01em;}
+  .subtitle{max-width:1220px;margin:0 0 18px;color:var(--muted);font-size:15.5px;line-height:1.45;font-style:italic;}
+  .frame{border:1px solid var(--rule);background:linear-gradient(180deg,#fffdf8 0%,#fbfaf6 56%,#f8f6ee 100%);padding:18px 22px 20px;}
+  svg{display:block;width:100%;height:auto}
+  .caption{margin-top:13px;font-size:13.5px;line-height:1.58;color:#30363d;}
+  .caption b{font-weight:700;color:var(--ink)}
+  @media print{html,body{background:#fff}.page{width:auto;margin:0;box-shadow:none;page-break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="figtag">Figure · Algorithm 2</div>
+  <h1>Client-Side Local Training and Encrypted Gradient Submission</h1>
+  <p class="subtitle">Geometric client-side view for thesis use: each client initializes its local state from the round model, performs local mini-batch training, averages the accumulated gradient, flattens it into coordinates, encodes and encrypts each coordinate, and submits the encrypted message <em>M</em><sub>i</sub><sup>(t)</sup> to the FIP Verifier.</p>
+
+  <div class="frame">
+    <svg viewBox="0 0 1500 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geometric system architecture diagram for Algorithm 2 client-side local training and encrypted gradient submission">
+      <defs>
+        <marker id="arrowNavy" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#11334d"/></marker>
+        <marker id="arrowInk" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#101418"/></marker>
+        <marker id="arrowAccent" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#0f766e"/></marker>
+        <marker id="arrowGrey" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 Z" fill="#5b6470"/></marker>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/><feOffset dy="1"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="bandFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#eef3f8"/><stop offset="100%" stop-color="#e6edf3"/></linearGradient>
+        <linearGradient id="paperGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fffdf8"/><stop offset="100%" stop-color="#f4f1e7"/></linearGradient>
+        <pattern id="matrix" patternUnits="userSpaceOnUse" width="14" height="14"><circle cx="3" cy="3" r="1.2" fill="#11334d" opacity=".35"/><circle cx="10" cy="7" r="1.2" fill="#0f766e" opacity=".3"/><circle cx="6" cy="11" r="1.2" fill="#101418" opacity=".15"/></pattern>
+
+        <symbol id="client" viewBox="0 0 92 92">
+          <rect x="4" y="8" width="84" height="76" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.5"/>
+          <rect x="4" y="8" width="84" height="12" fill="#11334d"/>
+          <circle cx="12" cy="14" r="1.7" fill="#fbfaf6"/><circle cx="18" cy="14" r="1.7" fill="#fbfaf6"/><circle cx="24" cy="14" r="1.7" fill="#fbfaf6"/>
+          <circle cx="46" cy="40" r="9" fill="none" stroke="#101418" stroke-width="1.3"/>
+          <path d="M28 66 c4 -12 12 -18 18 -18 c6 0 14 6 18 18" fill="none" stroke="#101418" stroke-width="1.3" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="dataset" viewBox="0 0 110 90">
+          <g fill="#fbfaf6" stroke="#101418" stroke-width="1.35"><ellipse cx="55" cy="14" rx="42" ry="9"/><path d="M13 14 v18 c0 5 18.8 9 42 9 s42 -4 42 -9 v-18"/><path d="M13 32 v18 c0 5 18.8 9 42 9 s42 -4 42 -9 v-18" fill="#f3f1ea"/><path d="M13 50 v18 c0 5 18.8 9 42 9 s42 -4 42 -9 v-18" fill="#f3f1ea"/></g>
+          <g fill="none" stroke="#101418" stroke-width="1" opacity=".45"><ellipse cx="55" cy="32" rx="42" ry="9"/><ellipse cx="55" cy="50" rx="42" ry="9"/></g>
+        </symbol>
+        <symbol id="model" viewBox="0 0 120 95">
+          <rect x="4" y="8" width="112" height="79" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.5"/>
+          <rect x="4" y="8" width="112" height="12" fill="#11334d"/>
+          <circle cx="30" cy="46" r="5" fill="#11334d"/><circle cx="60" cy="30" r="5" fill="#11334d"/><circle cx="60" cy="60" r="5" fill="#11334d"/><circle cx="90" cy="46" r="5" fill="#11334d"/>
+          <line x1="35" y1="46" x2="55" y2="30" stroke="#101418" stroke-width="1.2"/><line x1="35" y1="46" x2="55" y2="60" stroke="#101418" stroke-width="1.2"/><line x1="65" y1="30" x2="85" y2="46" stroke="#101418" stroke-width="1.2"/><line x1="65" y1="60" x2="85" y2="46" stroke="#101418" stroke-width="1.2"/>
+        </symbol>
+        <symbol id="shield" viewBox="0 0 100 110">
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 C28 100 8 84 8 58 V18 Z" fill="#fbfaf6" stroke="#101418" stroke-width="1.6"/>
+          <path d="M50 4 L92 18 V58 C92 84 72 100 50 106 Z" fill="#11334d" opacity=".07"/>
+          <text x="50" y="57" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="20" fill="#11334d">FIP</text>
+          <text x="50" y="76" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.5" fill="#101418">VERIFIER</text>
+        </symbol>
+        <symbol id="cipher" viewBox="0 0 88 90">
+          <rect x="10" y="28" width="68" height="50" rx="6" fill="#fbfaf6" stroke="#101418" stroke-width="1.4"/>
+          <path d="M26 28 v-8 c0-10 8-16 18-16 s18 6 18 16 v8" fill="none" stroke="#101418" stroke-width="1.4"/>
+          <rect x="36" y="48" width="16" height="18" rx="3" fill="#11334d"/>
+          <circle cx="44" cy="40" r="3" fill="#0f766e"/>
+        </symbol>
+      </defs>
+
+      <rect x="0" y="0" width="1500" height="900" fill="url(#paperGrad)"/>
+      <rect x="20" y="22" width="330" height="430" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="365" y="22" width="345" height="430" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="725" y="22" width="355" height="430" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+      <rect x="1095" y="22" width="385" height="430" fill="url(#bandFill)" stroke="#cdd7e0" stroke-width="1" rx="3"/>
+
+      <g font-family="Arial,Helvetica,sans-serif">
+        <g><circle cx="42" cy="46" r="13" fill="#11334d"/><text x="42" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">A</text><text x="64" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE A</text><text x="64" y="58" font-size="15" font-weight="700" fill="#101418">Receive Round State</text></g>
+        <g><circle cx="387" cy="46" r="13" fill="#11334d"/><text x="387" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">B</text><text x="409" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE B</text><text x="409" y="58" font-size="15" font-weight="700" fill="#101418">Local Mini-Batch Training</text></g>
+        <g><circle cx="747" cy="46" r="13" fill="#11334d"/><text x="747" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">C</text><text x="769" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE C</text><text x="769" y="58" font-size="15" font-weight="700" fill="#101418">Average + Flatten Gradient</text></g>
+        <g><circle cx="1117" cy="46" r="13" fill="#11334d"/><text x="1117" y="50.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fbfaf6">D</text><text x="1139" y="42" font-size="11" font-weight="700" letter-spacing=".18em" fill="#11334d">PHASE D</text><text x="1139" y="58" font-size="15" font-weight="700" fill="#101418">Encode, Encrypt, Submit</text></g>
+      </g>
+
+      <g>
+        <g transform="translate(55,92)" filter="url(#shadow)"><use href="#client" width="96" height="96"/></g>
+        <text x="103" y="217" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" letter-spacing=".06em" fill="#101418">Client C<tspan baseline-shift="sub" font-size="9">i</tspan></text>
+        <text x="103" y="233" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12.5" fill="#5b6470">anonymous tag TagID<tspan baseline-shift="sub" font-size="10">i</tspan></text>
+        <g transform="translate(196,85)" filter="url(#shadow)"><use href="#model" width="124" height="100"/></g>
+        <text x="258" y="206" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.5" font-weight="700" letter-spacing=".06em" fill="#101418">Round Model</text>
+        <text x="258" y="222" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#11334d">θ<tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        <g transform="translate(72,278)">
+          <rect x="0" y="0" width="235" height="112" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">INITIALIZATION</text>
+          <text x="18" y="48" font-family="Georgia,Times New Roman,serif" font-size="16" fill="#101418">θ<tspan baseline-shift="sub" font-size="11">i</tspan> ← θ<tspan baseline-shift="super" font-size="11">(t)</tspan></text>
+          <text x="18" y="73" font-family="Georgia,Times New Roman,serif" font-size="16" fill="#101418">g<tspan baseline-shift="sub" font-size="11">i</tspan><tspan baseline-shift="super" font-size="11">(t)</tspan> ← 0</text>
+          <text x="148" y="73" font-family="Georgia,Times New Roman,serif" font-size="16" fill="#101418">m<tspan baseline-shift="sub" font-size="11">i</tspan> ← 0</text>
+          <text x="18" y="96" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">inputs: pk, S, E, B, η</text>
+        </g>
+        <path d="M195,136 C184,138 173,138 154,138" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M258,226 L258,276" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <g>
+        <g transform="translate(390,92)" filter="url(#shadow)"><use href="#dataset" width="112" height="92"/></g>
+        <text x="446" y="217" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" letter-spacing=".06em" fill="#101418">Local Dataset</text>
+        <text x="446" y="233" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13.5" fill="#11334d">D<tspan baseline-shift="sub" font-size="10">i</tspan></text>
+        <g transform="translate(535,82)">
+          <rect x="0" y="0" width="145" height="116" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="12" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">LOCAL TRAINING LOOP</text>
+          <text x="16" y="44" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">for e = 1 … E</text>
+          <text x="16" y="64" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">for mini-batch 𝓑 ⊂ D<tspan baseline-shift="sub" font-size="10">i</tspan></text>
+          <text x="16" y="84" font-family="Georgia,Times New Roman,serif" font-size="14.5" fill="#101418">with |𝓑| = B do</text>
+          <text x="16" y="104" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">repeat local SGD steps</text>
+        </g>
+        <g transform="translate(386,278)">
+          <rect x="0" y="0" width="300" height="112" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.2"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">PER MINI-BATCH UPDATE</text>
+          <text x="16" y="48" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">h ← ∇<tspan font-style="italic">θ</tspan><tspan baseline-shift="sub" font-size="10">i</tspan>L(f<tspan baseline-shift="sub" font-size="10">θi</tspan>; 𝓑)</text>
+          <text x="16" y="73" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">g<tspan baseline-shift="sub" font-size="11">i</tspan><tspan baseline-shift="super" font-size="11">(t)</tspan> ← g<tspan baseline-shift="sub" font-size="11">i</tspan><tspan baseline-shift="super" font-size="11">(t)</tspan> + h,&nbsp; m<tspan baseline-shift="sub" font-size="11">i</tspan> ← m<tspan baseline-shift="sub" font-size="11">i</tspan> + 1</text>
+          <text x="16" y="98" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">θ<tspan baseline-shift="sub" font-size="11">i</tspan> ← θ<tspan baseline-shift="sub" font-size="11">i</tspan> − ηh</text>
+        </g>
+        <path d="M503,138 L532,138" fill="none" stroke="#11334d" stroke-width="1.4" marker-end="url(#arrowNavy)"/>
+        <path d="M607,199 L607,276" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <g>
+        <g transform="translate(748,82)">
+          <rect x="0" y="0" width="305" height="94" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">AVERAGE LOCAL GRADIENT</text>
+          <text x="152.5" y="55" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="18" fill="#101418">g<tspan baseline-shift="sub" font-size="11">i</tspan><tspan baseline-shift="super" font-size="11">(t)</tspan> ← g<tspan baseline-shift="sub" font-size="11">i</tspan><tspan baseline-shift="super" font-size="11">(t)</tspan> / max(m<tspan baseline-shift="sub" font-size="11">i</tspan>, 1)</text>
+          <text x="152.5" y="76" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">mean gradient over all processed mini-batches</text>
+        </g>
+        <g transform="translate(748,194)">
+          <rect x="0" y="0" width="305" height="96" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">FLATTEN TO COORDINATES</text>
+          <text x="152.5" y="52" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="17" fill="#101418">(g<tspan baseline-shift="super" font-size="10">(t)</tspan><tspan baseline-shift="sub" font-size="10">i,1</tspan>, … , g<tspan baseline-shift="super" font-size="10">(t)</tspan><tspan baseline-shift="sub" font-size="10">i,d</tspan>)</text>
+          <text x="152.5" y="76" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">flatten averaged gradient into d scalar coordinates</text>
+        </g>
+        <g transform="translate(750,314)">
+          <rect x="0" y="0" width="301" height="76" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">COORDINATE LOOP</text>
+          <text x="150.5" y="51" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="16" fill="#101418">for k = 1 … d</text>
+          <text x="150.5" y="67" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">process each scalar coordinate independently</text>
+        </g>
+        <path d="M687,334 C717,334 727,176 747,129" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M900,177 L900,192" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M900,291 L900,312" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+      </g>
+
+      <g>
+        <g transform="translate(1117,86)">
+          <rect x="0" y="0" width="332" height="92" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">FIXED-POINT ENCODING</text>
+          <text x="166" y="54" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="17" fill="#101418">ĝ<tspan baseline-shift="super" font-size="10">(t)</tspan><tspan baseline-shift="sub" font-size="10">i,k</tspan> ← Encode<tspan baseline-shift="sub" font-size="10">S</tspan>(g<tspan baseline-shift="super" font-size="10">(t)</tspan><tspan baseline-shift="sub" font-size="10">i,k</tspan>)</text>
+          <text x="166" y="76" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">convert each scalar to the fixed-point integer domain</text>
+        </g>
+        <g transform="translate(1117,194)">
+          <rect x="0" y="0" width="332" height="92" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">PAILLIER ENCRYPTION</text>
+          <text x="166" y="54" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="18" fill="#101418">[[ĝ<tspan baseline-shift="super" font-size="10">(t)</tspan><tspan baseline-shift="sub" font-size="10">i,k</tspan>]] ← Enc<tspan baseline-shift="sub" font-size="10">pk</tspan>(ĝ<tspan baseline-shift="super" font-size="10">(t)</tspan><tspan baseline-shift="sub" font-size="10">i,k</tspan>)</text>
+          <text x="166" y="76" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">encrypt every encoded coordinate with the public key</text>
+        </g>
+        <g transform="translate(1117,304)">
+          <rect x="0" y="0" width="332" height="118" rx="4" fill="#fbfaf6" stroke="#101418" stroke-width="1.25"/>
+          <text x="14" y="20" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="700" fill="#11334d" letter-spacing=".14em">PACKAGE + SUBMIT</text>
+          <text x="166" y="48" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="15.5" fill="#101418">M<tspan baseline-shift="sub" font-size="11">i</tspan><tspan baseline-shift="super" font-size="11">(t)</tspan> ← (TagID<tspan baseline-shift="sub" font-size="11">i</tspan>, {[[ĝ<tspan baseline-shift="super" font-size="9">(t)</tspan><tspan baseline-shift="sub" font-size="9">i,k</tspan>]]}<tspan baseline-shift="super" font-size="10">d</tspan><tspan baseline-shift="sub" font-size="10">k=1</tspan>)</text>
+          <text x="166" y="72" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="11.5" font-style="italic" fill="#5b6470">submission contains the anonymous tag and encrypted coordinate list</text>
+          <rect x="18" y="82" width="182" height="24" rx="3" fill="#11334d"/><text x="109" y="98" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" fill="#fbfaf6" letter-spacing=".14em">SEND Mᵢ⁽ᵗ⁾ TO FIP VERIFIER</text>
+        </g>
+        <g transform="translate(1358,450)" filter="url(#shadow)"><use href="#shield" width="82" height="90"/></g>
+        <text x="1399" y="548" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="11.5" font-weight="700" letter-spacing=".06em" fill="#101418">FIP Verifier</text>
+        <text x="1399" y="564" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">receives encrypted submission only</text>
+        <g transform="translate(1286,182)" filter="url(#shadow)"><use href="#cipher" width="82" height="84"/></g>
+        <path d="M900,352 C985,352 1030,120 1115,131" fill="none" stroke="#11334d" stroke-width="1.35" marker-end="url(#arrowNavy)"/>
+        <path d="M1283,179 L1283,193" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M1283,287 L1283,302" fill="none" stroke="#101418" stroke-width="1.35" marker-end="url(#arrowInk)"/>
+        <path d="M1290,423 C1326,443 1348,458 1360,468" fill="none" stroke="#0f766e" stroke-width="1.8" marker-end="url(#arrowAccent)"/>
+      </g>
+
+      <g><line x1="20" y1="476" x2="1480" y2="476" stroke="#cdc8b6" stroke-width="1"/><text x="20" y="470" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".22em" fill="#11334d">GEOMETRIC INSET · FROM LOCAL GRADIENT TO ENCRYPTED COORDINATE SUBMISSION</text></g>
+
+      <g transform="translate(40,505)">
+        <text x="0" y="14" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" letter-spacing=".14em" fill="#11334d">CLIENT-SIDE INTUITION</text>
+        <text x="0" y="42" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">Local optimization produces an averaged client gradient</text>
+        <text x="0" y="62" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418"><tspan font-style="italic">g</tspan><tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="11">(t)</tspan> that summarizes the client’s descent direction.</text>
+        <text x="0" y="90" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">This vector is flattened into coordinates, encoded with scale <tspan font-style="italic">S</tspan>,</text>
+        <text x="0" y="110" font-family="Georgia,Times New Roman,serif" font-size="13.5" fill="#101418">and Paillier-encrypted one coordinate at a time.</text>
+        <line x1="0" y1="134" x2="370" y2="134" stroke="#cdc8b6"/>
+        <text x="0" y="164" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">This figure uses thesis-level notation only:</text>
+        <text x="0" y="186" font-family="Georgia,Times New Roman,serif" font-size="13" font-style="italic" fill="#5b6470">θ<tspan baseline-shift="super" font-size="10">(t)</tspan>, θ<tspan baseline-shift="sub" font-size="10">i</tspan>, D<tspan baseline-shift="sub" font-size="10">i</tspan>, h, g<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>, m<tspan baseline-shift="sub" font-size="10">i</tspan>, pk, S, TagID<tspan baseline-shift="sub" font-size="10">i</tspan>, M<tspan baseline-shift="sub" font-size="10">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>.</text>
+      </g>
+
+      <g transform="translate(505,512)">
+        <rect x="-10" y="-10" width="405" height="288" rx="3" fill="#fbfaf6" stroke="#cdd7e0"/>
+        <g stroke="#e6e0cb" stroke-width=".7"><line x1="24" y1="132" x2="372" y2="132"/><line x1="194" y1="18" x2="194" y2="250"/><g opacity=".5"><line x1="64" y1="18" x2="64" y2="250"/><line x1="104" y1="18" x2="104" y2="250"/><line x1="144" y1="18" x2="144" y2="250"/><line x1="244" y1="18" x2="244" y2="250"/><line x1="284" y1="18" x2="284" y2="250"/><line x1="324" y1="18" x2="324" y2="250"/><line x1="24" y1="58" x2="372" y2="58"/><line x1="24" y1="96" x2="372" y2="96"/><line x1="24" y1="170" x2="372" y2="170"/><line x1="24" y1="208" x2="372" y2="208"/></g></g>
+        <line x1="24" y1="132" x2="372" y2="132" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <line x1="194" y1="250" x2="194" y2="18" stroke="#101418" stroke-width="1.2" marker-end="url(#arrowInk)"/>
+        <text x="366" y="148" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+        <text x="204" y="22" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="12" fill="#101418">θ<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+        <line x1="194" y1="132" x2="286" y2="78" stroke="#5b6470" stroke-width="2.3" marker-end="url(#arrowGrey)"/>
+        <text x="292" y="75" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#5b6470" font-style="italic">g<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan></text>
+        <text x="292" y="90" font-family="Georgia,Times New Roman,serif" font-size="10.5" fill="#5b6470" font-style="italic">averaged local gradient</text>
+        <path d="M288,78 C318,72 338,72 352,72" fill="none" stroke="#0f766e" stroke-width="1.5" marker-end="url(#arrowAccent)"/>
+        <rect x="236" y="102" width="122" height="28" rx="3" fill="#e7f5f2" stroke="#0f766e"/>
+        <text x="297" y="120" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="13" fill="#0f766e">flatten → coordinates</text>
+        <g transform="translate(238,154)"><rect x="0" y="0" width="118" height="68" rx="4" fill="url(#matrix)" stroke="#11334d" stroke-width="1.1"/><text x="59" y="18" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="9" font-weight="700" letter-spacing=".12em" fill="#11334d">COORDINATE STREAM</text><text x="59" y="40" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="14" fill="#101418">g<tspan baseline-shift="sub" font-size="9">i,1</tspan>, … , g<tspan baseline-shift="sub" font-size="9">i,d</tspan></text><text x="59" y="57" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="10.5" font-style="italic" fill="#5b6470">encode then encrypt each coordinate</text></g>
+        <text x="192" y="270" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="11.5" fill="#5b6470">2-D slice of the local parameter space</text>
+      </g>
+
+      <g transform="translate(945,522)">
+        <rect x="0" y="0" width="500" height="248" rx="3" fill="#fbfaf6" stroke="#11334d" stroke-width="1.4"/>
+        <rect x="0" y="0" width="500" height="34" rx="3" fill="#11334d"/>
+        <text x="14" y="22" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#fbfaf6" letter-spacing=".18em">OUTPUT OF ALGORITHM 2</text>
+        <g font-family="Georgia,Times New Roman,serif" fill="#101418">
+          <g transform="translate(20,58)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Client-local model initialized: θ<tspan baseline-shift="sub" font-size="9">i</tspan> ← θ<tspan baseline-shift="super" font-size="9">(t)</tspan></text></g>
+          <g transform="translate(20,86)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Averaged local gradient g<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan> computed over E epochs and mini-batches</text></g>
+          <g transform="translate(20,114)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Coordinates encoded with fixed-point scale S and encrypted under pk</text></g>
+          <g transform="translate(20,142)"><circle cx="6" cy="6" r="3.2" fill="#11334d"/><text x="20" y="10" font-size="13.5">Submission M<tspan baseline-shift="sub" font-size="9">i</tspan><tspan baseline-shift="super" font-size="9">(t)</tspan> = (TagID<tspan baseline-shift="sub" font-size="9">i</tspan>, {[[ĝ<tspan baseline-shift="sub" font-size="8">i,k</tspan><tspan baseline-shift="super" font-size="8">(t)</tspan>]]}<tspan baseline-shift="super" font-size="9">d</tspan><tspan baseline-shift="sub" font-size="9">k=1</tspan>)</text></g>
+          <g transform="translate(20,170)"><circle cx="6" cy="6" r="3.2" fill="#0f766e"/><text x="20" y="10" font-size="13.5">Only the anonymous tag and encrypted coordinates are transmitted</text></g>
+        </g>
+        <line x1="20" y1="198" x2="480" y2="198" stroke="#cdc8b6"/>
+        <text x="20" y="220" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" letter-spacing=".14em" fill="#11334d">PRIVACY INVARIANT</text>
+        <text x="20" y="240" font-family="Georgia,Times New Roman,serif" font-style="italic" font-size="13" fill="#101418">Raw gradient coordinates remain local; only TagID<tspan baseline-shift="sub" font-size="10">i</tspan> and {[[ĝ<tspan baseline-shift="sub" font-size="10">i,k</tspan><tspan baseline-shift="super" font-size="10">(t)</tspan>]]} are submitted.</text>
+      </g>
+    </svg>
+
+    <div class="caption">
+      <b>Figure.</b> Editable academic-style geometric diagram for <b>Algorithm 2</b>. Client <i>C</i><sub>i</sub> receives the round model <i>θ</i><sup>(t)</sup>, the Paillier public key <i>pk</i>, fixed-point scale <i>S</i>, and local hyperparameters. It initializes the local model <i>θ</i><sub>i</sub>, zeroes the running gradient accumulator <i>g</i><sub>i</sub><sup>(t)</sup> and mini-batch counter <i>m</i><sub>i</sub>, and performs <i>E</i> epochs of local mini-batch training over the client dataset <i>D</i><sub>i</sub>. For each mini-batch <i>𝓑</i> ⊂ <i>D</i><sub>i</sub> with |<i>𝓑</i>| = <i>B</i>, the local gradient <i>h</i> = ∇<sub>θi</sub><i>L</i>(<i>f</i><sub>θi</sub>; <i>𝓑</i>) is computed, accumulated into <i>g</i><sub>i</sub><sup>(t)</sup>, counted via <i>m</i><sub>i</sub>, and used to update the local model by <i>θ</i><sub>i</sub> ← <i>θ</i><sub>i</sub> − <i>ηh</i>. After local training, the client averages the accumulated gradient, flattens it into coordinates (<i>g</i><sub>i,1</sub><sup>(t)</sup>, …, <i>g</i><sub>i,d</sub><sup>(t)</sup>), encodes each coordinate with the fixed-point map Encode<sub>S</sub>(·) to obtain <i>ĝ</i><sub>i,k</sub><sup>(t)</sup>, encrypts it under Paillier as [[<i>ĝ</i><sub>i,k</sub><sup>(t)</sup>]], packages the anonymous tag together with the encrypted list into the message <i>M</i><sub>i</sub><sup>(t)</sup>, and sends only this encrypted submission to the server-side FIP Verifier.
+    </div>
+  </div>
+</div>
+</body>
+</html>

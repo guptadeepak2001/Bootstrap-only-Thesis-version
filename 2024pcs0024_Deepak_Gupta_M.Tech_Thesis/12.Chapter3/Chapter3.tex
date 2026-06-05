@@ -1,0 +1,23 @@
+\chapter{Literature Survey}
+\label{Literature:chap:chap3}
+\graphicspath{{12.Chapter3/Images/}}
+
+\section{Robust Aggregation Rules}
+\label{sec:lit-aggreg}
+
+Some defences swap the mean for sturdier estimators. Krum and Multi-Krum~\cite{blanchard2017machine} pick updates close to many neighbours but need every pairwise distance and cost $\mathcal{O}(N^{2}d)$. The coordinate-wise median and trimmed mean~\cite{yin2018byzantine} cut that to $\mathcal{O}(Nd\log N)$ yet struggle when genuine data vary strongly.
+
+\section{Detection-Based Defences}
+\label{sec:lit-detect}
+
+Other methods try to catch bad clients first. Most still need plaintext. PEFL~\cite{liu2021privacy} works on ciphertext but slows down when attacks rise or data skew deepens~\cite{yazdinejad2024robust}. FoolsGold~\cite{fung2020limitations} tracks long-term similarity, while ShieldFL~\cite{ma2022shieldfl} brings in a helper. Strong detection often means plaintext, a trusted partner, or extra bandwidth. My approach avoids all three by releasing just one scalar per client.
+
+\section{Auditor-Based PPFL Baseline}
+\label{sec:lit-auditor}
+
+Yazdinejad and colleagues~\cite{yazdinejad2024robust} add a trusted auditor who decrypts cluster summaries, fits a Gaussian mixture, and drops outliers with Mahalanobis distance before homomorphic averaging. They reach about $96.5$ percent target-class accuracy on non-IID MNIST under a fifty-percent flip, but that success requires an extra trust anchor, $\mathcal{O}(d^{3})$ covariance inversion, and leaking cluster stats.
+
+\section{Positioning of FIP-FL}
+\label{sec:lit-position}
+
+My method, FIP-FL, keeps every update encrypted, calls on no auditor, swaps clustering for a simple alignment check, and stays linear in the model dimension $d$. The goal is straightforward: hold privacy tight while keeping Byzantine screening light.

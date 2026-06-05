@@ -1,0 +1,21 @@
+\chapter{Conclusion and Future Work}
+\label{Conclusion:chap:chap9}
+\graphicspath{{18.Chapter9/Images/}}
+
+\section{Summary of the Thesis}
+\label{sec:concl-summary}
+
+The argument the thesis has been making is, in one line, that Byzantine-resilient privacy-preserving federated learning does not actually need an external auditor to decrypt cluster-level structure. FIP-FL swaps that trust anchor for a functional inner product taken between each encrypted client update and a momentum-tracked trusted reference direction. The single scalar that the inner product produces is what feeds the two-stage geometric audit --- the direction filter, which catches label-flip style reversals, and the magnitude window, which catches updates that are either too weak or too aggressive.
+
+The proposed approach is implemented through a simple pipeline. Paillier encryption is used at the cryptographic layer, the verifier computes client scores homomorphically, the server aggregates only the accepted encrypted updates, and the reference direction is updated after each round using momentum. The theoretical analysis lines up with this design --- scalar-gradient privacy, a geometric admissibility condition for any malicious update, and a monotone loss-decrease under $L$-smoothness. Empirically, FIP-FL ends up detecting every malicious-client configuration in the completed grid, lifts MNIST non-IID target-class accuracy from roughly $7\%$ in the undefended baseline to $97.69\%$ at a $50\%$ malicious-client rate, and replaces the auditor's $\mathcal{O}(d^3)$ covariance-inversion step with a verification stage that parallelises to a $13\times$ wall-clock speed-up in Phase~II.
+
+\section{Limitations and Future Work}
+\label{sec:concl-limits-future}
+
+The main limitations of this thesis arise from the experimental setting. FIP-FL is evaluated using softmax logistic regression models, parameter dimensions in the low-thousand range, a fixed client population, and a single attack type in each run.
+
+Extending the method to deep networks will likely require packed homomorphic encryption schemes such as BFV or CKKS~\cite{cheon2017homomorphic}. A more realistic setting should also consider client churn, evolving data distributions, adaptive adversaries, and combined attack strategies such as label flipping together with update scaling.
+
+Another limitation concerns the initialization of the reference direction. In the current design, this direction is derived from a small public dataset. Although this works well in the present experiments, it assumes the availability of such public data.
+
+A stronger approach for the first round would be to estimate the reference direction from robust aggregate statistics computed over the clients themselves, while still avoiding decryption of individual gradients. Beyond this, FIP-FL should be evaluated on real laptop, mobile, and edge devices to better understand the trade-off among encryption overhead, communication cost, and model utility in practical privacy-preserving federated learning settings.
