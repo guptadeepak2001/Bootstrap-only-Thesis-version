@@ -64,30 +64,14 @@ The name deliberately echoes inner-product functional encryption~\cite{abdalla20
 \end{equation}
 This lone scalar is the only thing ever decrypted, and even that step belongs to the TKA. Not a single coordinate of $\mathbf{g}_i$ is exposed anywhere in the round.
 
-\section{Robust Statistics}
-\label{sec:prelim-robust}
-
-Because FIP-FL ultimately threshold-tests one scalar per client, one-dimensional robust statistics are all that the audit needs. For a score set $\mathcal{S}=\{s_1,\ldots,s_N\}$,
-\begin{equation}
-    \tilde{\mu}=\mathrm{median}(\mathcal{S}),\qquad
-    \mathrm{MAD}=\mathrm{median}\{|s_i-\tilde{\mu}|:s_i\in\mathcal{S}\}.
-\end{equation}
-Both the median and the MAD are well known to remain stable when up to roughly half the data is contaminated, which is the regime we care about here. The window the audit applies is the adaptive band
-\begin{equation}
-    \tau_{\min}^{(t)}=\alpha(\rho^{(t)})\tilde{\mu}^{(t)},\qquad
-    \tau_{\max}^{(t)}=\tilde{\mu}^{(t)}+\gamma_{\mathrm{mad}}\mathrm{MAD}^{(t)},
-    \label{eq:mad-window}
-\end{equation}
-with $\gamma_{\mathrm{mad}}=5$. A score that drops below the lower edge is essentially a too-weak positive contribution, while one that shoots above the upper edge points to an update that is aligned all right but is throwing too much weight around.
-
 \section{System and Threat Model}
 \label{sec:prelim-threat}
 
-The FIP-FL protocol has four roles. The clients submit encrypted gradients. The Aggregation Server takes whatever ciphertexts the audit has accepted and broadcasts the new model. The FIP Verifier is the role that actually computes the scalar FIP scores and runs the two-stage check. The Trusted Key Authority (TKA) generates the Paillier keys and is allowed to decrypt only those scalar scores and aggregates that the protocol explicitly asks it to. The Verifier may be co-located with the server in practice; in either case, no external auditor enters the trust model.
+The FIP-FL protocol has four roles. The clients submit encrypted gradients. The Aggregation Server takes whatever ciphertexts the audit has accepted and broadcasts the new model. The FIP Verifier is the role that actually computes the scalar FIP scores and runs the bootstrap audit. The Trusted Key Authority (TKA) generates the Paillier keys and is allowed to decrypt only those scalar scores and aggregates that the protocol explicitly asks it to. The Verifier may be co-located with the server in practice; in either case, no external auditor enters the trust model.
 
 The adversary in this thesis controls up to $f<N/2$ Byzantine clients. Such an adversary is free to relabel its own data, hand in any syntactically valid ciphertext it likes, coordinate with other malicious clients, and listen in on every public broadcast. The empirical part instantiates this model with targeted and untargeted label flipping, at malicious rates $f/N\in\{10\%,20\%,30\%,50\%\}$.
 
 \section{Security and Privacy Goals}
 \label{sec:prelim-goals}
 
-The protocol is designed against four targets. \emph{Privacy}: neither the server nor the Verifier should learn any coordinate, norm, or pairwise distance over the client gradients beyond the scalar score $s_i^{(t)}=\langle\mathbf{g}_i^{(t)},\mathbf{g}_{\mathrm{ref}}^{(t)}\rangle$. \emph{Byzantine resilience}: an update is accepted only when the direction part is positive and the score lies inside the magnitude window $(\tau_{\min}^{(t)},\tau_{\max}^{(t)})$. \emph{Convergence}: the average of the accepted updates has to satisfy the descent-alignment plus step-size pair stated in Chapter~\ref{FIPFL:chap:chap5}. \emph{Efficiency}: the verifier should run in $\mathcal{O}(Nd+N\log N)$, and the aggregation step in $\mathcal{O}(|\mathcal{A}^{(t)}|d)$ for the accepted set $\mathcal{A}^{(t)}$.
+The protocol is designed against four targets. \emph{Privacy}: neither the server nor the Verifier should learn any coordinate, norm, or pairwise distance over the client gradients beyond the scalar score $s_i^{(t)}=\langle\mathbf{g}_i^{(t)},\mathbf{g}_{\mathrm{ref}}^{(t)}\rangle$. \emph{Byzantine resilience}: an update is accepted only when it passes the bootstrap audit. \emph{Convergence}: the average of the accepted updates has to satisfy the descent-alignment plus step-size pair stated in Chapter~\ref{FIPFL:chap:chap5}. \emph{Efficiency}: the verifier should run in $\mathcal{O}(Nd+N\log N)$, and the aggregation step in $\mathcal{O}(|\mathcal{A}^{(t)}|d)$ for the accepted set $\mathcal{A}^{(t)}$.

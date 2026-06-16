@@ -1,8 +1,9 @@
 \chapter{Comparative Analysis}
 \label{Comparison:chap:chap8}
 \graphicspath{{17.Chapter8/Images/}}
+\raggedbottom
 
-This chapter places FIP-FL alongside the Byzantine-resilient FL defences that were already covered in Chapter~\ref{Literature:chap:chap3}, with the auditor-based baseline of Yazdinejad et al.~\cite{yazdinejad2024robust} taking centre stage. The comparison runs over six axes --- privacy leakage, computation, communication, robustness under non-IID skew, engineering cost, and the canonical MNIST non-IID targeted benchmark.
+This chapter places FIP-FL alongside the Byzantine-resilient FL defences that were already covered in Chapter~\ref{Literature:chap:chap3}, with the auditor-based baseline of Yazdinejad et al.~\cite{yazdinejad2024robust} taking centre stage. The comparison runs over six axes, privacy leakage, computation, communication, robustness under non-IID skew, engineering cost, and the canonical MNIST non-IID targeted benchmark.
 
 \section{Privacy}
 \label{sec:comp-privacy}
@@ -29,7 +30,7 @@ Aggregation Server  & $\mathcal{O}(dN\log N)$ & $\mathcal{O}(|\mathcal{A}|d)$ \\
 \end{tabular}
 \end{table}
 
-The client side is identical in cost because both schemes are running ordinary local SGD on each device. The differences live at the verifier and at the aggregation server. The auditor has to pay for the projection step, the mixture fit, and the covariance inversion. FIP-FL spends its budget on $N$ homomorphic inner products plus the median and MAD statistics; that is the entire verifier-side cost. After the audit, the server only sums the accepted ciphertexts, which gives $\mathcal{O}(|\mathcal{A}|d)$ work in place of sorting or preprocessing the full set of $N$ updates.
+The client side is identical in cost because both schemes are running ordinary local SGD on each device. The differences live at the verifier and at the aggregation server. The auditor has to pay for the projection step, the mixture fit, and the covariance inversion. FIP-FL spends its budget on $N$ homomorphic inner products plus the bootstrap audit; that is the entire verifier-side cost. After the audit, the server only sums the accepted ciphertexts, which gives $\mathcal{O}(|\mathcal{A}|d)$ work in place of sorting or preprocessing the full set of $N$ updates.
 
 \section{Communication Complexity}
 \label{sec:comp-comm}
@@ -49,14 +50,14 @@ Server $\to$ Clients  & $\mathcal{O}(d)$ & $\mathcal{O}(d)$ \\
 \end{tabular}
 \end{table}
 
-The first leg of communication --- the client-to-verifier payload --- is the same in both designs, since both schemes need the encrypted updates to reach the verifier somehow. The savings show up after the audit. FIP-FL never forwards a rejected ciphertext, so the verifier-to-server traffic shrinks with the rejection rate, and the extra auditor-to-server hop that the auditor-based pipeline relies on simply does not exist here.
+The first leg of communication, the client-to-verifier payload, is the same in both designs, since both schemes need the encrypted updates to reach the verifier somehow. The savings show up after the audit. FIP-FL never forwards a rejected ciphertext, so the verifier-to-server traffic shrinks with the rejection rate, and the extra auditor-to-server hop that the auditor-based pipeline relies on simply does not exist here.
 
 \section{Robustness and Engineering Trade-Offs}
 \label{sec:comp-robust-engineering}
 
-The detector inside the auditor-based scheme leans on the assumption that the honest-client cluster is both tighter and more populous than the malicious cluster --- an assumption that gets noticeably weaker once label skew is in the mix. FIP-FL takes a different tack: it tests, for each individual update, whether the update is aligned with the trusted reference direction and whether its score lies inside the adaptive magnitude window. The whole admissibility check stays one-dimensional, and that one-dimensional behaviour is what carries the audit through the heterogeneous cases.
+The detector inside the auditor-based scheme leans on the assumption that the honest-client cluster is both tighter and more populous than the malicious cluster, an assumption that gets noticeably weaker once label skew is in the mix. FIP-FL takes a different tack: it tests, for each individual update, whether the update is aligned with the trusted reference direction and whether its score passes the bootstrap audit. The whole admissibility check stays one-dimensional, and that one-dimensional behaviour is what carries the audit through the heterogeneous cases.
 
-A useful side-effect of this design is that it limits cascade behaviour after a hard round. Only the updates that clear both checks ever enter the aggregate, and the next round's reference is refreshed by an exponential moving average rather than by a full replacement, which prevents a single noisy round from completely re-orienting the audit. The Phase~II FIP computations are independent across clients, so they parallelise cleanly --- on the 25-core workstation described in Section~\ref{sec:setup-impl} this gave a wall-clock speed-up of about $13\times$. The single-reference design also avoids the extra homomorphic inner products that a multi-reference cone would have demanded.
+A useful side-effect of this design is that it limits cascade behaviour after a hard round. Only the updates that clear the bootstrap audit ever enter the aggregate, and the bootstrap reference remains fixed across rounds, which prevents a single noisy round from completely re-orienting the audit. The Phase~II FIP computations are independent across clients, so they parallelise cleanly, on the 25-core workstation described in Section~\ref{sec:setup-impl} this gave a wall-clock speed-up of about $13\times$. The single-reference design also avoids the extra homomorphic inner products that a multi-reference cone would have demanded.
 
 \section{Scheme-versus-Scheme Accuracy Comparison}
 \label{sec:comp-accuracy}

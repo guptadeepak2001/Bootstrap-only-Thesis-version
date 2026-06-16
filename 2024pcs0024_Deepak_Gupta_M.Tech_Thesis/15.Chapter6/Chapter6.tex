@@ -7,7 +7,7 @@ This chapter pins down the empirical setting in which FIP-FL is run: which datas
 \section{Datasets}
 \label{sec:setup-datasets}
 
-The evaluation grid runs on two benchmarks --- one image task and one intrusion-detection task. The high-level statistics are listed in Table~\ref{tab:datasets}.
+The evaluation grid runs on two benchmarks, one image task and one intrusion-detection task. The high-level statistics are listed in Table~\ref{tab:datasets}.
 
 \begin{table}[H]
 \centering
@@ -25,7 +25,7 @@ KDDCup99        & Tabular & 5  & $41$  & $\approx 494$K ($10\%$) \\
 
 \noindent\textbf{MNIST.} The MNIST corpus has $60{,}000$ training and $10{,}000$ test grayscale images at $28\times28$, labelled over the digits $\{0,1,\ldots,9\}$. Every image is flattened to a $784$-dimensional vector and rescaled into the unit interval. The same dataset is the headline benchmark in Yazdinejad et al.~\cite{yazdinejad2024robust}, which makes it the direct comparison point against the auditor-based baseline.
 
-\noindent\textbf{KDDCup99.} KDDCup99 is the canonical network-intrusion benchmark. The full archive contains around $4.9$ million labelled connection records; the experiments here use the standard $10\%$ subset, which is roughly $494{,}000$ records. Each record exposes $41$ features mixing traffic counters and protocol flags, and the labels are collapsed into five classes --- \textsc{Normal}, \textsc{DoS}, \textsc{Probe}, \textsc{R2L} and \textsc{U2R}. Categorical fields are one-hot encoded and every feature is standardised. The class distribution is strongly imbalanced, which is exactly what makes this dataset a useful stress test: it forces the audit to behave even when the priors are far from uniform.
+\noindent\textbf{KDDCup99.} KDDCup99 is the canonical network-intrusion benchmark. The full archive contains around $4.9$ million labelled connection records; the experiments here use the standard $10\%$ subset, which is roughly $494{,}000$ records. Each record exposes $41$ features mixing traffic counters and protocol flags, and the labels are collapsed into five classes, \textsc{Normal}, \textsc{DoS}, \textsc{Probe}, \textsc{R2L} and \textsc{U2R}. Categorical fields are one-hot encoded and every feature is standardised. The class distribution is strongly imbalanced, which is exactly what makes this dataset a useful stress test: it forces the audit to behave even when the priors are far from uniform.
 
 \noindent\textbf{Model Architecture.} For both datasets, a single-layer softmax logistic regression classifier is used. This choice is consistent with the model used in the SenSys 2026 poster as well as the auditor-based baseline. The total number of parameters is $d=(\text{input dim})\cdot C+C$, where the final term corresponds to the bias.
 

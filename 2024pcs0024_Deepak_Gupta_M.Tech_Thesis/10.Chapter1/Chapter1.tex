@@ -16,12 +16,12 @@ The most relevant baseline that does work over encrypted gradients is the audito
 
 \section{Research Objectives and Contributions}
 
-What this thesis sets out to do is design, analyse, and evaluate FIP-FL --- a Byzantine-resilient PPFL framework in which no auditor is involved. The verifier looks at each encrypted client update through a single functional inner product (FIP) against a trusted reference direction; only one scalar per client per round ever needs to be decrypted. That scalar is then put through a two-stage geometric audit, namely a direction filter followed by a median-and-MAD magnitude window.
+What this thesis sets out to do is design, analyse, and evaluate FIP-FL, a Byzantine-resilient PPFL framework in which no auditor is involved. The verifier looks at each encrypted client update through a single functional inner product (FIP) against a fixed bootstrap reference direction; only one scalar per client per round ever needs to be decrypted. That scalar is then put through a bootstrap audit.
 
 The main contributions of the thesis are the following.
 \begin{enumerate}
     \item \textbf{An auditor-free PPFL architecture.} FIP-FL drops the external auditor entirely and does its verification straight on the ciphertexts, using a scalar FIP score.
-    \item \textbf{A two-stage geometric audit.} The direction stage discards the updates that point the wrong way, and the magnitude stage discards the ones that are either too weak or too aggressive even when the direction looks right.
+    \item \textbf{A bootstrap audit.} The direction test discards the updates that point the wrong way, and after borderline restoration the audit rejects the lowest-scoring clients according to the attack-rate setting.
     \item \textbf{Formal guarantees.} The thesis proves scalar-gradient privacy, gives the admissibility region left to an attacker, derives monotone descent under $L$-smoothness, and shows lower verifier complexity than the auditor-based baseline.
     \item \textbf{Empirical validation.} FIP-FL is run on MNIST and on KDDCup99, under both IID and non-IID partitions, against targeted and untargeted label flipping, and with the malicious-client rate swept all the way to $50\%$.
     \item \textbf{Engineering efficiency.} The verifier ends up running in $\mathcal{O}(Nd+N\log N)$, in place of an $\mathcal{O}(d^3)$ covariance step, and parallelising Phase~II gives roughly a $13\times$ wall-clock speed-up on 25 cores.

@@ -8,6 +8,7 @@
 \@writefile{toc}{\contentsline {chapter}{Abstract}{xiii}{Item.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{List of Figures}{xvii}{chapter*.1}\protected@file@percent }
 \citation{yazdinejad2024robust}
+\citation{yazdinejad2024robust}
 \@writefile{toc}{\contentsline {chapter}{List of Tables}{xix}{chapter*.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{List of Abbreviations}{xxi}{chapter*.3}\protected@file@percent }
 \citation{mcmahan2017communication}
@@ -79,13 +80,10 @@
 \newlabel{sec:prelim-fip}{{4.3}{10}{Functional Inner Product}{section.4.3}{}}
 \newlabel{eq:fip-discrete}{{4.7}{10}{Functional Inner Product}{equation.4.7}{}}
 \newlabel{eq:fip-homo}{{4.8}{11}{Functional Inner Product}{equation.4.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Robust Statistics}{11}{section.4.4}\protected@file@percent }
-\newlabel{sec:prelim-robust}{{4.4}{11}{Robust Statistics}{section.4.4}{}}
-\newlabel{eq:mad-window}{{4.10}{11}{Robust Statistics}{equation.4.10}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}System and Threat Model}{11}{section.4.5}\protected@file@percent }
-\newlabel{sec:prelim-threat}{{4.5}{11}{System and Threat Model}{section.4.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Security and Privacy Goals}{12}{section.4.6}\protected@file@percent }
-\newlabel{sec:prelim-goals}{{4.6}{12}{Security and Privacy Goals}{section.4.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}System and Threat Model}{11}{section.4.4}\protected@file@percent }
+\newlabel{sec:prelim-threat}{{4.4}{11}{System and Threat Model}{section.4.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Security and Privacy Goals}{11}{section.4.5}\protected@file@percent }
+\newlabel{sec:prelim-goals}{{4.5}{11}{Security and Privacy Goals}{section.4.5}{}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {5}Proposed Framework: FIP-FL}{13}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -122,7 +120,7 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.4.1}Gradient Privacy}{19}{subsection.5.4.1}\protected@file@percent }
 \newlabel{thm:fip-privacy}{{5.1}{19}{Gradient Privacy}{theorem.5.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.4.2}Attack Resilience}{19}{subsection.5.4.2}\protected@file@percent }
-\newlabel{thm:fip-security}{{5.2}{19}{Attack Resilience}{theorem.5.2}{}}
+\newlabel{thm:fip-security}{{5.2}{19}{Bootstrap Audit Rejection Rule}{theorem.5.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.4.3}Convergence Guarantee}{20}{subsection.5.4.3}\protected@file@percent }
 \newlabel{thm:fip-convergence}{{5.3}{20}{Descent under $L$-Smoothness}{theorem.5.3}{}}
 \citation{yazdinejad2024robust}
@@ -157,57 +155,59 @@
 \newlabel{sec:res-nonIID-untarg-kdd}{{7.1.2}{28}{KDDCup99}{subsection.7.1.2}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {7.2}{\ignorespaces KDDCup99, non-IID partition (Dirichlet $\alpha =0.5$), untargeted label-flipping attack.}}{28}{table.caption.6}\protected@file@percent }
 \newlabel{tab:res-nonIID-untarg-kdd}{{7.2}{28}{KDDCup99, non-IID partition (Dirichlet $\alpha =0.5$), untargeted label-flipping attack}{table.caption.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Observations.}{28}{section*.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7.2}Non-IID Partition, Targeted Attacks}{28}{section.7.2}\protected@file@percent }
-\newlabel{sec:res-nonIID-targ}{{7.2}{28}{Non-IID Partition, Targeted Attacks}{section.7.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7.1}{\ignorespaces Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the direction/magnitude audit reaches perfect malicious-client detection by the final round.}}{29}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:res-noniid-untargeted-dynamics}{{7.1}{29}{Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the direction/magnitude audit reaches perfect malicious-client detection by the final round}{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {MNIST ACC trajectory}}}{29}{figure.caption.8}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{29}{figure.caption.8}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {MNIST malicious-client TPR}}}{29}{figure.caption.8}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{29}{figure.caption.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7.1}{\ignorespaces Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the bootstrap audit reaches perfect malicious-client detection by the final round.}}{28}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:res-noniid-untargeted-dynamics}{{7.1}{28}{Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the bootstrap audit reaches perfect malicious-client detection by the final round}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Observations.}{28}{section*.8}\protected@file@percent }
+\citation{yazdinejad2024robust}
+\citation{yazdinejad2024robust}
+\citation{yazdinejad2024robust}
+\@writefile{toc}{\contentsline {section}{\numberline {7.2}Non-IID Partition, Targeted Attacks}{29}{section.7.2}\protected@file@percent }
+\newlabel{sec:res-nonIID-targ}{{7.2}{29}{Non-IID Partition, Targeted Attacks}{section.7.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {7.2.1}MNIST}{29}{subsection.7.2.1}\protected@file@percent }
 \newlabel{sec:res-nonIID-targ-mnist}{{7.2.1}{29}{MNIST}{subsection.7.2.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7.3}{\ignorespaces MNIST, non-IID, targeted label-flipping attack $(c_s=0,c_t=7)$; SenSys 2026 headline targeted-accuracy cell.}}{29}{table.caption.9}\protected@file@percent }
-\newlabel{tab:res-nonIID-targ-mnist}{{7.3}{29}{MNIST, non-IID, targeted label-flipping attack $(c_s=0,c_t=7)$; SenSys 2026 headline targeted-accuracy cell}{table.caption.9}{}}
-\citation{yazdinejad2024robust}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.2}KDDCup99}{30}{subsection.7.2.2}\protected@file@percent }
-\newlabel{sec:res-nonIID-targ-kdd}{{7.2.2}{30}{KDDCup99}{subsection.7.2.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7.4}{\ignorespaces KDDCup99, non-IID partition (2 shards/client), targeted label-flipping attack.}}{30}{table.caption.10}\protected@file@percent }
-\newlabel{tab:res-nonIID-targ-kdd}{{7.4}{30}{KDDCup99, non-IID partition (2 shards/client), targeted label-flipping attack}{table.caption.10}{}}
-\@writefile{toc}{\contentsline {paragraph}{Observations.}{30}{section*.11}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7.3}{\ignorespaces MNIST, non-IID, targeted label-flipping attack $(c_s=0,c_t=7)$; SenSys 2026 headline targeted-accuracy cell, with the auditor-based value from~\cite  {yazdinejad2024robust}.}}{29}{table.caption.9}\protected@file@percent }
+\newlabel{tab:res-nonIID-targ-mnist}{{7.3}{29}{MNIST, non-IID, targeted label-flipping attack $(c_s=0,c_t=7)$; SenSys 2026 headline targeted-accuracy cell, with the auditor-based value from~\cite {yazdinejad2024robust}}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.2}KDDCup99}{29}{subsection.7.2.2}\protected@file@percent }
+\newlabel{sec:res-nonIID-targ-kdd}{{7.2.2}{29}{KDDCup99}{subsection.7.2.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7.4}{\ignorespaces KDDCup99, non-IID partition (2 shards/client), targeted label-flipping attack.}}{29}{table.caption.10}\protected@file@percent }
+\newlabel{tab:res-nonIID-targ-kdd}{{7.4}{29}{KDDCup99, non-IID partition (2 shards/client), targeted label-flipping attack}{table.caption.10}{}}
+\@writefile{toc}{\contentsline {paragraph}{Observations.}{29}{section*.11}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {7.2}{\ignorespaces KDDCup99 non-IID targeted attack results. The target-class trajectory remains high through training, and the round-300 comparison shows that overall and target-class accuracy stay stable even as the malicious-client fraction increases.}}{30}{figure.caption.12}\protected@file@percent }
 \newlabel{fig:res-noniid-targeted-kdd-dynamics}{{7.2}{30}{KDDCup99 non-IID targeted attack results. The target-class trajectory remains high through training, and the round-300 comparison shows that overall and target-class accuracy stay stable even as the malicious-client fraction increases}{figure.caption.12}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {MNIST ACC trajectory}}}{30}{figure.caption.12}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{30}{figure.caption.12}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {MNIST malicious-client TPR}}}{30}{figure.caption.12}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{30}{figure.caption.12}\protected@file@percent }
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {Target-class accuracy trajectory}}}{30}{figure.caption.12}\protected@file@percent }
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {Round-300 accuracy comparison}}}{30}{figure.caption.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7.3}IID Partition, Untargeted Attacks}{31}{section.7.3}\protected@file@percent }
-\newlabel{sec:res-IID-untarg}{{7.3}{31}{IID Partition, Untargeted Attacks}{section.7.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3.1}MNIST}{31}{subsection.7.3.1}\protected@file@percent }
-\newlabel{sec:res-IID-untarg-mnist}{{7.3.1}{31}{MNIST}{subsection.7.3.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7.5}{\ignorespaces MNIST, IID partition, untargeted label-flipping attack.}}{31}{table.caption.13}\protected@file@percent }
-\newlabel{tab:res-IID-untarg-mnist}{{7.5}{31}{MNIST, IID partition, untargeted label-flipping attack}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.3}IID Partition, Untargeted Attacks}{30}{section.7.3}\protected@file@percent }
+\newlabel{sec:res-IID-untarg}{{7.3}{30}{IID Partition, Untargeted Attacks}{section.7.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3.1}MNIST}{30}{subsection.7.3.1}\protected@file@percent }
+\newlabel{sec:res-IID-untarg-mnist}{{7.3.1}{30}{MNIST}{subsection.7.3.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7.5}{\ignorespaces MNIST, IID partition, untargeted label-flipping attack.}}{30}{table.caption.13}\protected@file@percent }
+\newlabel{tab:res-IID-untarg-mnist}{{7.5}{30}{MNIST, IID partition, untargeted label-flipping attack}{table.caption.13}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {7.3.2}KDDCup99}{31}{subsection.7.3.2}\protected@file@percent }
 \newlabel{sec:res-IID-untarg-kdd}{{7.3.2}{31}{KDDCup99}{subsection.7.3.2}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {7.6}{\ignorespaces KDDCup99, IID partition, untargeted label-flipping attack.}}{31}{table.caption.14}\protected@file@percent }
 \newlabel{tab:res-IID-untarg-kdd}{{7.6}{31}{KDDCup99, IID partition, untargeted label-flipping attack}{table.caption.14}{}}
 \@writefile{toc}{\contentsline {paragraph}{Observations.}{31}{section*.15}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7.3}{\ignorespaces IID untargeted attack dynamics over 300 communication rounds. Both datasets show stable convergence, and the audit maintains perfect malicious-client detection without false positives at the reported final round.}}{32}{figure.caption.16}\protected@file@percent }
-\newlabel{fig:res-iid-untargeted-dynamics}{{7.3}{32}{IID untargeted attack dynamics over 300 communication rounds. Both datasets show stable convergence, and the audit maintains perfect malicious-client detection without false positives at the reported final round}{figure.caption.16}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {MNIST ACC trajectory}}}{32}{figure.caption.16}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{32}{figure.caption.16}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {MNIST malicious-client TPR}}}{32}{figure.caption.16}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{32}{figure.caption.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7.3}{\ignorespaces IID untargeted attack dynamics over 300 communication rounds. Both datasets show stable convergence, and the audit maintains perfect malicious-client detection without false positives at the reported final round.}}{31}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:res-iid-untargeted-dynamics}{{7.3}{31}{IID untargeted attack dynamics over 300 communication rounds. Both datasets show stable convergence, and the audit maintains perfect malicious-client detection without false positives at the reported final round}{figure.caption.16}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {MNIST ACC trajectory}}}{31}{figure.caption.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{31}{figure.caption.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {MNIST malicious-client TPR}}}{31}{figure.caption.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{31}{figure.caption.16}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {7.4}IID Partition, Targeted Attacks}{32}{section.7.4}\protected@file@percent }
 \newlabel{sec:res-IID-targ}{{7.4}{32}{IID Partition, Targeted Attacks}{section.7.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {7.4.1}MNIST}{32}{subsection.7.4.1}\protected@file@percent }
 \newlabel{sec:res-IID-targ-mnist}{{7.4.1}{32}{MNIST}{subsection.7.4.1}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {7.7}{\ignorespaces MNIST, IID partition, targeted label-flipping attack $(c_s=0,c_t=7)$.}}{32}{table.caption.17}\protected@file@percent }
 \newlabel{tab:res-IID-targ-mnist}{{7.7}{32}{MNIST, IID partition, targeted label-flipping attack $(c_s=0,c_t=7)$}{table.caption.17}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.4.2}KDDCup99}{33}{subsection.7.4.2}\protected@file@percent }
-\newlabel{sec:res-IID-targ-kdd}{{7.4.2}{33}{KDDCup99}{subsection.7.4.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7.8}{\ignorespaces KDDCup99, IID partition, targeted label-flipping attack.}}{33}{table.caption.18}\protected@file@percent }
-\newlabel{tab:res-IID-targ-kdd}{{7.8}{33}{KDDCup99, IID partition, targeted label-flipping attack}{table.caption.18}{}}
-\@writefile{toc}{\contentsline {paragraph}{Observations.}{33}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4.2}KDDCup99}{32}{subsection.7.4.2}\protected@file@percent }
+\newlabel{sec:res-IID-targ-kdd}{{7.4.2}{32}{KDDCup99}{subsection.7.4.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7.8}{\ignorespaces KDDCup99, IID partition, targeted label-flipping attack.}}{32}{table.caption.18}\protected@file@percent }
+\newlabel{tab:res-IID-targ-kdd}{{7.8}{32}{KDDCup99, IID partition, targeted label-flipping attack}{table.caption.18}{}}
+\@writefile{toc}{\contentsline {paragraph}{Observations.}{32}{section*.19}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {7.4}{\ignorespaces IID targeted attack target-class accuracy over 300 communication rounds. In both datasets, the target class recovers to a stable high-accuracy regime by the final round.}}{33}{figure.caption.20}\protected@file@percent }
 \newlabel{fig:res-iid-targeted-dynamics}{{7.4}{33}{IID targeted attack target-class accuracy over 300 communication rounds. In both datasets, the target class recovers to a stable high-accuracy regime by the final round}{figure.caption.20}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {7.5}Aggregate Findings Across the Grid}{33}{section.7.5}\protected@file@percent }
@@ -250,11 +250,11 @@
 \newlabel{Conclusion:chap:chap9}{{9}{39}{Conclusion and Future Work}{chapter.9}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {9.1}Summary of the Thesis}{39}{section.9.1}\protected@file@percent }
 \newlabel{sec:concl-summary}{{9.1}{39}{Summary of the Thesis}{section.9.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9.2}Limitations and Future Work}{39}{section.9.2}\protected@file@percent }
+\newlabel{sec:concl-limits-future}{{9.2}{39}{Limitations and Future Work}{section.9.2}{}}
 \citation{cheon2017homomorphic}
 \bibstyle{unsrtnat}
 \bibdata{references}
-\@writefile{toc}{\contentsline {section}{\numberline {9.2}Limitations and Future Work}{40}{section.9.2}\protected@file@percent }
-\newlabel{sec:concl-limits-future}{{9.2}{40}{Limitations and Future Work}{section.9.2}{}}
 \bibcite{yazdinejad2024robust}{{1}{2024}{{Yazdinejad et~al.}}{{Yazdinejad, Dehghantanha, Karimipour, Srivastava, and Parizi}}}
 \bibcite{mcmahan2017communication}{{2}{2017}{{McMahan et~al.}}{{McMahan, Moore, Ramage, Hampson, and y~Arcas}}}
 \bibcite{zhu2019deep}{{3}{2019}{{Zhu et~al.}}{{Zhu, Liu, and Han}}}

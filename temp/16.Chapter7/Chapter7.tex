@@ -2,13 +2,13 @@
 \label{Results:chap:chap7}
 \graphicspath{{16.Chapter7/Images/}}
 
-This chapter goes through the empirical results of FIP-FL on the grid defined in Chapter~\ref{Setup:chap:chap6}. Each table reports the relevant round-300 numbers, overall accuracy ($\text{ACC}$), target-class accuracy ($T_{\text{acc}}$), other-label accuracy ($O_{\text{acc}}$), the true positive rate (TPR), and the false positive rate (FPR). Accuracies are quoted as percentages, and TPR and FPR are quoted as proportions in $[0,1]$.
+This chapter goes through the empirical results of FIP-FL on the grid defined in Chapter~\ref{Setup:chap:chap6}. Each table reports the relevant round-300 numbers --- overall accuracy ($\text{ACC}$), target-class accuracy ($T_{\text{acc}}$), other-label accuracy ($O_{\text{acc}}$), the true positive rate (TPR), and the false positive rate (FPR). Accuracies are quoted as percentages, and TPR and FPR are quoted as proportions in $[0,1]$.
 
 %=====================================================================
 \section{Non-IID Partition, Untargeted Attacks}
 \label{sec:res-nonIID-untarg}
 
-Of the four non-IID rows, the untargeted one is in some ways the most demanding. The label skew has already pushed the honest-client gradients away from each other, and on top of that the malicious clients are sending in label-flipped gradients that genuinely point away from the descent direction. Overall accuracy is the right utility number to read here, with TPR sitting alongside it as the cost-of-filtering pair.
+Of the four non-IID rows, the untargeted one is in some ways the most demanding. The label skew has already pushed the honest-client gradients away from each other, and on top of that the malicious clients are sending in label-flipped gradients that genuinely point away from the descent direction. Overall accuracy is the right utility number to read here, with TPR and FPR sitting alongside it as the cost-of-filtering pair.
 
 \subsection{MNIST}
 \label{sec:res-nonIID-untarg-mnist}
@@ -17,14 +17,14 @@ Of the four non-IID rows, the untargeted one is in some ways the most demanding.
 \centering
 \caption{MNIST, non-IID partition, untargeted label-flipping attack.}
 \label{tab:res-nonIID-untarg-mnist}
-\begin{tabular}{@{}ccccc@{}}
+\begin{tabular}{@{}cccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} \\
+\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} & \textbf{FPR} \\
 \midrule
-10\% & 91.22 & 97.60 & 90.18 & 1.00 \\
-20\% & 91.02 & 97.87 & 89.94 & 1.00 \\
-30\% & 90.78 & 97.33 & 89.31 & 1.00 \\
-50\% & 91.10 & 97.51 & 89.91 & 1.00 \\
+10\% & 91.22 & 97.60 & 90.18 & 1.00 & 0.00 \\
+20\% & 91.02 & 97.87 & 89.94 & 1.00 & 0.00 \\
+30\% & 90.78 & 97.33 & 89.31 & 1.00 & 0.00 \\
+50\% & 91.10 & 97.51 & 89.91 & 1.00 & 0.20 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -36,32 +36,31 @@ Of the four non-IID rows, the untargeted one is in some ways the most demanding.
 \centering
 \caption{KDDCup99, non-IID partition (Dirichlet $\alpha=0.5$), untargeted label-flipping attack.}
 \label{tab:res-nonIID-untarg-kdd}
-\begin{tabular}{@{}ccccc@{}}
+\begin{tabular}{@{}cccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} \\
+\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} & \textbf{FPR} \\
 \midrule
-10\% & 99.71 & 99.50 & 84.62 & 1.00 \\
-20\% & 99.72 & 99.55 & 83.65 & 1.00 \\
-30\% & 99.69 & 99.45 & 85.58 & 1.00 \\
-50\% & 99.69 & 99.70 & 77.88 & 1.00 \\
+10\% & 99.71 & 99.50 & 84.62 & 1.00 & 0.00 \\
+20\% & 99.72 & 99.55 & 83.65 & 1.00 & 0.00 \\
+30\% & 99.69 & 99.45 & 85.58 & 1.00 & 0.14 \\
+50\% & 99.69 & 99.70 & 77.88 & 1.00 & 0.40 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\paragraph{Observations.} Across both datasets, FIP-FL ends up rejecting every single malicious update and the utility number stays close to its undefended-clean value even under the non-IID untargeted load. On MNIST the ACC sits between $90.78\%$ and $91.22\%$, and false rejection only kicks in once the attack rate hits $50\%$. On KDDCup99 the ACC remains above $99.6\%$ throughout the sweep, even at the point where the FPR begins to rise under the heaviest non-IID setting.
+
 \begin{figure}[H]
 \centering
-\subfigure[MNIST ACC trajectory]{\includegraphics[width=0.39\textwidth]{fig_noniid_untargeted_mnist_acc.pdf}}
+\subfigure[MNIST ACC trajectory]{\includegraphics[width=0.45\textwidth]{fig_noniid_untargeted_mnist_acc.pdf}}
 \hfill
-\subfigure[KDDCup99 ACC trajectory]{\includegraphics[width=0.39\textwidth]{fig_noniid_untargeted_kdd_acc.pdf}}
-\\[-0.6em]
-\subfigure[MNIST malicious-client TPR]{\includegraphics[width=0.39\textwidth]{fig_noniid_untargeted_mnist_tpr.pdf}}
+\subfigure[KDDCup99 ACC trajectory]{\includegraphics[width=0.45\textwidth]{fig_noniid_untargeted_kdd_acc.pdf}}
+\subfigure[MNIST malicious-client TPR]{\includegraphics[width=0.45\textwidth]{fig_noniid_untargeted_mnist_tpr.pdf}}
 \hfill
-\subfigure[KDDCup99 malicious-client TPR]{\includegraphics[width=0.39\textwidth]{fig_noniid_untargeted_kdd_tpr.pdf}}
-\caption{Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the bootstrap audit reaches perfect malicious-client detection by the final round.}
+\subfigure[KDDCup99 malicious-client TPR]{\includegraphics[width=0.45\textwidth]{fig_noniid_untargeted_kdd_tpr.pdf}}
+\caption{Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the direction/magnitude audit reaches perfect malicious-client detection by the final round.}
 \label{fig:res-noniid-untargeted-dynamics}
 \end{figure}
-
-\paragraph{Observations.} Across both datasets, FIP-FL ends up rejecting every single malicious update and the utility number stays close to its undefended-clean value even under the non-IID untargeted load. On MNIST the ACC sits between $90.78\%$ and $91.22\%$, and false rejection only kicks in once the attack rate hits $50\%$. On KDDCup99 the ACC remains above $99.6\%$ throughout the sweep, even at the point where the FPR begins to rise under the heaviest non-IID setting.
 
 %=====================================================================
 \section{Non-IID Partition, Targeted Attacks}
@@ -159,17 +158,16 @@ The IID rows are included mostly as a sanity-check baseline. With IID partitions
 \end{tabular}
 \end{table}
 
-\paragraph{Observations.} In the IID untargeted setting, detection is essentially exact on both datasets, every row reports $\mathrm{TPR}=1.00$ together with $\mathrm{FPR}=0.00$. The MNIST ACC moves by less than $0.2$ percentage points across the whole attack-rate sweep, and on KDDCup99 the ACC, $T_{\text{acc}}$, and $O_{\text{acc}}$ values together vary by at most $0.05$ percentage points.
+\paragraph{Observations.} In the IID untargeted setting, detection is essentially exact on both datasets --- every row reports $\mathrm{TPR}=1.00$ together with $\mathrm{FPR}=0.00$. The MNIST ACC moves by less than $0.2$ percentage points across the whole attack-rate sweep, and on KDDCup99 the ACC, $T_{\text{acc}}$, and $O_{\text{acc}}$ values together vary by at most $0.05$ percentage points.
 
 \begin{figure}[!htbp]
 \centering
-\subfigure[MNIST ACC trajectory]{\includegraphics[width=0.39\textwidth]{fig_iid_untargeted_mnist_acc.pdf}}
+\subfigure[MNIST ACC trajectory]{\includegraphics[width=0.45\textwidth]{fig_iid_untargeted_mnist_acc.pdf}}
 \hfill
-\subfigure[KDDCup99 ACC trajectory]{\includegraphics[width=0.39\textwidth]{fig_iid_untargeted_kdd_acc.pdf}}
-\\[-0.6em]
-\subfigure[MNIST malicious-client TPR]{\includegraphics[width=0.39\textwidth]{fig_iid_untargeted_mnist_tpr.pdf}}
+\subfigure[KDDCup99 ACC trajectory]{\includegraphics[width=0.45\textwidth]{fig_iid_untargeted_kdd_acc.pdf}}
+\subfigure[MNIST malicious-client TPR]{\includegraphics[width=0.45\textwidth]{fig_iid_untargeted_mnist_tpr.pdf}}
 \hfill
-\subfigure[KDDCup99 malicious-client TPR]{\includegraphics[width=0.39\textwidth]{fig_iid_untargeted_kdd_tpr.pdf}}
+\subfigure[KDDCup99 malicious-client TPR]{\includegraphics[width=0.45\textwidth]{fig_iid_untargeted_kdd_tpr.pdf}}
 \caption{IID untargeted attack dynamics over 300 communication rounds. Both datasets show stable convergence, and the audit maintains perfect malicious-client detection without false positives at the reported final round.}
 \label{fig:res-iid-untargeted-dynamics}
 \end{figure}
@@ -232,4 +230,4 @@ The IID rows are included mostly as a sanity-check baseline. With IID partitions
 \section{Aggregate Findings Across the Grid}
 \label{sec:res-aggregate}
 
-Stepping back from the individual tables, the grid as a whole supports three conclusions. First, every completed row reports $\mathrm{TPR}=1.00$, including the $50\%$ malicious-client cases on both datasets. Second, false rejection only shows up under the heaviest non-IID untargeted load, exactly the regime where the honest gradients are already pulled apart by label skew, and even there ACC remains numerically stable. Third, targeted attacks are caught just as reliably as untargeted ones, which suggests that a one-dimensional FIP score against the trusted reference is genuinely sufficient for the poisoning regimes evaluated here. Chapter~\ref{Comparison:chap:chap8} puts these numbers next to the auditor-based baseline.
+Stepping back from the individual tables, the grid as a whole supports three conclusions. First, every completed row reports $\mathrm{TPR}=1.00$, including the $50\%$ malicious-client cases on both datasets. Second, false rejection only shows up under the heaviest non-IID untargeted load --- exactly the regime where the honest gradients are already pulled apart by label skew --- and even there ACC remains numerically stable. Third, targeted attacks are caught just as reliably as untargeted ones, which suggests that a one-dimensional FIP score against the trusted reference is genuinely sufficient for the poisoning regimes evaluated here. Chapter~\ref{Comparison:chap:chap8} puts these numbers next to the auditor-based baseline.

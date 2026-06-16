@@ -21,9 +21,8 @@
 \contentsline {section}{\numberline {4.1}Notation}{9}{section.4.1}%
 \contentsline {section}{\numberline {4.2}The Paillier Cryptosystem}{9}{section.4.2}%
 \contentsline {section}{\numberline {4.3}Functional Inner Product}{10}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Robust Statistics}{11}{section.4.4}%
-\contentsline {section}{\numberline {4.5}System and Threat Model}{11}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Security and Privacy Goals}{12}{section.4.6}%
+\contentsline {section}{\numberline {4.4}System and Threat Model}{11}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Security and Privacy Goals}{11}{section.4.5}%
 \contentsline {chapter}{\numberline {5}Proposed Framework: FIP-FL}{13}{chapter.5}%
 \contentsline {section}{\numberline {5.1}System Architecture}{13}{section.5.1}%
 \contentsline {section}{\numberline {5.2}System Setup and Key Distribution}{13}{section.5.2}%
@@ -47,19 +46,19 @@
 \contentsline {section}{\numberline {7.1}Non-IID Partition, Untargeted Attacks}{27}{section.7.1}%
 \contentsline {subsection}{\numberline {7.1.1}MNIST}{27}{subsection.7.1.1}%
 \contentsline {subsection}{\numberline {7.1.2}KDDCup99}{28}{subsection.7.1.2}%
-\contentsline {paragraph}{Observations.}{28}{section*.7}%
-\contentsline {section}{\numberline {7.2}Non-IID Partition, Targeted Attacks}{28}{section.7.2}%
+\contentsline {paragraph}{Observations.}{28}{section*.8}%
+\contentsline {section}{\numberline {7.2}Non-IID Partition, Targeted Attacks}{29}{section.7.2}%
 \contentsline {subsection}{\numberline {7.2.1}MNIST}{29}{subsection.7.2.1}%
-\contentsline {subsection}{\numberline {7.2.2}KDDCup99}{30}{subsection.7.2.2}%
-\contentsline {paragraph}{Observations.}{30}{section*.11}%
-\contentsline {section}{\numberline {7.3}IID Partition, Untargeted Attacks}{31}{section.7.3}%
-\contentsline {subsection}{\numberline {7.3.1}MNIST}{31}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.2.2}KDDCup99}{29}{subsection.7.2.2}%
+\contentsline {paragraph}{Observations.}{29}{section*.11}%
+\contentsline {section}{\numberline {7.3}IID Partition, Untargeted Attacks}{30}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}MNIST}{30}{subsection.7.3.1}%
 \contentsline {subsection}{\numberline {7.3.2}KDDCup99}{31}{subsection.7.3.2}%
 \contentsline {paragraph}{Observations.}{31}{section*.15}%
 \contentsline {section}{\numberline {7.4}IID Partition, Targeted Attacks}{32}{section.7.4}%
 \contentsline {subsection}{\numberline {7.4.1}MNIST}{32}{subsection.7.4.1}%
-\contentsline {subsection}{\numberline {7.4.2}KDDCup99}{33}{subsection.7.4.2}%
-\contentsline {paragraph}{Observations.}{33}{section*.19}%
+\contentsline {subsection}{\numberline {7.4.2}KDDCup99}{32}{subsection.7.4.2}%
+\contentsline {paragraph}{Observations.}{32}{section*.19}%
 \contentsline {section}{\numberline {7.5}Aggregate Findings Across the Grid}{33}{section.7.5}%
 \contentsline {chapter}{\numberline {8}Comparative Analysis}{35}{chapter.8}%
 \contentsline {section}{\numberline {8.1}Privacy}{35}{section.8.1}%
@@ -69,4 +68,4 @@
 \contentsline {section}{\numberline {8.5}Scheme-versus-Scheme Accuracy Comparison}{38}{section.8.5}%
 \contentsline {chapter}{\numberline {9}Conclusion and Future Work}{39}{chapter.9}%
 \contentsline {section}{\numberline {9.1}Summary of the Thesis}{39}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Limitations and Future Work}{40}{section.9.2}%
+\contentsline {section}{\numberline {9.2}Limitations and Future Work}{39}{section.9.2}%

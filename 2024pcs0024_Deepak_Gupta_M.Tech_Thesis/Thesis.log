@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.4.13)  5 JUN 2026 04:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.4.13)  10 JUN 2026 12:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -713,7 +713,7 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman
 
 
 (./1_firstpage.tex
-<logo.png, id=277, 285.065pt x 107.40125pt>
+<logo.png, id=273, 285.065pt x 107.40125pt>
 File: logo.png Graphic file (type png)
 <use logo.png>
 Package pdftex.def Info: logo.png  used on input line 38.
@@ -728,7 +728,7 @@ png>] [2
 \openout2 = `2_frontmatter.aux'.
 
  (./2_frontmatter.tex
-<deepaksign.png, id=289, 1131.22626pt x 751.80875pt>
+<deepaksign.png, id=285, 1131.22626pt x 751.80875pt>
 File: deepaksign.png Graphic file (type png)
 <use deepaksign.png>
 Package pdftex.def Info: deepaksign.png  used on input line 20.
@@ -741,32 +741,32 @@ Package pdftex.def Info: deepaksign.png  used on input line 20.
 [4
 
 ]
-<approval_signed.pdf, id=301, 597.23125pt x 843.15pt>
+<approval_signed.pdf, id=297, 597.50829pt x 845.0471pt>
 File: approval_signed.pdf Graphic file (type pdf)
 <use approval_signed.pdf>
 Package pdftex.def Info: approval_signed.pdf  used on input line 32.
-(pdftex.def)             Requested size: 597.22978pt x 843.14793pt.
-<approval_signed.pdf, id=303, page=1, 597.23125pt x 843.15pt>
+(pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
+<approval_signed.pdf, id=299, page=1, 597.50829pt x 845.0471pt>
 File: approval_signed.pdf Graphic file (type pdf)
 <use approval_signed.pdf, page 1>
 Package pdftex.def Info: approval_signed.pdf , page1 used on input line 32.
-(pdftex.def)             Requested size: 597.54874pt x 843.59822pt.
+(pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
 File: approval_signed.pdf Graphic file (type pdf)
 <use approval_signed.pdf, page 1>
 Package pdftex.def Info: approval_signed.pdf , page1 used on input line 32.
-(pdftex.def)             Requested size: 597.73099pt x 843.85553pt.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
 File: approval_signed.pdf Graphic file (type pdf)
 <use approval_signed.pdf, page 1>
 Package pdftex.def Info: approval_signed.pdf , page1 used on input line 32.
-(pdftex.def)             Requested size: 597.73099pt x 843.85553pt.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
 File: approval_signed.pdf Graphic file (type pdf)
 <use approval_signed.pdf, page 1>
 Package pdftex.def Info: approval_signed.pdf , page1 used on input line 32.
-(pdftex.def)             Requested size: 597.73099pt x 843.85553pt.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
 File: approval_signed.pdf Graphic file (type pdf)
 <use approval_signed.pdf, page 1>
 Package pdftex.def Info: approval_signed.pdf , page1 used on input line 32.
-(pdftex.def)             Requested size: 597.73099pt x 843.85553pt.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
  [5
 
  <./approval_signed.pdf>] [6
@@ -859,13 +859,13 @@ Underfull \vbox (badness 7030) has occurred while \output is active []
 Chapter 4.
 [9
 
-] [10] [11]) (./14.Chapter5/Chapter5.tex [12]
+] [10]) (./14.Chapter5/Chapter5.tex [11] [12
+
+]
 Chapter 5.
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
 put line 20.
-[13
-
-]
+[13]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [14]
@@ -892,140 +892,128 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 ]
 Chapter 7.
 [27]
-<16.Chapter7/Images/fig_noniid_untargeted_mnist_acc.pdf, id=737, 678.1241pt x 3
+<16.Chapter7/Images/fig_noniid_untargeted_mnist_acc.pdf, id=724, 678.1241pt x 3
 88.34836pt>
 File: 16.Chapter7/Images/fig_noniid_untargeted_mnist_acc.pdf Graphic file (type
  pdf)
 <use 16.Chapter7/Images/fig_noniid_untargeted_mnist_acc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_noniid_untargeted_mnist_acc.pdf
-  used on input line 55.
-(pdftex.def)             Requested size: 190.56282pt x 109.12788pt.
-<16.Chapter7/Images/fig_noniid_untargeted_kdd_acc.pdf, id=738, 678.00299pt x 38
+  used on input line 53.
+(pdftex.def)             Requested size: 158.12595pt x 90.5567pt.
+<16.Chapter7/Images/fig_noniid_untargeted_kdd_acc.pdf, id=725, 678.00299pt x 38
 8.34836pt>
 File: 16.Chapter7/Images/fig_noniid_untargeted_kdd_acc.pdf Graphic file (type p
 df)
 <use 16.Chapter7/Images/fig_noniid_untargeted_kdd_acc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_noniid_untargeted_kdd_acc.pdf  
-used on input line 57.
-(pdftex.def)             Requested size: 190.56282pt x 109.14566pt.
-<16.Chapter7/Images/fig_noniid_untargeted_mnist_tpr.pdf, id=739, 678.0645pt x 3
+used on input line 55.
+(pdftex.def)             Requested size: 158.12595pt x 90.56856pt.
+<16.Chapter7/Images/fig_noniid_untargeted_mnist_tpr.pdf, id=726, 678.0645pt x 3
 88.34836pt>
 File: 16.Chapter7/Images/fig_noniid_untargeted_mnist_tpr.pdf Graphic file (type
  pdf)
 <use 16.Chapter7/Images/fig_noniid_untargeted_mnist_tpr.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_noniid_untargeted_mnist_tpr.pdf
-  used on input line 59.
-(pdftex.def)             Requested size: 190.56282pt x 109.13974pt.
-<16.Chapter7/Images/fig_noniid_untargeted_kdd_tpr.pdf, id=740, 678.0645pt x 388
+  used on input line 57.
+(pdftex.def)             Requested size: 158.12595pt x 90.56264pt.
+<16.Chapter7/Images/fig_noniid_untargeted_kdd_tpr.pdf, id=727, 678.0645pt x 388
 .34836pt>
 File: 16.Chapter7/Images/fig_noniid_untargeted_kdd_tpr.pdf Graphic file (type p
 df)
 <use 16.Chapter7/Images/fig_noniid_untargeted_kdd_tpr.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_noniid_untargeted_kdd_tpr.pdf  
-used on input line 61.
-(pdftex.def)             Requested size: 190.56282pt x 109.13974pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [28]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [29 <./16.Chapter7/Images/fig_noniid_untargeted_mnist_acc.pdf> <./16.Chapter7/
+used on input line 59.
+(pdftex.def)             Requested size: 158.12595pt x 90.56264pt.
+ [28 <./16.Chapter7/Images/fig_noniid_untargeted_mnist_acc.pdf> <./16.Chapter7/
 Images/fig_noniid_untargeted_kdd_acc.pdf> <./16.Chapter7/Images/fig_noniid_unta
 rgeted_mnist_tpr.pdf> <./16.Chapter7/Images/fig_noniid_untargeted_kdd_tpr.pdf>]
-<16.Chapter7/Images/fig_noniid_targeted_kdd_tacc.pdf, id=1015, 678.0645pt x 388
+<16.Chapter7/Images/fig_noniid_targeted_kdd_tacc.pdf, id=1000, 678.0645pt x 388
 .34836pt>
 File: 16.Chapter7/Images/fig_noniid_targeted_kdd_tacc.pdf Graphic file (type pd
 f)
 <use 16.Chapter7/Images/fig_noniid_targeted_kdd_tacc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_noniid_targeted_kdd_tacc.pdf  u
 sed on input line 111.
-(pdftex.def)             Requested size: 190.56282pt x 109.13974pt.
-<16.Chapter7/Images/fig_noniid_targeted_kdd_final_acc.pdf, id=1016, 678.1241pt 
+(pdftex.def)             Requested size: 182.45206pt x 104.49397pt.
+<16.Chapter7/Images/fig_noniid_targeted_kdd_final_acc.pdf, id=1001, 678.1241pt 
 x 387.97005pt>
 File: 16.Chapter7/Images/fig_noniid_targeted_kdd_final_acc.pdf Graphic file (ty
 pe pdf)
 <use 16.Chapter7/Images/fig_noniid_targeted_kdd_final_acc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_noniid_targeted_kdd_final_acc.p
 df  used on input line 113.
-(pdftex.def)             Requested size: 190.56282pt x 109.02158pt.
-
+(pdftex.def)             Requested size: 182.45206pt x 104.38628pt.
+ [29]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [30 <./16.Chapter7/Images/fig_noniid_targeted_kdd_tacc.pdf> <./16.Chapter7/Ima
-ges/fig_noniid_targeted_kdd_final_acc.pdf>] [31]
-<16.Chapter7/Images/fig_iid_untargeted_mnist_acc.pdf, id=1156, 678.03374pt x 38
+ges/fig_noniid_targeted_kdd_final_acc.pdf>]
+<16.Chapter7/Images/fig_iid_untargeted_mnist_acc.pdf, id=1139, 678.03374pt x 38
 8.34836pt>
 File: 16.Chapter7/Images/fig_iid_untargeted_mnist_acc.pdf Graphic file (type pd
 f)
 <use 16.Chapter7/Images/fig_iid_untargeted_mnist_acc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_iid_untargeted_mnist_acc.pdf  u
 sed on input line 166.
-(pdftex.def)             Requested size: 190.56282pt x 109.14566pt.
-<16.Chapter7/Images/fig_iid_untargeted_kdd_acc.pdf, id=1157, 678.00299pt x 388.
+(pdftex.def)             Requested size: 158.12595pt x 90.56264pt.
+<16.Chapter7/Images/fig_iid_untargeted_kdd_acc.pdf, id=1140, 678.00299pt x 388.
 34836pt>
 File: 16.Chapter7/Images/fig_iid_untargeted_kdd_acc.pdf Graphic file (type pdf)
 
 <use 16.Chapter7/Images/fig_iid_untargeted_kdd_acc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_iid_untargeted_kdd_acc.pdf  use
 d on input line 168.
-(pdftex.def)             Requested size: 190.56282pt x 109.14566pt.
-<16.Chapter7/Images/fig_iid_untargeted_mnist_tpr.pdf, id=1158, 678.0645pt x 388
+(pdftex.def)             Requested size: 158.12595pt x 90.56856pt.
+<16.Chapter7/Images/fig_iid_untargeted_mnist_tpr.pdf, id=1141, 678.0645pt x 388
 .34836pt>
 File: 16.Chapter7/Images/fig_iid_untargeted_mnist_tpr.pdf Graphic file (type pd
 f)
 <use 16.Chapter7/Images/fig_iid_untargeted_mnist_tpr.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_iid_untargeted_mnist_tpr.pdf  u
 sed on input line 170.
-(pdftex.def)             Requested size: 190.56282pt x 109.13974pt.
-<16.Chapter7/Images/fig_iid_untargeted_kdd_tpr.pdf, id=1159, 678.0645pt x 388.3
+(pdftex.def)             Requested size: 158.12595pt x 90.56264pt.
+<16.Chapter7/Images/fig_iid_untargeted_kdd_tpr.pdf, id=1142, 678.0645pt x 388.3
 4836pt>
 File: 16.Chapter7/Images/fig_iid_untargeted_kdd_tpr.pdf Graphic file (type pdf)
 
 <use 16.Chapter7/Images/fig_iid_untargeted_kdd_tpr.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_iid_untargeted_kdd_tpr.pdf  use
 d on input line 172.
-(pdftex.def)             Requested size: 190.56282pt x 109.13974pt.
- [32 <./16.Chapter7/Images/fig_iid_untargeted_mnist_acc.pdf> <./16.Chapter7/Ima
+(pdftex.def)             Requested size: 158.12595pt x 90.56264pt.
+ [31 <./16.Chapter7/Images/fig_iid_untargeted_mnist_acc.pdf> <./16.Chapter7/Ima
 ges/fig_iid_untargeted_kdd_acc.pdf> <./16.Chapter7/Images/fig_iid_untargeted_mn
 ist_tpr.pdf> <./16.Chapter7/Images/fig_iid_untargeted_kdd_tpr.pdf>]
-<16.Chapter7/Images/fig_iid_targeted_mnist_tacc.pdf, id=1428, 678.0645pt x 388.
+<16.Chapter7/Images/fig_iid_targeted_mnist_tacc.pdf, id=1413, 678.0645pt x 388.
 34836pt>
 File: 16.Chapter7/Images/fig_iid_targeted_mnist_tacc.pdf Graphic file (type pdf
 )
 <use 16.Chapter7/Images/fig_iid_targeted_mnist_tacc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_iid_targeted_mnist_tacc.pdf  us
-ed on input line 223.
-(pdftex.def)             Requested size: 190.56282pt x 109.13974pt.
-<16.Chapter7/Images/fig_iid_targeted_kdd_tacc.pdf, id=1429, 678.0645pt x 388.34
+ed on input line 224.
+(pdftex.def)             Requested size: 182.45206pt x 104.49397pt.
+<16.Chapter7/Images/fig_iid_targeted_kdd_tacc.pdf, id=1414, 678.0645pt x 388.34
 836pt>
 File: 16.Chapter7/Images/fig_iid_targeted_kdd_tacc.pdf Graphic file (type pdf)
 <use 16.Chapter7/Images/fig_iid_targeted_kdd_tacc.pdf>
 Package pdftex.def Info: 16.Chapter7/Images/fig_iid_targeted_kdd_tacc.pdf  used
- on input line 225.
-(pdftex.def)             Requested size: 190.56282pt x 109.13974pt.
-) (./17.Chapter8/Chapter8.tex [33 <./16.Chapter7/Images/fig_iid_targeted_mnist_
-tacc.pdf> <./16.Chapter7/Images/fig_iid_targeted_kdd_tacc.pdf>] [34]
-Chapter 8.
+ on input line 226.
+(pdftex.def)             Requested size: 182.45206pt x 104.49397pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 3058) has occurred while \output is active []
 
- [35
-
-]
-[36]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [37])
-(./18.Chapter9/Chapter9.tex [38]
-Chapter 9.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [39
+ [32
 
 ])
-(./Thesis.bbl [40] [41
+(./17.Chapter8/Chapter8.tex [33 <./16.Chapter7/Images/fig_iid_targeted_mnist_ta
+cc.pdf> <./16.Chapter7/Images/fig_iid_targeted_kdd_tacc.pdf>] [34
+
+]
+Chapter 8.
+[35] [36] [37]) (./18.Chapter9/Chapter9.tex [38]
+Chapter 9.
+[39
+
+]) (./Thesis.bbl [40] [41
 
 ]) [42] (./Thesis.aux (./1_firstpage.aux)
 (./2_frontmatter.aux) (./3_abstract.aux))
@@ -1034,14 +1022,14 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `Thesis.out' has not changed.
-(rerunfilecheck)             Checksum: DCA5B19A3639F81E703AF269C47469E3;11601.
+(rerunfilecheck)             Checksum: 6521E62636E9872A31E15413D5B366A3;11458.
  ) 
 Here is how much of TeX's memory you used:
- 18022 strings out of 467525
- 292203 string characters out of 5418982
- 745077 words of memory out of 5000000
- 46133 multiletter control sequences out of 15000+600000
- 650983 words of font info for 217 fonts, out of 8000000 for 9000
+ 18014 strings out of 467525
+ 292090 string characters out of 5418982
+ 745046 words of memory out of 5000000
+ 46130 multiletter control sequences out of 15000+600000
+ 651026 words of font info for 217 fonts, out of 8000000 for 9000
  1147 hyphenation exceptions out of 8191
  90i,17n,93p,1153b,599s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
@@ -1066,10 +1054,10 @@ live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texl
 ive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb></usr/local/texliv
 e/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/local/texlive
 /2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on Thesis.pdf (64 pages, 955196 bytes).
+Output written on Thesis.pdf (64 pages, 1023006 bytes).
 PDF statistics:
- 1768 PDF objects out of 2073 (max. 8388607)
- 957 compressed objects within 10 object streams
- 220 named destinations out of 1000 (max. 500000)
- 48252 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 1753 PDF objects out of 2073 (max. 8388607)
+ 942 compressed objects within 10 object streams
+ 215 named destinations out of 1000 (max. 500000)
+ 48244 words of extra memory for PDF output out of 51595 (max. 10000000)
 

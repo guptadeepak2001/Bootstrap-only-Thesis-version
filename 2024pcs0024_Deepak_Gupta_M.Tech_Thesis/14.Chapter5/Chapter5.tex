@@ -5,7 +5,7 @@
 \section{System Architecture}
 \label{sec:fip-arch}
 
-FIP-FL is built around four logical roles: the $N$ clients, an Aggregation Server, a FIP Verifier, and a Trusted Key Authority (or TKA). In a single round, the clients put their Paillier ciphertexts on the wire, the Verifier turns each ciphertext into one alignment score, only the accepted ciphertexts make it to the aggregation server, and the TKA touches at most scalar scores or aggregate updates --- never an individual plaintext gradient.
+FIP-FL is built around four logical roles: the $N$ clients, an Aggregation Server, a FIP Verifier, and a Trusted Key Authority (or TKA). In a single round, the clients put their Paillier ciphertexts on the wire, the Verifier turns each ciphertext into one alignment score, only the accepted ciphertexts make it to the aggregation server, and the TKA touches at most scalar scores or aggregate updates, never an individual plaintext gradient.
 
 The system is organized so that each component has a clearly limited role. Clients perform local training and encrypt their updates. The Verifier evaluates these encrypted updates and filters suspicious ones. The server aggregates only the updates that pass the audit, while the TKA is responsible solely for the decryptions explicitly required by the protocol.
 
@@ -207,7 +207,7 @@ Algorithm~\ref{alg:secure_aggregation} presents secure aggregation and model upd
 \section{Theoretical Analysis}
 \label{sec:fip-theory}
 
-The three theorems collected below match, one to one, the four design targets stated in Section~4.6 (privacy, Byzantine resilience, and convergence; the efficiency target is a complexity statement and is read off directly from the algorithms above).
+The three theorems collected below match, one to one, the four design targets stated in Section~4.5 (privacy, Byzantine resilience, and convergence; the efficiency target is a complexity statement and is read off directly from the algorithms above).
 
 \subsection{Gradient Privacy}
 
@@ -222,20 +222,13 @@ The FIP Verifier's only operation on ciphertext $[\![\mathbf{g}_i^{(t)}]\!]$ is 
 
 \subsection{Attack Resilience}
 
-\begin{theorem}[Attack Resilience]
+\begin{theorem}[Bootstrap Audit Rejection Rule]
 \label{thm:fip-security}
-Any malicious update $\mathbf{g}_{\text{adv}}$ accepted by the FIP-FL filter in round $t$ must satisfy both
-\begin{align}
-    \langle \mathbf{g}_{\text{adv}}, \mathbf{R}^{(t)} \rangle &> 0 & &\text{(direction constraint)}, \\
-    \tau_{\min}^{(t)} \le \langle \mathbf{g}_{\text{adv}}, \mathbf{R}^{(t)} \rangle &\le \tau_{\max}^{(t)} & &\text{(magnitude constraint)},
-\end{align}
-where $\tau_{\min}^{(t)}$ and $\tau_{\max}^{(t)}$ are computed from the positive-score distribution in that round. Together, these two conditions prevent direction-reversing attacks, scaling-to-zero attacks, and destabilizing large-norm attacks, while keeping the audit process independent of any external auditor.
+In every round $t$, the audit of Algorithm~\ref{alg:stage1_audit} rejects exactly the $B=\mathrm{round}(\rho N)$ lowest-scoring clients among those whose bootstrap FIP scores remain below the direction threshold $\epsilon_{\mathrm{dir}}$ after borderline restoration; every other client is accepted. In particular, a direction-reversing update of the form $\mathbf{g}_{\text{adv}}\approx-\mathbf{g}_{\text{honest}}$ produces a score below $\epsilon_{\mathrm{dir}}$ and, lying among the lowest scores, is rejected, while the audit process remains independent of any external auditor.
 \end{theorem}
 
 \begin{proof}
-The audit first applies the direction test and then the $\tau_{\min}^{(t)}$ to $\tau_{\max}^{(t)}$ magnitude window. Any adversarial update that violates either condition is rejected.
-
-These conditions correspond naturally to three common adversarial strategies. A direct poisoning update of the form $\mathbf{g}_{\text{adv}}\approx-\mathbf{g}_{\text{honest}}$ produces a non-positive score and is removed in the first stage. A heavily down-scaled update may remain positive, but its score becomes too small and falls below $\tau_{\min}^{(t)}$. A large destabilizing update may still align with the reference direction, but its score exceeds $\tau_{\max}^{(t)}=\mu^{(t)}+5\cdot\text{MAD}^{(t)}$, and it is therefore filtered out.
+The claim follows directly from the steps of Algorithm~\ref{alg:stage1_audit}. The direction test places every client with $s_i^{(t)}>\epsilon_{\mathrm{dir}}$ in the accepted set $\mathcal{A}^{(t)}$ and every other client in the rejected set $\mathcal{R}^{(t)}$. If $|\mathcal{A}^{(t)}|<K_{\min}$, borderline clients whose scores lie within the noise-aware band $\delta_R$ of $\epsilon_{\mathrm{dir}}$ are restored to $\mathcal{A}^{(t)}$ in descending order of score. The algorithm then sorts $\mathcal{R}^{(t)}$ in ascending order of bootstrap score, keeps only the $B=\mathrm{round}(\rho N)$ lowest-scoring clients in the rejected set, and restores all remaining clients to $\mathcal{A}^{(t)}$. A direction-reversing update scores below $\epsilon_{\mathrm{dir}}$, falls outside the restoration band, and sits among the lowest-scoring entries of the sorted rejected set, so it is retained in $\mathcal{R}^{(t)}$ and never enters the aggregate.
 \end{proof}
 
 \subsection{Convergence Guarantee}
@@ -268,5 +261,5 @@ Starting from the $L$-smoothness descent lemma we get
 \end{equation}
 The key idea is that the alignment assumption makes the linear term strictly negative, while the bound on $\eta$ ensures that the quadratic term does not dominate it. Under this step-size condition, the right-hand side remains strictly smaller than $F(\mathbf{w}^{(t)})$.
 
-In practice, the FIP-FL filter is designed to make this assumption reasonable. Only updates with positive projection onto the reference direction and controlled scalar magnitude are included in $\Delta_{\text{global}}^{(t)}$. Importantly, the theorem does not require the reference direction to equal the true gradient; it states the average descent condition that the accepted aggregate must satisfy.
+In practice, the FIP-FL filter is designed to make this assumption reasonable. Only updates passing the bootstrap audit are included in $\Delta_{\text{global}}^{(t)}$. Importantly, the theorem does not require the reference direction to equal the true gradient; it states the average descent condition that the accepted aggregate must satisfy.
 \end{proof}

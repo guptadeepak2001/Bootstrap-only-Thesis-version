@@ -1,12 +1,0 @@
-21                                       Chapter 5. Proposed Framework: FIP-FL
-
-
-average.
-
-
-    What these three results give us is the trio of properties that the experiments
-later in the thesis are meant to verify. The full gradient should stay hidden.
-Harmful or over-scaled projections should be filtered out. And the surviving
-aggregate should retain the descent orientation that the smoothness argument
-needs.
-
