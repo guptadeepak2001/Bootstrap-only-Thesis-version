@@ -1,6 +1,7 @@
 \chapter{Proposed Framework: FIP-FL}
 \label{FIPFL:chap:chap5}
 \graphicspath{{14.Chapter5/Images/}}
+\raggedbottom % diagram pages stack from the top; no mid-page stretch gaps
 
 \section{System Architecture}
 \label{sec:fip-arch}
@@ -14,9 +15,11 @@ This separation is intentional. The Verifier can access encrypted client updates
 \section{System Setup and Key Distribution}
 \label{sec:fip-setup}
 
+\enlargethispage{\baselineskip}
 The setup phase is executed only once, before round~1. As described in Algorithm~\ref{alg:fip-ppfl-init}, the protocol keeps the three forms of state deliberately separate. The cryptographic state is maintained by the TKA. The model state begins with a clean global model stored on the server. The geometric state, namely the unit-norm reference direction, is initialized using a small public bootstrap dataset and then stored at the Verifier.
 
-\begin{algorithm}[t]
+\clearpage
+\begin{algorithm}[H]
 \caption{FIP-FL System Initialization and Reference Bootstrapping}
 \label{alg:fip-ppfl-init}
 \begin{algorithmic}[1]
@@ -47,17 +50,22 @@ The setup phase is executed only once, before round~1. As described in Algorithm
 
 The public bootstrap set plays a role at exactly one point in the protocol: it gives us $\mathbf{g}_{\text{ref}}^{(0)}$ at the zero model. From round~$t\ge 1$ onwards we just call this reference direction $\mathbf{R}^{(t)}$.
 
+\clearpage
+\thispagestyle{plain}
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth,height=0.70\textheight,keepaspectratio]{Algorithm_1_Flow_Diagram.pdf}}
+    \caption{Setup and key-distribution flow of Algorithm~\ref{alg:fip-ppfl-init}.}
+    \label{fig:alg1-flow}
+\end{figure}
+
 \section{Per-Round Protocol}
 \label{sec:fip-round}
 
 After initialization, each round $t\ge 1$ follows the same core procedure described in the SenSys poster: encrypted gradient submission, FIP score computation, bootstrap-stage filtering, secure aggregation, and global model update.
 
-\subsection{Phase I: Local Training and Encrypted Update Generation}
-\label{sec:fip-phaseI}
-
-In Phase~I, each client runs $E$ epochs of mini-batch SGD on its own shard, averages the gradients, flattens the weight and bias parameters into a single $d$-dimensional vector, encrypts each coordinate under Paillier, and ships the resulting ciphertext vector off to the Verifier. Algorithm~\ref{alg:fip-client-submit} writes out the honest version of this; a malicious client tampers with its labels before this step ever begins, so its arithmetic on the device is the same.
-
-\begin{algorithm}[t]
+\clearpage
+\begin{algorithm}[H]
 \caption{Client-Side Local Training and Encrypted Gradient Submission}
 \label{alg:fip-client-submit}
 \begin{algorithmic}[1]
@@ -84,12 +92,27 @@ In Phase~I, each client runs $E$ epochs of mini-batch SGD on its own shard, aver
 \end{algorithmic}
 \end{algorithm}
 
+\subsection{Phase I: Local Training and Encrypted Update Generation}
+\label{sec:fip-phaseI}
+
+In Phase~I, each client runs $E$ epochs of mini-batch SGD on its own shard, averages the gradients, flattens the weight and bias parameters into a single $d$-dimensional vector, encrypts each coordinate under Paillier, and ships the resulting ciphertext vector off to the Verifier. Algorithm~\ref{alg:fip-client-submit} writes out the honest version of this; a malicious client tampers with its labels before this step ever begins, so its arithmetic on the device is the same.
+
+\clearpage
+\thispagestyle{plain}
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth,height=0.70\textheight,keepaspectratio]{Algorithm_2_Flow_Diagram.pdf}}
+    \caption{Phase~I client pipeline of Algorithm~\ref{alg:fip-client-submit}.}
+    \label{fig:alg2-flow}
+\end{figure}
+
 \subsection{Phase II: Homomorphic FIP Score Computation}
 \label{sec:fip-phaseII}
 
 In Phase~II, the Verifier forms the projection of the client update onto $\mathbf{R}^{(t)}$ \emph{while the update itself is still in ciphertext form}. The Paillier identities for plaintext-scalar multiplication and ciphertext addition take care of the inner product. After this is done, only the scalar $s_i^{(t)}=\langle \mathbf{g}_i^{(t)},\mathbf{R}^{(t)}\rangle$ ever gets handed to the TKA for decryption; the individual coordinates of $\mathbf{g}_i^{(t)}$ stay sealed. Algorithm~\ref{alg:fip-score} writes this out step by step.
 
-\begin{algorithm}[t]
+\clearpage
+\begin{algorithm}[H]
 \caption{Homomorphic Functional Inner Product Score Computation}
 \label{alg:fip-score}
 \begin{algorithmic}[1]
@@ -112,6 +135,15 @@ In Phase~II, the Verifier forms the projection of the client update onto $\mathb
 \end{algorithmic}
 \end{algorithm}
 
+\clearpage
+\thispagestyle{plain}
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth,height=0.70\textheight,keepaspectratio]{Algorithm_3_Flow_Diagram.pdf}}
+    \caption{Phase~II homomorphic scoring of Algorithm~\ref{alg:fip-score}.}
+    \label{fig:alg3-flow}
+\end{figure}
+
 \subsection{Phase III: Adaptive Bootstrap-Only Stage-1 Audit}
 \label{sec:fip-phaseIII}
 
@@ -119,7 +151,8 @@ The audit begins with a direction test on the bootstrap FIP scores. Clients whos
 
 The final step uses the attack-rate setting to keep only the lowest-scoring rejected clients. All other rejected clients are restored to the accepted set. The complete bootstrap-stage procedure is given in Algorithm~\ref{alg:stage1_audit}.
 
-\begin{algorithm}[t]
+\clearpage
+\begin{algorithm}[H]
 \caption{Adaptive Bootstrap-Only Stage-1 Audit}
 \label{alg:stage1_audit}
 \begin{algorithmic}[1]
@@ -160,19 +193,22 @@ The final step uses the attack-rate setting to keep only the lowest-scoring reje
 \end{algorithmic}
 \end{algorithm}
 
+\clearpage
+\thispagestyle{plain}
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth,height=0.70\textheight,keepaspectratio]{Algorithm_4_Flow_Diagram.pdf}}
+    \caption{Phase~III bootstrap-stage audit of Algorithm~\ref{alg:stage1_audit}.}
+    \label{fig:alg4-flow}
+\end{figure}
+
 \subsection{Phase IV: Secure Aggregation}
 \label{sec:fip-phaseIV}
 
 Phase~IV is short. The ciphertexts that the audit rejected are simply dropped; they are never decrypted at all. Whatever survives is folded into one pooled encrypted sum, and only that sum is later opened.
 
-\subsection{Phase V: Model Update and Distribution}
-\label{sec:fip-phaseV}
-
-In Phase~V, the server updates the global model using the averaged accepted gradient. The server decrypts only the aggregate update, never an individual client update. If all client updates are rejected in a given round, the current model is carried forward unchanged to the next round.
-
-Algorithm~\ref{alg:secure_aggregation} presents secure aggregation and model update together in a single procedure. The bootstrap reference remains fixed during this step.
-
-\begin{algorithm}[t]
+\clearpage
+\begin{algorithm}[H]
 \caption{Secure Aggregation and Model Update}
 \label{alg:secure_aggregation}
 \begin{algorithmic}[1]
@@ -203,6 +239,22 @@ Algorithm~\ref{alg:secure_aggregation} presents secure aggregation and model upd
 \State \Return $\boldsymbol{\theta}^{(t+1)}$
 \end{algorithmic}
 \end{algorithm}
+
+\subsection{Phase V: Model Update and Distribution}
+\label{sec:fip-phaseV}
+
+In Phase~V, the server updates the global model using the averaged accepted gradient. The server decrypts only the aggregate update, never an individual client update. If all client updates are rejected in a given round, the current model is carried forward unchanged to the next round.
+
+Algorithm~\ref{alg:secure_aggregation} presents secure aggregation and model update together in a single procedure. The bootstrap reference remains fixed during this step.
+
+\clearpage
+\thispagestyle{plain}
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth,height=0.70\textheight,keepaspectratio]{Algorithm_5_Flow_Diagram.pdf}}
+    \caption{Phases~IV--V secure aggregation and model update of Algorithm~\ref{alg:secure_aggregation}.}
+    \label{fig:alg5-flow}
+\end{figure}
 
 \section{Theoretical Analysis}
 \label{sec:fip-theory}
@@ -263,3 +315,5 @@ The key idea is that the alignment assumption makes the linear term strictly neg
 
 In practice, the FIP-FL filter is designed to make this assumption reasonable. Only updates passing the bootstrap audit are included in $\Delta_{\text{global}}^{(t)}$. Importantly, the theorem does not require the reference direction to equal the true gradient; it states the average descent condition that the accepted aggregate must satisfy.
 \end{proof}
+
+\flushbottom % restore default vertical justification for the following chapters

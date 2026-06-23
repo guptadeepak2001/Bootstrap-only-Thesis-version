@@ -8,6 +8,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{float}
+\usepackage{placeins} % \FloatBarrier: keeps each algorithm diagram with its algorithm
 \usepackage{pdflscape}
 \usepackage{pdfpages}
 
@@ -108,7 +109,7 @@
 		\item \textbf{IID} \, - Independent and Identically Distributed
 		\item \textbf{KDD} \, - Knowledge Discovery in Databases
 		\item \textbf{MNIST} \, - Modified National Institute of Standards and Technology (database)
-		\item \textbf{$O_\text{acc}$} \, - Other-label Accuracy
+		\item \textbf{$O_{\text{acc}}$} \, - Other-label Accuracy
 		\item \textbf{PCA} \, - Principal Component Analysis
 		\item \textbf{PPFL} \, - Privacy-Preserving Federated Learning
 		\item \textbf{R2L} \, - Remote-to-Local (KDDCup attack class)
@@ -116,7 +117,7 @@
 		\item \textbf{SGD} \, - Stochastic Gradient Descent
 		\item \textbf{SHA} \, - Secure Hash Algorithm
 		\item \textbf{SMPC} \, - Secure Multiparty Computation
-		\item \textbf{$T_\text{acc}$} \, - Target-class Accuracy
+		\item \textbf{$T_{\text{acc}}$} \, - Target-class Accuracy
 		\item \textbf{TF-IDF} \, - Term Frequency -- Inverse Document Frequency
 		\item \textbf{TKA} \, - Trusted Key Authority
 		\item \textbf{TPR} \, - True Positive Rate
@@ -143,11 +144,14 @@
 	\input{11.Chapter2/Chapter2}
 	\input{12.Chapter3/Chapter3}
 	\input{13.Chapter4/Chapter4}
+	\begingroup
+	\let\cleardoublepage\clearpage
 	\input{14.Chapter5/Chapter5}
 	\input{15.Chapter6/Chapter6}
 	\input{16.Chapter7/Chapter7}
 	\input{17.Chapter8/Chapter8}
 	\input{18.Chapter9/Chapter9}
+	\endgroup
 	
 	%
 	\singlespacing
