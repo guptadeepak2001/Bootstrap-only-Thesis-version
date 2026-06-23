@@ -30,7 +30,32 @@ Aggregation Server  & $\mathcal{O}(dN\log N)$ & $\mathcal{O}(|\mathcal{A}|d)$ \\
 \end{tabular}
 \end{table}
 
-The client side is identical in cost because both schemes are running ordinary local SGD on each device. The differences live at the verifier and at the aggregation server. The auditor has to pay for the projection step, the mixture fit, and the covariance inversion. FIP-FL spends its budget on $N$ homomorphic inner products plus the bootstrap audit; that is the entire verifier-side cost. After the audit, the server only sums the accepted ciphertexts, which gives $\mathcal{O}(|\mathcal{A}|d)$ work in place of sorting or preprocessing the full set of $N$ updates.
+\subsection{Time-Complexity Interpretation}
+\label{sec:comp-time-interpretation}
+
+The computational comparison in Table~\ref{tab:comp-computation} shows that the main saving of FIP-FL appears at the verifier stage. The client-side cost remains unchanged because both schemes require each client to perform ordinary local SGD on its own data. The difference lies in how the submitted updates are verified and aggregated after local training.
+
+\noindent\textbf{Client-side training.}
+The auditor-based PPFL scheme and FIP-FL both have client-side complexity $\mathcal{O}(dBE)$. Both schemes have the same local learning cost because each client trains on mini-batches for $E$ local epochs.
+
+\noindent\textbf{Verification basis.}
+The auditor-based PPFL scheme verifies updates through distributional modelling of submitted gradient statistics, while FIP-FL verifies updates through scalar alignment with the bootstrap reference direction. FIP-FL reduces verification from high-dimensional distributional analysis to one scalar score per client.
+
+\noindent\textbf{Verifier / Auditor operations.}
+The auditor-based scheme uses projection, Gaussian-mixture modelling, Mahalanobis-distance scoring, and covariance-related computation. FIP-FL uses homomorphic functional inner product computation and bootstrap score filtering. The auditor-based scheme performs richer statistical modelling, whereas FIP-FL performs one encrypted inner product per client.
+
+\noindent\textbf{Verifier / Auditor complexity.}
+The auditor-based verifier has complexity $\mathcal{O}(NKD+Nd\log d)+\mathcal{O}(d^3)$, while the FIP-FL verifier has complexity $\mathcal{O}(Nd+N\log N)$. Under the asymptotic model used in this thesis, the additional $\mathcal{O}(d^3)$ term accounts for covariance-inversion style computation in the auditor-side distributional model.
+
+\noindent\textbf{Aggregation cost.}
+The auditor-based aggregation cost is $\mathcal{O}(dN\log N)$, while the FIP-FL aggregation cost is $\mathcal{O}(|\mathcal{A}^{(t)}|d)$. FIP-FL aggregates only the accepted ciphertexts after verification, while rejected ciphertexts are dropped.
+
+\noindent\textbf{Scalability implication.}
+In the auditor-based PPFL scheme, cost increases with distributional modelling and covariance-related computation. In FIP-FL, verification is linear in the model dimension at the verifier stage. FIP-FL is therefore more scalable for high-dimensional updates because verification avoids cluster-level statistics and covariance estimation.
+
+Here, $N$ is the number of clients, $d$ is the model dimension, $B$ is the batch size, $E$ is the number of local epochs, $K$ is the number of mixture components, $D$ is the auditor-side feature or projection dimension, and $\mathcal{A}^{(t)}$ is the accepted client set in round $t$.
+
+Overall, this comparison shows that FIP-FL keeps the same client-side learning cost as the auditor-based baseline but replaces auditor-side distributional modelling with a scalar encrypted inner-product audit. For each client, the verifier computes one homomorphic functional inner product with the fixed bootstrap reference direction, giving $\mathcal{O}(Nd)$ score-computation cost. The bootstrap audit then filters scalar scores, contributing $\mathcal{O}(N\log N)$. After verification, only accepted ciphertexts are aggregated, giving $\mathcal{O}(|\mathcal{A}^{(t)}|d)$. Thus, FIP-FL shifts verification from high-dimensional statistical auditing to linear-time encrypted alignment testing, making the verifier stage easier to scale and parallelise across clients.
 
 \section{Communication Complexity}
 \label{sec:comp-comm}
@@ -68,7 +93,7 @@ A useful side-effect of this design is that it limits cascade behaviour after a 
 \label{tab:comp-accuracy}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Scheme} & \textbf{Targeted} ($T_{\text{acc}}$) & \textbf{Untargeted} (ACC) \\
+\textbf{Scheme} & \shortstack{\textbf{Targeted}\\\textbf{target-class accuracy}\\\textbf{($T_{\text{acc}}$)}} & \shortstack{\textbf{Untargeted}\\\textbf{overall accuracy}\\\textbf{(ACC)}} \\
 \midrule
 Krum~\cite{blanchard2017machine}              & 71.4 & 78.3 \\
 Auror~\cite{shen2016auror}                    & 32.5 & 49.9 \\
@@ -83,4 +108,4 @@ Auditor-based~\cite{yazdinejad2024robust}     & 96.5 & 96.3 \\
 \end{tabular}
 \end{table}
 
-In the table above, FIP-FL records the best targeted accuracy of every entry, and it does so while resting on weaker trust assumptions than the auditor-based row. Its untargeted number is competitive with FoolsGold and ShieldFL but does not quite reach the auditor-based result, and that gap is the clearest empirical place where future work could push further. For the purposes of this thesis the relevant point is the qualitative one: FIP-FL produces the strongest targeted-class recovery without decrypting any cluster statistics and without bringing in an external auditor.
+In the table above, FIP-FL records the best target-class accuracy ($T_{\text{acc}}$) of every targeted entry, and it does so while resting on weaker trust assumptions than the auditor-based row. Its untargeted overall accuracy (ACC) is competitive with FoolsGold and ShieldFL but does not quite reach the auditor-based result, and that gap is the clearest empirical place where future work could push further. For the purposes of this thesis the relevant point is the qualitative one: FIP-FL produces the strongest target-class recovery without decrypting any cluster statistics and without bringing in an external auditor.

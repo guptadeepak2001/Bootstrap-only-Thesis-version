@@ -3,21 +3,26 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Setup and key-distribution flow of Algorithm~\ref {alg:fip-ppfl-init}.}}{16}{figure.caption.4}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Phase~I client pipeline of Algorithm~\ref {alg:fip-client-submit}.}}{18}{figure.caption.5}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Phase~II homomorphic scoring of Algorithm~\ref {alg:fip-score}.}}{20}{figure.caption.6}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Phase~III bootstrap-stage audit of Algorithm~\ref {alg:stage1_audit}.}}{22}{figure.caption.7}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Phases~IV--V secure aggregation and model update of Algorithm~\ref {alg:secure_aggregation}.}}{24}{figure.caption.8}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the bootstrap audit reaches perfect malicious-client detection by the final round.}}{28}{figure.caption.7}%
-\contentsline {figure}{\numberline {7.2}{\ignorespaces KDDCup99 non-IID targeted attack results. The target-class trajectory remains high through training, and the round-300 comparison shows that overall and target-class accuracy stay stable even as the malicious-client fraction increases.}}{30}{figure.caption.12}%
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {MNIST ACC trajectory}}}{30}{figure.caption.12}%
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{30}{figure.caption.12}%
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {MNIST malicious-client TPR}}}{30}{figure.caption.12}%
-\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{30}{figure.caption.12}%
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Target-class accuracy trajectory}}}{30}{figure.caption.12}%
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Round-300 accuracy comparison}}}{30}{figure.caption.12}%
-\contentsline {figure}{\numberline {7.3}{\ignorespaces IID untargeted attack dynamics over 300 communication rounds. Both datasets show stable convergence, and the audit maintains perfect malicious-client detection without false positives at the reported final round.}}{31}{figure.caption.16}%
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {MNIST ACC trajectory}}}{31}{figure.caption.16}%
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{31}{figure.caption.16}%
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {MNIST malicious-client TPR}}}{31}{figure.caption.16}%
-\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{31}{figure.caption.16}%
-\contentsline {figure}{\numberline {7.4}{\ignorespaces IID targeted attack target-class accuracy over 300 communication rounds. In both datasets, the target class recovers to a stable high-accuracy regime by the final round.}}{33}{figure.caption.20}%
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Non-IID untargeted attack dynamics over 300 communication rounds. Accuracy converges stably for both datasets, while the bootstrap audit reaches perfect malicious-client detection by the final round.}}{33}{figure.caption.12}%
+\contentsline {figure}{\numberline {7.2}{\ignorespaces KDDCup99 non-IID targeted attack results. The target-class trajectory remains high through training, and the round-300 comparison shows that overall and target-class accuracy stay stable even as the malicious-client fraction increases.}}{35}{figure.caption.17}%
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {MNIST ACC trajectory}}}{35}{figure.caption.17}%
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{35}{figure.caption.17}%
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {MNIST malicious-client TPR}}}{35}{figure.caption.17}%
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{35}{figure.caption.17}%
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Target-class accuracy trajectory}}}{35}{figure.caption.17}%
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Round-300 accuracy comparison}}}{35}{figure.caption.17}%
+\contentsline {figure}{\numberline {7.3}{\ignorespaces IID untargeted attack dynamics over 300 communication rounds. Both datasets show stable convergence, and the audit maintains perfect malicious-client detection without false positives at the reported final round.}}{36}{figure.caption.21}%
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {MNIST ACC trajectory}}}{36}{figure.caption.21}%
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {KDDCup99 ACC trajectory}}}{36}{figure.caption.21}%
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {MNIST malicious-client TPR}}}{36}{figure.caption.21}%
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {KDDCup99 malicious-client TPR}}}{36}{figure.caption.21}%
+\contentsline {figure}{\numberline {7.4}{\ignorespaces IID targeted attack target-class accuracy over 300 communication rounds. In both datasets, the target class recovers to a stable high-accuracy regime by the final round.}}{38}{figure.caption.25}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

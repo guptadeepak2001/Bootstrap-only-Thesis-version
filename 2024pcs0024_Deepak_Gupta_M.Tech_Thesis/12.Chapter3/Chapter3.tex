@@ -17,6 +17,43 @@ Other methods try to catch bad clients first. Most still need plaintext. PEFL~\c
 
 Yazdinejad and colleagues~\cite{yazdinejad2024robust} add a trusted auditor who decrypts cluster summaries, fits a Gaussian mixture, and drops outliers with Mahalanobis distance before homomorphic averaging. They reach about $96.5$ percent target-class accuracy on non-IID MNIST under a fifty-percent flip, but that success requires an extra trust anchor, $\mathcal{O}(d^{3})$ covariance inversion, and leaking cluster stats.
 
+\section{Comparative Summary of Related Work}
+\label{sec:lit-comparative}
+
+The comparison below summarises representative Byzantine-resilient and privacy-preserving federated learning defences that are closest to the setting considered in this thesis. Each entry highlights the method's core idea, main advantage, major limitation, and relevance to the proposed FIP-FL framework.
+
+\noindent\textbf{Work / defence: Krum / Multi-Krum~\cite{blanchard2017machine}.}
+\textbf{Main idea:} Selects the update that is closest to most other client updates using pairwise distances.
+\textbf{Advantage:} Provides Byzantine robustness in plaintext FL and is a standard robust aggregation baseline.
+\textbf{Limitation:} Requires access to plaintext gradients and incurs pairwise-distance computation over client updates; its distance-based assumption can also become less reliable when honest gradients are naturally diverse under non-IID data.
+\textbf{Relevance to FIP-FL:} Shows why classical robust aggregation cannot be directly used when gradients are encrypted.
+
+\noindent\textbf{Work / defence: Coordinate-wise Median / Trimmed Mean~\cite{yin2018byzantine}.}
+\textbf{Main idea:} Replaces the mean with coordinate-wise robust statistics by taking median values or trimming extreme coordinates.
+\textbf{Advantage:} Simpler and computationally cheaper than pairwise-distance-based robust rules.
+\textbf{Limitation:} Still requires plaintext coordinates and may remove useful honest variation under heterogeneous client data.
+\textbf{Relevance to FIP-FL:} Motivates the need for a ciphertext-compatible filtering rule.
+
+\noindent\textbf{Work / defence: FLTrust~\cite{cao2021fltrust}.}
+\textbf{Main idea:} Uses a trusted server-side reference dataset to compute a reference gradient and score client updates by their alignment with it.
+\textbf{Advantage:} Provides a strong reference-based trust signal against poisoning.
+\textbf{Limitation:} Requires a clean server-held dataset and generally assumes access to readable gradient information, which limits its fit for strict PPFL.
+\textbf{Relevance to FIP-FL:} FIP-FL also uses a reference direction, but computes only an encrypted functional inner product instead of exposing full gradients.
+
+\noindent\textbf{Work / defence: PEFL~\cite{liu2021privacy} / ShieldFL~\cite{ma2022shieldfl}.}
+\textbf{Main idea:} Represents privacy-preserving poisoning-defence approaches that try to protect client updates while detecting malicious behaviour.
+\textbf{Advantage:} Moves closer to the PPFL setting than plaintext-only robust aggregation methods.
+\textbf{Limitation:} PEFL can become less efficient under stronger attacks or deeper data skew, while ShieldFL introduces additional helper, trust, or protocol assumptions.
+\textbf{Relevance to FIP-FL:} Helps position FIP-FL as a lighter auditor-free encrypted-gradient defence.
+
+\noindent\textbf{Work / defence: Auditor-based PPFL~\cite{yazdinejad2024robust}.}
+\textbf{Main idea:} Uses additive homomorphic encryption with an internal auditor; malicious gradients are detected using Gaussian Mixture Models and Mahalanobis Distance.
+\textbf{Advantage:} Directly addresses encrypted gradients, targeted and untargeted attacks, and IID/non-IID settings.
+\textbf{Limitation:} Relies on a trusted auditing component, performs richer distributional auditing over gradient statistics, and requires covariance-based computations that increase cost with model dimension.
+\textbf{Relevance to FIP-FL:} This is the closest baseline. FIP-FL keeps the encrypted-gradient setting but replaces auditor-side distributional modelling with one scalar functional inner product per client.
+
+From this comparison, the gap is clear. Classical robust aggregation methods offer Byzantine tolerance but require plaintext gradients. Detection-based methods improve poisoning resistance but often depend on readable gradients, trusted validation data, or extra helper entities. Auditor-based PPFL handles encrypted gradients, but it introduces a trusted auditing component and relies on richer distributional statistics for auditing. FIP-FL is designed to close this gap by keeping updates encrypted, removing the auditor, and reducing verification to a single functional inner product score per client.
+
 \section{Positioning of FIP-FL}
 \label{sec:lit-position}
 

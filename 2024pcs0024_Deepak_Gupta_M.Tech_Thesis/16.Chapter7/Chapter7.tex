@@ -1,8 +1,11 @@
 \chapter{Results and Analysis}
 \label{Results:chap:chap7}
 \graphicspath{{16.Chapter7/Images/}}
+\newcommand{\OverallAccHead}{\textbf{ACC (\%)}}
+\newcommand{\TargetAccHead}{\textbf{$T_{\text{acc}}$ (\%)}}
+\newcommand{\OtherAccHead}{\textbf{$O_{\text{acc}}$ (\%)}}
 
-This chapter goes through the empirical results of FIP-FL on the grid defined in Chapter~\ref{Setup:chap:chap6}. Each table reports the relevant round-300 numbers, overall accuracy ($\text{ACC}$), target-class accuracy ($T_{\text{acc}}$), other-label accuracy ($O_{\text{acc}}$), the true positive rate (TPR), and the false positive rate (FPR). Accuracies are quoted as percentages, and TPR and FPR are quoted as proportions in $[0,1]$.
+This chapter goes through the empirical results of FIP-FL on the grid defined in Chapter~\ref{Setup:chap:chap6}. Each table reports the relevant round-300 numbers, ACC, $T_{\text{acc}}$, $O_{\text{acc}}$, TPR, and FPR. Accuracies are quoted as percentages, and TPR and FPR are quoted as proportions in $[0,1]$.
 
 %=====================================================================
 \section{Non-IID Partition, Untargeted Attacks}
@@ -19,7 +22,7 @@ Of the four non-IID rows, the untargeted one is in some ways the most demanding.
 \label{tab:res-nonIID-untarg-mnist}
 \begin{tabular}{@{}ccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} \\
+\textbf{AR} & \OverallAccHead & \TargetAccHead & \OtherAccHead & \textbf{TPR} \\
 \midrule
 10\% & 91.22 & 97.60 & 90.18 & 1.00 \\
 20\% & 91.02 & 97.87 & 89.94 & 1.00 \\
@@ -38,7 +41,7 @@ Of the four non-IID rows, the untargeted one is in some ways the most demanding.
 \label{tab:res-nonIID-untarg-kdd}
 \begin{tabular}{@{}ccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} \\
+\textbf{AR} & \OverallAccHead & \TargetAccHead & \OtherAccHead & \textbf{TPR} \\
 \midrule
 10\% & 99.71 & 99.50 & 84.62 & 1.00 \\
 20\% & 99.72 & 99.55 & 83.65 & 1.00 \\
@@ -67,7 +70,7 @@ Of the four non-IID rows, the untargeted one is in some ways the most demanding.
 \section{Non-IID Partition, Targeted Attacks}
 \label{sec:res-nonIID-targ}
 
-A targeted label-flipping attack is a more delicate kind of poisoning than the untargeted case. It tries to break one specific source class while letting the global accuracy stay believable, so reading ACC alone would actively hide the damage. The number that matters here is the target-class accuracy $T_{\text{acc}}$.
+A targeted label-flipping attack is a more delicate kind of poisoning than the untargeted case. It tries to break one specific source class while letting the global accuracy stay believable, so reading ACC alone would actively hide the damage. The number that matters here is $T_{\text{acc}}$.
 
 \subsection{MNIST}
 \label{sec:res-nonIID-targ-mnist}
@@ -94,7 +97,7 @@ A targeted label-flipping attack is a more delicate kind of poisoning than the u
 \label{tab:res-nonIID-targ-kdd}
 \begin{tabular}{@{}cccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} & \textbf{FPR} \\
+\textbf{AR} & \OverallAccHead & \TargetAccHead & \OtherAccHead & \textbf{TPR} & \textbf{FPR} \\
 \midrule
 10\% & 99.54 & 99.75 & 63.46 & 1.00 & 0.00 \\
 20\% & 99.69 & 99.65 & 78.85 & 1.00 & 0.00 \\
@@ -130,7 +133,7 @@ The IID rows are included mostly as a sanity-check baseline. With IID partitions
 \label{tab:res-IID-untarg-mnist}
 \begin{tabular}{@{}cccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} & \textbf{FPR} \\
+\textbf{AR} & \OverallAccHead & \TargetAccHead & \OtherAccHead & \textbf{TPR} & \textbf{FPR} \\
 \midrule
 10\% & 91.49 & 97.51 & 90.40 & 1.00 & 0.00 \\
 20\% & 91.50 & 97.51 & 90.39 & 1.00 & 0.00 \\
@@ -149,7 +152,7 @@ The IID rows are included mostly as a sanity-check baseline. With IID partitions
 \label{tab:res-IID-untarg-kdd}
 \begin{tabular}{@{}cccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} & \textbf{FPR} \\
+\textbf{AR} & \OverallAccHead & \TargetAccHead & \OtherAccHead & \textbf{TPR} & \textbf{FPR} \\
 \midrule
 10\% & 99.74 & 99.60 & 85.58 & 1.00 & 0.00 \\
 20\% & 99.73 & 99.55 & 85.58 & 1.00 & 0.00 \\
@@ -188,7 +191,7 @@ The IID rows are included mostly as a sanity-check baseline. With IID partitions
 \label{tab:res-IID-targ-mnist}
 \begin{tabular}{@{}cccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} & \textbf{FPR} \\
+\textbf{AR} & \OverallAccHead & \TargetAccHead & \OtherAccHead & \textbf{TPR} & \textbf{FPR} \\
 \midrule
 10\% & 91.62 & 97.51 & 90.57 & 1.00 & 0.00 \\
 20\% & 91.42 & 97.42 & 90.35 & 1.00 & 0.00 \\
@@ -207,7 +210,7 @@ The IID rows are included mostly as a sanity-check baseline. With IID partitions
 \label{tab:res-IID-targ-kdd}
 \begin{tabular}{@{}cccccc@{}}
 \toprule
-\textbf{AR} & \textbf{ACC (\%)} & \textbf{$T_{\text{acc}}$ (\%)} & \textbf{$O_{\text{acc}}$ (\%)} & \textbf{TPR} & \textbf{FPR} \\
+\textbf{AR} & \OverallAccHead & \TargetAccHead & \OtherAccHead & \textbf{TPR} & \textbf{FPR} \\
 \midrule
 10\% & 99.73 & 99.60 & 84.62 & 1.00 & 0.00 \\
 20\% & 99.73 & 99.55 & 85.58 & 1.00 & 0.00 \\

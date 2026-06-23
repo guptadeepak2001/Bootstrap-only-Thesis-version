@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="min-height:100vh; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px; background:#eef0f3; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <div style="position:relative; width:840px; height:700px; background:#ffffff; background-image:radial-gradient(#e4e6ea 1px, transparent 1.4px); background-size:16px 16px; border:1px solid #d8dbe0; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+
+    <div style="position:absolute; left:24px; top:20px; font-size:15px; font-weight:700; color:#2b2f36;">Algorithm 3 &nbsp;·&nbsp; Homomorphic Functional-Inner-Product Score Computation</div>
+    <div style="position:absolute; left:24px; top:42px; font-size:11.5px; color:#8a8f98;">Phase II - the Verifier projects each update onto R&#8317;&#7511;&#8318; while encrypted; only one scalar per client crosses to the TKA</div>
+
+    <svg width="840" height="700" style="position:absolute; left:0; top:0; pointer-events:none; z-index:1;">
+      <defs>
+        <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#5b6068"></path>
+        </marker>
+      </defs>
+      <g fill="none" stroke="#5b6068" stroke-width="1.6">
+        <path d="M290,158 L290,236" marker-end="url(#arr)"></path>
+        <path d="M290,294 L290,306" marker-end="url(#arr)"></path>
+        <path d="M488,364 L598,364" marker-end="url(#arr)"></path>
+        <path d="M700,476 L700,507 L394,507" marker-end="url(#arr)"></path>
+        <path d="M242,534 L242,548" marker-end="url(#arr)"></path>
+      </g>
+      <line x1="560" y1="214" x2="560" y2="600" stroke="#b85450" stroke-width="1.4" stroke-dasharray="6 5"></line>
+    </svg>
+
+    <div style="position:absolute; left:566px; top:194px; z-index:3; font-size:10.5px; font-weight:700; color:#b85450; letter-spacing:0.4px;">TKA trust boundary</div>
+    <div style="position:absolute; left:498px; top:344px; z-index:3; font-size:10.5px; font-weight:600; color:#7a4f00; background:#ffffff; padding:1px 4px;">[[&scirc;<sub>i</sub>]] encrypted</div>
+    <div style="position:absolute; left:470px; top:512px; z-index:3; font-size:10.5px; font-weight:600; color:#1f3a5f; background:#ffffff; padding:1px 4px;">&scirc;<sub>i</sub> scalar</div>
+
+    <!-- REQUIRE -->
+    <div style="position:absolute; left:70px; top:78px; width:440px; height:78px; z-index:2; box-sizing:border-box; border:1.5px solid #9aa0a8; border-radius:6px; background:#f5f6f7; padding:10px 14px;">
+      <div style="font-size:11px; font-weight:700; color:#5b6068; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px;">Require</div>
+      <div style="font-size:12px; line-height:1.6; color:#3a3f47;">encrypted set U&#8317;&#7511;&#8318; &nbsp;&middot;&nbsp; reference R&#8317;&#7511;&#8318; &nbsp;&middot;&nbsp; public key pk, scale s &nbsp;&middot;&nbsp; sk held by TKA</div>
+    </div>
+
+    <!-- VERIFIER container -->
+    <div style="position:absolute; left:70px; top:180px; width:440px; height:456px; z-index:2; box-sizing:border-box; border:1.5px solid #d79b00; border-radius:7px; background:rgba(255,230,204,0.30);">
+      <div style="position:absolute; left:0; top:0; right:0; background:#ffe6cc; border-bottom:1.5px solid #d79b00; border-radius:6px 6px 0 0; padding:7px 14px; font-size:12.5px; font-weight:700; color:#7a4f00;">FIP Verifier &nbsp;<span style="font-weight:500; color:#9c6b08;">- operates on ciphertext only</span></div>
+
+      <div style="position:absolute; left:22px; top:58px; width:396px; height:54px; box-sizing:border-box; border:1.4px solid #d79b00; border-radius:5px; background:#ffffff; padding:8px 13px;">
+        <div style="font-size:11px; font-weight:700; color:#7a4f00; margin-bottom:3px;">1 &middot; Encode reference coordinates</div>
+        <div style="font-size:11.5px; color:#2b2f36;">R&#770;<sub>k</sub> &larr; Encode<sub>s</sub>(R<sub>k</sub>),&nbsp; for k = 1 &hellip; d</div>
+      </div>
+
+      <div style="position:absolute; left:22px; top:128px; width:396px; height:112px; box-sizing:border-box; border:1.4px solid #d79b00; border-radius:5px; background:#ffffff; padding:9px 13px;">
+        <div style="font-size:11px; font-weight:700; color:#7a4f00; margin-bottom:6px;">2 &middot; Homomorphic inner product &nbsp;<span style="font-weight:500; color:#9c6b08;">(per client TagID<sub>i</sub>)</span></div>
+        <div style="font-size:11.5px; line-height:1.8; color:#2b2f36;">
+          [[&scirc;<sub>i</sub>]] &larr; Enc<sub>pk</sub>(0)<br/>
+          for k = 1&hellip;d:&nbsp; [[&scirc;<sub>i</sub>]] &larr; [[&scirc;<sub>i</sub>]] &middot; [[g<sub>i,k</sub>]]<sup>R&#770;<sub>k</sub></sup> mod n&sup2;
+        </div>
+      </div>
+
+      <div style="position:absolute; left:22px; top:300px; width:300px; height:54px; box-sizing:border-box; border:1.4px solid #d79b00; border-radius:5px; background:#ffffff; padding:7px 13px;">
+        <div style="font-size:11px; font-weight:700; color:#7a4f00; margin-bottom:3px;">4 &middot; Decode &amp; store</div>
+        <div style="font-size:11.5px; color:#2b2f36;">s<sub>i</sub> &larr; Decode<sub>s&sup2;</sub>(&scirc;<sub>i</sub>);&nbsp; S&#8317;&#7511;&#8318;[TagID<sub>i</sub>] &larr; s<sub>i</sub></div>
+      </div>
+
+      <div style="position:absolute; left:22px; top:370px; width:300px; height:46px; box-sizing:border-box; border:1.5px solid #9673a6; border-radius:5px; background:#e1d5e7; padding:0 13px; display:flex; align-items:center; gap:8px;">
+        <span style="font-size:10.5px; font-weight:700; color:#4a2d5e; text-transform:uppercase; letter-spacing:0.5px;">Ensure</span>
+        <span style="font-size:11.5px; color:#4a2d5e;">FIP score map &nbsp;S&#8317;&#7511;&#8318;</span>
+      </div>
+    </div>
+
+    <!-- TKA -->
+    <div style="position:absolute; left:600px; top:356px; width:200px; height:122px; z-index:2; box-sizing:border-box; border:1.5px solid #6c8ebf; border-radius:6px; background:#ffffff; overflow:hidden;">
+      <div style="background:#dae8fc; border-bottom:1.5px solid #6c8ebf; padding:7px 12px; font-size:12px; font-weight:700; color:#1f3a5f;">3 &middot; TKA - scalar decryption</div>
+      <div style="padding:10px 12px; font-size:11.5px; line-height:1.7; color:#2b2f36;">
+        &scirc;<sub>i</sub> &larr; Dec<sub>sk</sub>([[&scirc;<sub>i</sub>]])<br/>
+        <span style="color:#4a6791;">holds sk - sees only the scalar</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="font-size:12px; color:#8a8f98; font-style:italic;">Figure 5.3 - Phase II homomorphic scoring of Algorithm 3.</div>
+</div>
+</x-dc>
+</body>
+</html>

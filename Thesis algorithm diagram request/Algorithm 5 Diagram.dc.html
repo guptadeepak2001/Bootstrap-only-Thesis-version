@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="min-height:100vh; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px; background:#eef0f3; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <div style="position:relative; width:840px; height:880px; background:#ffffff; background-image:radial-gradient(#e4e6ea 1px, transparent 1.4px); background-size:16px 16px; border:1px solid #d8dbe0; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+
+    <div style="position:absolute; left:24px; top:20px; font-size:15px; font-weight:700; color:#2b2f36;">Algorithm 5 &nbsp;·&nbsp; Secure Aggregation and Model Update</div>
+    <div style="position:absolute; left:24px; top:42px; font-size:11.5px; color:#8a8f98;">Phases IV–V - accepted ciphertexts are pooled into one encrypted sum; the TKA opens only that aggregate, then the server steps the model</div>
+
+    <svg width="840" height="880" style="position:absolute; left:0; top:0; pointer-events:none; z-index:1;">
+      <defs>
+        <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#5b6068"></path>
+        </marker>
+      </defs>
+      <g fill="none" stroke="#5b6068" stroke-width="1.6">
+        <path d="M300,156 L300,174" marker-end="url(#arr)"></path>
+        <path d="M227,250 L204,250" marker-end="url(#arr)"></path>
+        <path d="M300,323 L300,338" marker-end="url(#arr)"></path>
+        <path d="M300,438 L300,452" marker-end="url(#arr)"></path>
+        <path d="M300,548 L300,564" marker-end="url(#arr)"></path>
+        <path d="M300,608 L300,624" marker-end="url(#arr)"></path>
+        <path d="M300,700 L300,736" marker-end="url(#arr)"></path>
+        <path d="M498,500 L598,500" marker-end="url(#arr)"></path>
+        <path d="M700,560 L700,586 L454,586" marker-end="url(#arr)"></path>
+        <path d="M120,284 L120,302 L40,302 L40,760 L168,760" marker-end="url(#arr)"></path>
+      </g>
+      <line x1="560" y1="360" x2="560" y2="700" stroke="#b85450" stroke-width="1.4" stroke-dasharray="6 5"></line>
+    </svg>
+
+    <div style="position:absolute; left:566px; top:366px; z-index:3; font-size:10.5px; font-weight:700; color:#b85450; letter-spacing:0.4px;">TKA trust boundary</div>
+    <div style="position:absolute; left:200px; top:236px; z-index:3; font-size:10px; font-weight:700; color:#5b6068; background:#ffffff; padding:0 4px;">yes</div>
+    <div style="position:absolute; left:308px; top:328px; z-index:3; font-size:10px; font-weight:700; color:#2d4a26; background:#ffffff; padding:0 4px;">no</div>
+    <div style="position:absolute; left:504px; top:484px; z-index:3; font-size:10px; font-weight:600; color:#1f3a5f; background:#ffffff; padding:0 4px;">[[G&#770;<sub>k</sub>]] encrypted sum</div>
+    <div style="position:absolute; left:504px; top:570px; z-index:3; font-size:10px; font-weight:600; color:#1f3a5f; background:#ffffff; padding:0 4px;">G&#770;<sub>k</sub> aggregate only</div>
+    <div style="position:absolute; left:42px; top:744px; width:120px; box-sizing:border-box; z-index:3; font-size:10px; font-weight:600; color:#4f7344; background:#ffffff; padding:0 4px; white-space:nowrap;">carried-forward path</div>
+
+    <!-- REQUIRE -->
+    <div style="position:absolute; left:100px; top:78px; width:400px; height:78px; z-index:2; box-sizing:border-box; border:1.5px solid #9aa0a8; border-radius:6px; background:#f5f6f7; padding:10px 14px;">
+      <div style="font-size:11px; font-weight:700; color:#5b6068; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px;">Require</div>
+      <div style="font-size:12px; line-height:1.6; color:#3a3f47;">accepted encrypted set A&#8317;&#7511;&#8318; &nbsp;&middot;&nbsp; model &theta;&#8317;&#7511;&#8318; &nbsp;&middot;&nbsp; pk, sk (TKA), scale s &nbsp;&middot;&nbsp; learning rate &eta;</div>
+    </div>
+
+    <!-- DIAMOND -->
+    <div style="position:absolute; left:248px; top:198px; width:104px; height:104px; z-index:2; transform:rotate(45deg); background:#d5e8d4; border:1.5px solid #82b366; border-radius:7px;"></div>
+    <div style="position:absolute; left:230px; top:240px; width:140px; text-align:center; z-index:3; font-size:12px; font-weight:600; color:#2d4a26;">A&#8317;&#7511;&#8318; = &empty; ?</div>
+
+    <!-- CARRY FORWARD -->
+    <div style="position:absolute; left:44px; top:222px; width:160px; height:60px; z-index:2; box-sizing:border-box; border:1.5px solid #82b366; border-radius:5px; background:#ffffff; padding:7px 11px;">
+      <div style="font-size:11px; color:#2b2f36; line-height:1.45;">&theta;&#8317;&#7511;&#8314;&#185;&#8318; &larr; &theta;&#8317;&#7511;&#8318; &middot; broadcast<br/><span style="color:#4f7344; font-size:9.5px;">model carried forward unchanged</span></div>
+    </div>
+
+    <!-- SERVER container -->
+    <div style="position:absolute; left:80px; top:338px; width:440px; height:362px; z-index:2; box-sizing:border-box; border:1.5px solid #82b366; border-radius:7px; background:rgba(213,232,212,0.30);">
+      <div style="position:absolute; left:0; top:0; right:0; background:#d5e8d4; border-bottom:1.5px solid #82b366; border-radius:6px 6px 0 0; padding:7px 14px; font-size:12.5px; font-weight:700; color:#2d4a26;">Aggregation Server &nbsp;<span style="font-weight:500; color:#4f7344;">- homomorphic aggregation of accepted updates</span></div>
+
+      <div style="position:absolute; left:22px; top:56px; width:396px; height:42px; box-sizing:border-box; border:1.4px solid #82b366; border-radius:5px; background:#ffffff; padding:0 13px; display:flex; align-items:center; font-size:11.5px; color:#2b2f36;"><b style="color:#4f7344; margin-right:6px;">1</b> m &larr; |A&#8317;&#7511;&#8318;| &nbsp;(number accepted)</div>
+
+      <div style="position:absolute; left:22px; top:114px; width:396px; height:96px; box-sizing:border-box; border:1.4px solid #82b366; border-radius:5px; background:#ffffff; padding:8px 13px;">
+        <div style="font-size:11px; font-weight:700; color:#4f7344; margin-bottom:5px;">2 &middot; Homomorphic coordinate sum &nbsp;<span style="font-weight:500;">(k = 1&hellip;d)</span></div>
+        <div style="font-size:11px; line-height:1.7; color:#2b2f36;">[[G&#770;<sub>k</sub>]] &larr; Enc<sub>pk</sub>(0)<br/>[[G&#770;<sub>k</sub>]] &larr; [[G&#770;<sub>k</sub>]] &middot; [[g<sub>i,k</sub>]] mod n&sup2; &nbsp;&forall; i &isin; A&#8317;&#7511;&#8318;</div>
+      </div>
+
+      <div style="position:absolute; left:70px; top:226px; width:300px; height:44px; box-sizing:border-box; border:1.4px solid #82b366; border-radius:5px; background:#ffffff; padding:0 13px; display:flex; flex-direction:column; justify-content:center;">
+        <div style="font-size:11px; font-weight:700; color:#4f7344;">4 &middot; Decode &amp; average</div>
+        <div style="font-size:11px; color:#2b2f36;">g<sub>global,k</sub> &larr; Decode<sub>s</sub>(G&#770;<sub>k</sub>) / m</div>
+      </div>
+
+      <div style="position:absolute; left:22px; top:288px; width:396px; height:44px; box-sizing:border-box; border:1.4px solid #82b366; border-radius:5px; background:#ffffff; padding:0 13px; display:flex; align-items:center; font-size:11.5px; color:#2b2f36;"><b style="color:#4f7344; margin-right:6px;">5</b> &theta;&#8317;&#7511;&#8314;&#185;&#8318; &larr; &theta;&#8317;&#7511;&#8318; &minus; &eta; g<sub>global</sub> ; broadcast &nbsp;<span style="color:#4f7344; font-size:10px; margin-left:6px;">&#9655; reference fixed</span></div>
+    </div>
+
+    <!-- TKA -->
+    <div style="position:absolute; left:600px; top:440px; width:200px; height:120px; z-index:2; box-sizing:border-box; border:1.5px solid #6c8ebf; border-radius:6px; background:#ffffff; overflow:hidden;">
+      <div style="background:#dae8fc; border-bottom:1.5px solid #6c8ebf; padding:7px 12px; font-size:12px; font-weight:700; color:#1f3a5f;">3 &middot; TKA - aggregate decryption</div>
+      <div style="padding:9px 12px; font-size:11.5px; line-height:1.7; color:#2b2f36;">
+        G&#770;<sub>k</sub> &larr; Dec<sub>sk</sub>([[G&#770;<sub>k</sub>]])<br/>
+        <span style="color:#4a6791;">opens only the pooled sum</span>
+      </div>
+    </div>
+
+    <!-- ENSURE / output -->
+    <div style="position:absolute; left:170px; top:736px; width:260px; height:64px; z-index:2; box-sizing:border-box; border:1.5px solid #9673a6; border-radius:6px; background:#e1d5e7; padding:0 16px; display:flex; align-items:center; gap:9px;">
+      <span style="font-size:10.5px; font-weight:700; color:#4a2d5e; text-transform:uppercase; letter-spacing:0.5px;">Ensure</span>
+      <span style="font-size:12.5px; font-weight:600; color:#4a2d5e;">updated model &nbsp;&theta;&#8317;&#7511;&#8314;&#185;&#8318;</span>
+    </div>
+
+  </div>
+
+  <div style="font-size:12px; color:#8a8f98; font-style:italic;">Figure 5.5 - Phases IV–V secure aggregation and model update of Algorithm 5.</div>
+</div>
+</x-dc>
+</body>
+</html>

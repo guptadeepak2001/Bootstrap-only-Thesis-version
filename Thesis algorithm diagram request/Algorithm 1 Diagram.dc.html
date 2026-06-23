@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</helmet>
+<div style="min-height:100vh; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px; background:#eef0f3; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <div style="position:relative; width:840px; height:1040px; background:#ffffff; background-image:radial-gradient(#e4e6ea 1px, transparent 1.4px); background-size:16px 16px; border:1px solid #d8dbe0; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+
+    <div style="position:absolute; left:24px; top:20px; font-size:15px; font-weight:700; color:#2b2f36; letter-spacing:0.2px;">Algorithm 1 &nbsp;·&nbsp; FIP-FL System Initialization &amp; Reference Bootstrapping</div>
+    <div style="position:absolute; left:24px; top:42px; font-size:11.5px; color:#8a8f98;">Setup phase - executed once, before Round 1</div>
+
+    <svg width="840" height="1040" style="position:absolute; left:0; top:0; pointer-events:none; z-index:1;">
+      <defs>
+        <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#5b6068"></path>
+        </marker>
+      </defs>
+      <g fill="none" stroke="#5b6068" stroke-width="1.6">
+        <path d="M270,160 L270,198" marker-end="url(#arr)"></path>
+        <path d="M270,398 L270,432" marker-end="url(#arr)"></path>
+        <path d="M270,584 L270,618" marker-end="url(#arr)"></path>
+        <path d="M270,792 L270,826" marker-end="url(#arr)"></path>
+        <!-- distribution to clients -->
+        <path d="M450,299 L538,299" marker-end="url(#arr)" stroke-dasharray="5 4"></path>
+        <path d="M450,509 L538,509" marker-end="url(#arr)" stroke-dasharray="5 4"></path>
+      </g>
+    </svg>
+
+    <!-- edge labels -->
+    <div style="position:absolute; left:468px; top:283px; z-index:3; font-size:11px; font-weight:600; color:#4a6791; background:#ffffff; padding:1px 4px;">(pk, s)</div>
+    <div style="position:absolute; left:468px; top:493px; z-index:3; font-size:11px; font-weight:600; color:#2d4a26; background:#ffffff; padding:1px 4px;">&theta;&#8317;&#8304;&#8318;</div>
+
+    <!-- REQUIRE -->
+    <div style="position:absolute; left:90px; top:78px; width:360px; height:82px; z-index:2; box-sizing:border-box; border:1.5px solid #9aa0a8; border-radius:6px; background:#f5f6f7; padding:10px 14px;">
+      <div style="font-size:11px; font-weight:700; color:#5b6068; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px;">Require</div>
+      <div style="font-size:12px; line-height:1.6; color:#3a3f47;">N clients &nbsp;&middot;&nbsp; model f<sub>&theta;</sub> &nbsp;&middot;&nbsp; bootstrap set D<sub>init</sub> &nbsp;&middot;&nbsp; security &lambda; &nbsp;&middot;&nbsp; fixed-point scale s</div>
+    </div>
+
+    <!-- PHASE 1 - TKA -->
+    <div style="position:absolute; left:90px; top:200px; width:360px; height:198px; z-index:2; box-sizing:border-box; border:1.5px solid #6c8ebf; border-radius:6px; background:#ffffff; overflow:hidden;">
+      <div style="background:#dae8fc; border-bottom:1.5px solid #6c8ebf; padding:7px 14px;">
+        <div style="font-size:13px; font-weight:700; color:#1f3a5f;">&#9312; &nbsp;Key Generation &amp; Registration</div>
+        <div style="font-size:11px; color:#4a6791; margin-top:1px;">Trusted Key Authority (TKA)</div>
+      </div>
+      <div style="padding:11px 15px; font-size:12.5px; line-height:1.5; color:#2b2f36;">
+        <div style="margin-bottom:8px;"><b style="color:#6c8ebf;">1.</b> &nbsp;(pk, sk) &larr; PaillierKeyGen(1<sup>&lambda;</sup>)</div>
+        <div style="margin-bottom:8px;"><b style="color:#6c8ebf;">2.</b> &nbsp;Seal sk &nbsp;·&nbsp; release only pk</div>
+        <div style="margin-bottom:8px;"><b style="color:#6c8ebf;">3.</b> &nbsp;Register C<sub>1</sub>&hellip;C<sub>N</sub> &rarr; TagID<sub>i</sub></div>
+        <div><b style="color:#6c8ebf;">4.</b> &nbsp;Send (pk, s) to each client</div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 - SERVER -->
+    <div style="position:absolute; left:90px; top:434px; width:360px; height:150px; z-index:2; box-sizing:border-box; border:1.5px solid #82b366; border-radius:6px; background:#ffffff; overflow:hidden;">
+      <div style="background:#d5e8d4; border-bottom:1.5px solid #82b366; padding:7px 14px;">
+        <div style="font-size:13px; font-weight:700; color:#2d4a26;">&#9313; &nbsp;Model Initialisation</div>
+        <div style="font-size:11px; color:#4f7344; margin-top:1px;">Aggregation Server</div>
+      </div>
+      <div style="padding:11px 15px; font-size:12.5px; line-height:1.5; color:#2b2f36;">
+        <div style="margin-bottom:8px;"><b style="color:#82b366;">1.</b> &nbsp;&theta;&#8317;&#8304;&#8318; &larr; 0</div>
+        <div style="margin-bottom:8px;"><b style="color:#82b366;">2.</b> &nbsp;Broadcast &theta;&#8317;&#8304;&#8318; to clients</div>
+        <div><b style="color:#82b366;">3.</b> &nbsp;Init encrypted-update table U&#8317;&#8304;&#8318; &larr; &empty;</div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 - VERIFIER -->
+    <div style="position:absolute; left:90px; top:620px; width:360px; height:172px; z-index:2; box-sizing:border-box; border:1.5px solid #d79b00; border-radius:6px; background:#ffffff; overflow:hidden;">
+      <div style="background:#ffe6cc; border-bottom:1.5px solid #d79b00; padding:7px 14px;">
+        <div style="font-size:13px; font-weight:700; color:#7a4f00;">&#9314; &nbsp;Reference Bootstrapping</div>
+        <div style="font-size:11px; color:#9c6b08; margin-top:1px;">FIP Verifier</div>
+      </div>
+      <div style="padding:11px 15px; font-size:12.5px; line-height:1.5; color:#2b2f36;">
+        <div style="margin-bottom:8px;"><b style="color:#d79b00;">1.</b> &nbsp;Bootstrap gradient: g&#771;<sub>ref</sub>&#8317;&#8304;&#8318; &larr; &nabla;<sub>&theta;</sub>L(f<sub>&theta;</sub>; D<sub>init</sub>)</div>
+        <div style="margin-bottom:8px;"><b style="color:#d79b00;">2.</b> &nbsp;Normalise: g<sub>ref</sub>&#8317;&#8304;&#8318; &larr; g&#771; / max(&#8741;g&#771;&#8741;<sub>2</sub>, &epsilon;)</div>
+        <div><b style="color:#d79b00;">3.</b> &nbsp;Store g<sub>ref</sub>&#8317;&#8304;&#8318; for Round 1</div>
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div style="position:absolute; left:90px; top:828px; width:360px; height:104px; z-index:2; box-sizing:border-box; border:1.5px solid #9673a6; border-radius:6px; background:#e1d5e7; padding:10px 15px;">
+      <div style="font-size:11px; font-weight:700; color:#5a3d6e; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px;">Output</div>
+      <div style="font-size:12px; line-height:1.6; color:#3f2b50;">Paillier keys &nbsp;&middot;&nbsp; registered clients &nbsp;&middot;&nbsp; global model &theta;&#8317;&#8304;&#8318; &nbsp;&middot;&nbsp; reference direction g<sub>ref</sub>&#8317;&#8304;&#8318;</div>
+    </div>
+
+    <!-- ready terminal removed -->
+
+    <!-- CLIENTS lane -->
+    <div style="position:absolute; left:540px; top:250px; width:280px; height:300px; z-index:2; box-sizing:border-box; border:1.5px solid #5b6068; border-radius:6px; background:#ffffff; padding:16px; display:flex; flex-direction:column; justify-content:center;">
+      <div style="font-size:14px; font-weight:700; color:#5b6068; margin-bottom:6px;">Clients</div>
+      <div style="font-size:13px; font-weight:600; color:#5b6068; margin-bottom:10px;">C<sub>1</sub> &nbsp;&hellip;&nbsp; C<sub>N</sub></div>
+      <div style="font-size:11.5px; color:#5b6068; line-height:1.6;">receive Paillier public key &amp; scale (pk, s) and the initial model &theta;&#8317;&#8304;&#8318; - each holds local data D<sub>i</sub></div>
+    </div>
+
+  </div>
+
+  <div style="font-size:12px; color:#8a8f98; font-style:italic;">Figure 5.1 - Setup and key-distribution flow of Algorithm 1.</div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="min-height:100vh; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px; background:#eef0f3; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <div style="position:relative; width:780px; height:1000px; background:#ffffff; background-image:radial-gradient(#e4e6ea 1px, transparent 1.4px); background-size:16px 16px; border:1px solid #d8dbe0; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+
+    <div style="position:absolute; left:24px; top:20px; font-size:15px; font-weight:700; color:#2b2f36;">Algorithm 2 &nbsp;·&nbsp; Client-Side Local Training &amp; Encrypted Gradient Submission</div>
+    <div style="position:absolute; left:24px; top:42px; font-size:11.5px; color:#8a8f98;">Phase I - runs locally on each client; the raw gradient never leaves the device in plaintext</div>
+
+    <svg width="780" height="1000" style="position:absolute; left:0; top:0; pointer-events:none; z-index:1;">
+      <defs>
+        <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#5b6068"></path>
+        </marker>
+      </defs>
+      <g fill="none" stroke="#5b6068" stroke-width="1.6">
+        <path d="M390,170 L390,254" marker-end="url(#arr)"></path>
+        <path d="M390,326 L390,350" marker-end="url(#arr)"></path>
+        <path d="M390,442 L390,466" marker-end="url(#arr)"></path>
+        <path d="M390,538 L390,562" marker-end="url(#arr)"></path>
+        <path d="M390,642 L390,666" marker-end="url(#arr)"></path>
+        <path d="M390,742 L390,808" marker-end="url(#arr)"></path>
+        <!-- loop arcs -->
+        <path d="M570,442 C612,442 612,352 570,352" marker-end="url(#arr)"></path>
+        <path d="M570,642 C612,642 612,564 570,564" marker-end="url(#arr)"></path>
+      </g>
+    </svg>
+
+    <!-- loop labels -->
+    <div style="position:absolute; left:616px; top:378px; width:120px; z-index:3; font-size:10.5px; font-weight:600; color:#7d6a14;">repeat E epochs &times; batches</div>
+    <div style="position:absolute; left:616px; top:594px; width:110px; z-index:3; font-size:10.5px; font-weight:600; color:#7d6a14;">for k = 1 &hellip; d</div>
+    <div style="position:absolute; left:398px; top:768px; z-index:3; font-size:11px; font-weight:600; color:#7a4f00; background:#ffffff; padding:1px 4px;">M<sub>i</sub>&#8317;&#7511;&#8318;</div>
+
+    <!-- REQUIRE -->
+    <div style="position:absolute; left:250px; top:72px; width:280px; height:96px; z-index:2; box-sizing:border-box; border:1.5px solid #9aa0a8; border-radius:6px; background:#f5f6f7; padding:10px 14px;">
+      <div style="font-size:11px; font-weight:700; color:#5b6068; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px;">Require</div>
+      <div style="font-size:11.5px; line-height:1.6; color:#3a3f47;">Client C<sub>i</sub> with data D<sub>i</sub> &nbsp;&middot;&nbsp; round model &theta;&#8317;&#7511;&#8318; &nbsp;&middot;&nbsp; public key pk, scale s &nbsp;&middot;&nbsp; epochs E, batch B, learning rate &eta;</div>
+    </div>
+
+    <!-- CLIENT container -->
+    <div style="position:absolute; left:150px; top:200px; width:480px; height:580px; z-index:2; box-sizing:border-box; border:1.5px solid #82b366; border-radius:7px; background:rgba(213,232,212,0.30);">
+      <div style="position:absolute; left:0; top:0; right:0; background:#d5e8d4; border-bottom:1.5px solid #82b366; border-radius:6px 6px 0 0; padding:8px 14px; font-size:12.5px; font-weight:700; color:#2d4a26;">Client C<sub>i</sub>  -  local device <span style="font-weight:500; color:#4f7344;">(everything below stays private)</span></div>
+
+      <div style="position:absolute; left:60px; top:56px; width:360px; height:70px; box-sizing:border-box; border:1.4px solid #9aa0a8; border-radius:5px; background:#ffffff; padding:8px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#5b6068; margin-bottom:4px;">1 &middot; Initialise</div>
+        <div style="font-size:11.5px; color:#2b2f36;">&theta;<sub>i</sub> &larr; &theta;&#8317;&#7511;&#8318; ;&nbsp; g<sub>i</sub>&#8317;&#7511;&#8318; &larr; 0,&nbsp; m<sub>i</sub> &larr; 0</div>
+      </div>
+
+      <div style="position:absolute; left:60px; top:152px; width:360px; height:90px; box-sizing:border-box; border:1.4px solid #9aa0a8; border-radius:5px; background:#ffffff; padding:8px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#5b6068; margin-bottom:4px;">2 &middot; Local SGD</div>
+        <div style="font-size:11.5px; line-height:1.55; color:#2b2f36;">h &larr; &nabla;<sub>&theta;</sub>L(f<sub>&theta;<sub>i</sub></sub>; B) ;&nbsp; g<sub>i</sub> += h,&nbsp; m<sub>i</sub>++ ;&nbsp; &theta;<sub>i</sub> &larr; &theta;<sub>i</sub> &minus; &eta;h</div>
+      </div>
+
+      <div style="position:absolute; left:60px; top:268px; width:360px; height:70px; box-sizing:border-box; border:1.4px solid #9aa0a8; border-radius:5px; background:#ffffff; padding:8px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#5b6068; margin-bottom:4px;">3 &middot; Average &amp; flatten</div>
+        <div style="font-size:11.5px; color:#2b2f36;">g<sub>i</sub> &larr; g<sub>i</sub> / max(m<sub>i</sub>,1) &nbsp;&rarr;&nbsp; (g<sub>i,1</sub> &hellip; g<sub>i,d</sub>)</div>
+      </div>
+
+      <div style="position:absolute; left:60px; top:364px; width:360px; height:78px; box-sizing:border-box; border:1.4px solid #9aa0a8; border-radius:5px; background:#ffffff; padding:8px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#5b6068; margin-bottom:4px;">4 &middot; Encrypt coordinates</div>
+        <div style="font-size:11.5px; line-height:1.55; color:#2b2f36;">&gcirc;<sub>i,k</sub> &larr; Encode<sub>s</sub>(g<sub>i,k</sub>) ;&nbsp; [[g<sub>i,k</sub>]] &larr; Enc<sub>pk</sub>(&gcirc;<sub>i,k</sub>)</div>
+      </div>
+
+      <div style="position:absolute; left:60px; top:468px; width:360px; height:74px; box-sizing:border-box; border:1.4px solid #9aa0a8; border-radius:5px; background:#ffffff; padding:8px 12px;">
+        <div style="font-size:11px; font-weight:700; color:#5b6068; margin-bottom:4px;">5 &middot; Package</div>
+        <div style="font-size:11.5px; color:#2b2f36;">M<sub>i</sub>&#8317;&#7511;&#8318; &larr; ( TagID<sub>i</sub>,&nbsp; { [[g<sub>i,k</sub>]] }<sub>k=1..d</sub> )</div>
+      </div>
+    </div>
+
+    <!-- VERIFIER -->
+    <div style="position:absolute; left:250px; top:812px; width:280px; height:84px; z-index:2; box-sizing:border-box; border:1.5px solid #d79b00; border-radius:6px; background:#ffe6cc; padding:11px 16px; display:flex; flex-direction:column; justify-content:center;">
+      <div style="font-size:13px; font-weight:700; color:#7a4f00;">FIP Verifier</div>
+      <div style="font-size:11px; color:#9c6b08; margin-top:3px; line-height:1.5;">receives encrypted submission - raw gradient stays sealed</div>
+    </div>
+
+    <!-- ENSURE note -->
+    <div style="position:absolute; left:250px; top:912px; width:280px; height:44px; z-index:2; box-sizing:border-box; border:1.5px solid #9673a6; border-radius:6px; background:#e1d5e7; padding:0 14px; display:flex; align-items:center; gap:9px;">
+      <span style="font-size:10.5px; font-weight:700; color:#4a2d5e; text-transform:uppercase; letter-spacing:0.5px;">Ensure</span>
+      <span style="font-size:11.5px; color:#4a2d5e;">encrypted submission M<sub>i</sub>&#8317;&#7511;&#8318;</span>
+    </div>
+
+  </div>
+
+  <div style="font-size:12px; color:#8a8f98; font-style:italic;">Figure 5.2 - Phase I client pipeline of Algorithm 2.</div>
+</div>
+</x-dc>
+</body>
+</html>

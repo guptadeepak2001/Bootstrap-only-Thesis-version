@@ -67,21 +67,21 @@ On MNIST the chosen source--target pair is $(c_s,c_t)=(0,7)$, and on KDDCup99 I 
 
 Five metrics are used in the experiments. Three of them evaluate model utility on held-out test data, while the remaining two measure how effectively the verifier distinguishes malicious clients from honest ones.
 
-\noindent\textbf{Target accuracy (Tacc).} This metric evaluates performance only on test samples belonging to the targeted source class $c_s$:
+\noindent\textbf{Target-class accuracy ($T_{\text{acc}}$).} Target-class accuracy evaluates performance only on test samples belonging to the targeted source class $c_s$:
 \begin{equation}
-    \mathrm{Tacc} \;=\; \frac{|\{(x, y) \in \mathcal{D}_{\text{test}} : y = c_{s},\; \hat{f}(x) = c_{s}\}|}{|\{(x, y) \in \mathcal{D}_{\text{test}} : y = c_{s}\}|}.
+    T_{\text{acc}} \;=\; \frac{|\{(x, y) \in \mathcal{D}_{\text{test}} : y = c_{s},\; \hat{f}(x) = c_{s}\}|}{|\{(x, y) \in \mathcal{D}_{\text{test}} : y = c_{s}\}|}.
 \end{equation}
 A successful targeted attack reduces this value, whereas an effective defence keeps it close to the clean baseline. For untargeted attacks, class $0$ is taken as a fixed reference class so that results remain comparable across rows.
 
-\noindent\textbf{Other-label accuracy (Oacc).} Other-label accuracy measures performance on all test samples whose labels are not $c_s$:
+\noindent\textbf{Other-label accuracy ($O_{\text{acc}}$).} Other-label accuracy measures performance on all test samples whose labels are not $c_s$:
 \begin{equation}
-    \mathrm{Oacc} \;=\; \frac{|\{(x, y) \in \mathcal{D}_{\text{test}} : y \neq c_{s},\; \hat{f}(x) = y\}|}{|\{(x, y) \in \mathcal{D}_{\text{test}} : y \neq c_{s}\}|}.
+    O_{\text{acc}} \;=\; \frac{|\{(x, y) \in \mathcal{D}_{\text{test}} : y \neq c_{s},\; \hat{f}(x) = y\}|}{|\{(x, y) \in \mathcal{D}_{\text{test}} : y \neq c_{s}\}|}.
 \end{equation}
-Together, $\mathrm{Tacc}$ and $\mathrm{Oacc}$ show whether the attack mainly affects the target class or also damages the rest of the task.
+Together, target-class accuracy ($T_{\text{acc}}$) and other-label accuracy ($O_{\text{acc}}$) show whether the attack mainly affects the target class or also damages the rest of the task.
 
-\noindent\textbf{Overall accuracy (ACC).} Overall accuracy is the standard test accuracy over all classes:
+\noindent\textbf{Overall accuracy (ACC).} Overall accuracy (ACC) is the standard test accuracy over all classes:
 \begin{equation}
-    \text{ACC} \;=\; \frac{|\{(x, y) \in \mathcal{D}_{\text{test}} : \hat{f}(x) = y\}|}{|\mathcal{D}_{\text{test}}|}.
+    \mathrm{ACC} \;=\; \frac{|\{(x, y) \in \mathcal{D}_{\text{test}} : \hat{f}(x) = y\}|}{|\mathcal{D}_{\text{test}}|}.
 \end{equation}
 This is the main utility metric for untargeted attack experiments.
 
